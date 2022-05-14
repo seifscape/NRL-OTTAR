@@ -26,6 +26,7 @@ class CameraViewController: UIViewController {
     var usingFrontCamera: Bool = false
 //    var db: Firestore!
     private let photoOutput = AVCapturePhotoOutput()
+    private var photosTakens: [String] = []
 
 
     lazy var detectBarcodeRequest = VNDetectBarcodesRequest { request, error in
@@ -92,13 +93,12 @@ class CameraViewController: UIViewController {
                                            height: view.frame.height))
         view.addSubview(previewView)
         previewView.translatesAutoresizingMaskIntoConstraints = false
-        previewView.contentMode = UIView.ContentMode.scaleAspectFit
         previewView.clipsToBounds = true
-
         previewView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         previewView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         previewView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         previewView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        previewView.contentMode = UIView.ContentMode.scaleAspectFit
 
     }
 
@@ -396,8 +396,14 @@ extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate, AV
     }
 
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+        AudioServicesPlaySystemSound(1108);
         guard let imageData = photo.fileDataRepresentation() else { return }
         let previewImage = UIImage(data: imageData)
+
+        if let image = previewImage {
+            let b64 = self.convertImageToBase64String(img: image)
+            photosTakens.append(b64)
+        }
 
 //        if let image = previewImage {
 //            let b64 = self.convertImageToBase64String(img: image)

@@ -37,15 +37,27 @@ class TabViewController: UITabBarController, UITabBarControllerDelegate {
             UINavigationBar.appearance().scrollEdgeAppearance = appearance
         }
 
+        if #available(iOS 15, *) {
+           let tabBarAppearance = UITabBarAppearance()
+            tabBarAppearance.backgroundColor = .white
+            tabBarAppearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor.black]
+            tabBarAppearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor.black]
+           tabBar.standardAppearance = tabBarAppearance
+           tabBar.scrollEdgeAppearance = tabBarAppearance
+        } else {
+            UITabBarItem.appearance().setTitleTextAttributes([.foregroundColor: UIColor.blue], for: .selected)
+            UITabBarItem.appearance().setTitleTextAttributes([.foregroundColor: UIColor.black], for: .normal)
+            tabBar.barTintColor = .black
+         }
     }
 
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         let configuration = UIImage.SymbolConfiguration(pointSize: 24, weight: .medium, scale: .medium)
-        let docSymbol         = UIImage(systemName: "doc.richtext", withConfiguration: configuration)
+        let docSymbol         = UIImage(systemName: "doc.richtext", withConfiguration: configuration)?.withBaselineOffset(fromBottom: UIFont.systemFontSize / 2)
         // Create Tab one
-        let tabOne = UINavigationController.init(rootViewController: CaptureReviewViewController()) 
+        let tabOne = UINavigationController.init(rootViewController: CapturePreviewViewController()) 
         let tabOneBarItem = UITabBarItem(title: "", image: docSymbol, selectedImage: nil)
         tabOne.tabBarItem = tabOneBarItem
         self.viewControllers = [tabOne]

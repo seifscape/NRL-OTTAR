@@ -10,12 +10,14 @@ import UIKit
 
 class CaptureReviewViewController: UIViewController {
 
-    var topView    = UIView()
+    var topView     = UIView()
+    var titleLabel  = UILabel()
     var bottomView = UIView()
     var safeArea: UILayoutGuide!
     var collectionView = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: UICollectionViewFlowLayout())
     var collectionContainer = UIView()
     var submitButton = UIButton()
+    var totalItems = 4
 
     private let spacing:CGFloat = 16.0
     private let topHeaderHeight:CGFloat = 20
@@ -27,8 +29,6 @@ class CaptureReviewViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        self.title = "Review Captures"
         edgesForExtendedLayout = []
         let layout = UICollectionViewFlowLayout()
         collectionView.automaticallyAdjustsScrollIndicatorInsets = false
@@ -37,13 +37,14 @@ class CaptureReviewViewController: UIViewController {
         layout.minimumLineSpacing = spacing
         layout.minimumInteritemSpacing = spacing
         collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
-        collectionView.register(CaptureDetailCollectionViewCell.self, forCellWithReuseIdentifier: "aCell")
+        collectionView.register(CaptureDetailCollectionViewCell.self, forCellWithReuseIdentifier: "cell")
+        collectionView.register(NewCaptureCollectionViewCell.self, forCellWithReuseIdentifier: "CaptureCell")
         collectionView.delegate = self
         collectionView.dataSource = self
         self.setupUI()
         self.setupConstraints()
         self.setupCollectionView()
-
+        self.setupNavBar()
     }
 
     func setupNavBar() {
@@ -63,7 +64,7 @@ class CaptureReviewViewController: UIViewController {
         self.navigationController?.navigationBar.scrollEdgeAppearance = appearance
         self.navigationController?.navigationBar.compactAppearance = appearance
         self.navigationController?.navigationBar.standardAppearance = appearance
-        self.navigationController?.navigationBar.prefersLargeTitles = true
+        self.navigationController?.navigationBar.prefersLargeTitles = false
     }
 
     func setupUI() {
@@ -77,7 +78,13 @@ class CaptureReviewViewController: UIViewController {
 
         topView = UIView(frame: .zero)
         topView.translatesAutoresizingMaskIntoConstraints = false
-        topView.backgroundColor = .systemRed
+        topView.backgroundColor = .clear
+
+        titleLabel = UILabel(frame: .zero)
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.text = "Review Captures"
+        titleLabel.font = .systemFont(ofSize: 32)
+        titleLabel.textColor = .white
 
         bottomView = UIView(frame: .zero)
         bottomView.translatesAutoresizingMaskIntoConstraints = false
@@ -98,6 +105,7 @@ class CaptureReviewViewController: UIViewController {
         collectionView.backgroundColor = self.view.backgroundColor
 
         self.view.addSubview(topView)
+        topView.addSubview(titleLabel)
         self.view.addSubview(collectionContainer)
         self.view.addSubview(bottomView)
         collectionContainer.addSubview(collectionView)
@@ -110,6 +118,9 @@ class CaptureReviewViewController: UIViewController {
         topView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 10).isActive = true
         topView.leftAnchor.constraint(equalTo: safeArea.leftAnchor).isActive = true
         topView.rightAnchor.constraint(equalTo: safeArea.rightAnchor).isActive = true
+
+        titleLabel.centerXAnchor.constraint(equalTo: topView.centerXAnchor).isActive = true
+        titleLabel.centerYAnchor.constraint(equalTo: topView.centerYAnchor).isActive = true
 
 
         collectionContainer.topAnchor.constraint(equalTo: topView.bottomAnchor, constant: 3).isActive = true
@@ -140,21 +151,34 @@ class CaptureReviewViewController: UIViewController {
 extension CaptureReviewViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 5
+        return totalItems + 1
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "aCell", for: indexPath) as? CaptureDetailCollectionViewCell
 
-        cell?.imageView.image = UIImage(named: "backgroundImage")
-        return cell ?? UICollectionViewCell()
+        if indexPath.row < totalItems {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? CaptureDetailCollectionViewCell
+             cell?.imageView.image = UIImage(named: "backgroundImage")
+            return cell ?? UICollectionViewCell()
+        }
+        else {
+            let captureCell = collectionView.dequeueReusableCell(withReuseIdentifier: "CaptureCell", for: indexPath) as? NewCaptureCollectionViewCell
+            return captureCell ?? UICollectionViewCell()
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets(top: spacing, left: 6, bottom: spacing, right: 6)
+        return UIEdgeInsets(top: spacing, left: 5, bottom: spacing, right: 5)
     }
 
+
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 152, height: 152)
+            let numberOfItemsPerRow:CGFloat = 2
+            let spacingBetweenCells:CGFloat = 0
+
+            let totalSpacing = (2 * self.spacing) + ((numberOfItemsPerRow - 1) * spacingBetweenCells) //Amount of total spacing in a row
+
+            let width = floor((collectionView.bounds.width - totalSpacing)/numberOfItemsPerRow)
+            return CGSize(width: width, height: width)
     }
 }

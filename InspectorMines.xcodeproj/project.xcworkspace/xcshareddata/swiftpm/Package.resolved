@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "bottomsheet",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/finn-no/BottomSheet.git",
+      "state" : {
+        "revision" : "2287df38e0f5cfb9ba747bae234eddf169ad00c6",
+        "version" : "5.2.0"
+      }
+    }
+  ],
+  "version" : 2
+}

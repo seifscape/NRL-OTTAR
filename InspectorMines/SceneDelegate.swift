@@ -19,8 +19,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
         let window = UIWindow(windowScene: windowScene)
-        let tabController = TabViewController()
-        window.rootViewController = tabController
+        let cameraVC = CapturePreviewViewController()
+//        let tabController = TabViewController()
+        window.rootViewController = cameraVC
         //UINavigationController(rootViewController: AthanyTabBarController())
         self.window = window
         window.makeKeyAndVisible()
