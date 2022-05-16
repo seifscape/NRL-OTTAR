@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		280CCF422832981F00488F6C /* CapturePreviewOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280CCF412832981F00488F6C /* CapturePreviewOptionsView.swift */; };
+		280CCF442832B62400488F6C /* Ext+UITabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280CCF432832B62400488F6C /* Ext+UITabBarController.swift */; };
 		280E72FF27DE99B900B701DC /* CaptureDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280E72FE27DE99B900B701DC /* CaptureDetailViewController.swift */; };
 		2845A4FD275989BE002C8691 /* CaptureListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2845A4FC275989BE002C8691 /* CaptureListViewController.swift */; };
 		28625DC128035B1A003CAAA6 /* NewCaptureCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28625DC028035B1A003CAAA6 /* NewCaptureCollectionViewCell.swift */; };
@@ -29,6 +31,7 @@
 		289DDC6427542CE400A246C0 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 289DDC6327542CE400A246C0 /* CameraViewController.swift */; };
 		289DDC66275432FD00A246C0 /* CameraButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 289DDC65275432FD00A246C0 /* CameraButton.swift */; };
 		28A0604D28304ED2001531DE /* FINNBottomSheet in Frameworks */ = {isa = PBXBuildFile; productRef = 28A0604C28304ED2001531DE /* FINNBottomSheet */; };
+		28A0604F28309092001531DE /* tina-boujemil-TX-9Ze-9nk8-unsplash.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 28A0604E28309092001531DE /* tina-boujemil-TX-9Ze-9nk8-unsplash.jpg */; };
 		28BD0B2C282DFD71009292F1 /* PhotoCaptureDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28BD0B2B282DFD71009292F1 /* PhotoCaptureDelegate.swift */; };
 		28BD0B2E282E01E8009292F1 /* CaptureCameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28BD0B2D282E01E8009292F1 /* CaptureCameraViewController.swift */; };
 		28BD0B30282E032A009292F1 /* PreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28BD0B2F282E032A009292F1 /* PreviewView.swift */; };
@@ -55,6 +58,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		280CCF412832981F00488F6C /* CapturePreviewOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapturePreviewOptionsView.swift; sourceTree = "<group>"; };
+		280CCF432832B62400488F6C /* Ext+UITabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ext+UITabBarController.swift"; sourceTree = "<group>"; };
 		280E72FE27DE99B900B701DC /* CaptureDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureDetailViewController.swift; sourceTree = "<group>"; };
 		2845A4FC275989BE002C8691 /* CaptureListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureListViewController.swift; sourceTree = "<group>"; };
 		28625DC028035B1A003CAAA6 /* NewCaptureCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCaptureCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -82,6 +87,7 @@
 		288079F427EF97FA0069BC0B /* CaptureReviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureReviewViewController.swift; sourceTree = "<group>"; };
 		289DDC6327542CE400A246C0 /* CameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		289DDC65275432FD00A246C0 /* CameraButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraButton.swift; sourceTree = "<group>"; };
+		28A0604E28309092001531DE /* tina-boujemil-TX-9Ze-9nk8-unsplash.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "tina-boujemil-TX-9Ze-9nk8-unsplash.jpg"; path = "Assets.xcassets/backgroundImage.imageset/tina-boujemil-TX-9Ze-9nk8-unsplash.jpg"; sourceTree = "<group>"; };
 		28BD0B2B282DFD71009292F1 /* PhotoCaptureDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureDelegate.swift; sourceTree = "<group>"; };
 		28BD0B2D282E01E8009292F1 /* CaptureCameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureCameraViewController.swift; sourceTree = "<group>"; };
 		28BD0B2F282E032A009292F1 /* PreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewView.swift; sourceTree = "<group>"; };
@@ -155,6 +161,7 @@
 				286EBD9D268D3A5F0002CBED /* LaunchScreen.storyboard */,
 				286EBDA0268D3A5F0002CBED /* Info.plist */,
 				286EBD98268D3A5D0002CBED /* InspectorMines.xcdatamodeld */,
+				28A0604E28309092001531DE /* tina-boujemil-TX-9Ze-9nk8-unsplash.jpg */,
 			);
 			path = InspectorMines;
 			sourceTree = "<group>";
@@ -199,6 +206,7 @@
 				28D6031127BAF2C50060D2D2 /* Cells */,
 				289DDC65275432FD00A246C0 /* CameraButton.swift */,
 				28BD0B2F282E032A009292F1 /* PreviewView.swift */,
+				280CCF412832981F00488F6C /* CapturePreviewOptionsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -206,6 +214,7 @@
 		286EBDC4268D3A960002CBED /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				280CCF432832B62400488F6C /* Ext+UITabBarController.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -385,6 +394,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				28A0604F28309092001531DE /* tina-boujemil-TX-9Ze-9nk8-unsplash.jpg in Resources */,
 				286EBD9F268D3A5F0002CBED /* LaunchScreen.storyboard in Resources */,
 				286EBD9C268D3A5F0002CBED /* Assets.xcassets in Resources */,
 			);
@@ -415,6 +425,7 @@
 				28BD0B30282E032A009292F1 /* PreviewView.swift in Sources */,
 				286EBDCD268D3EFF0002CBED /* Photo.swift in Sources */,
 				28668029282DB61C003CBA54 /* CapturePreviewViewController.swift in Sources */,
+				280CCF442832B62400488F6C /* Ext+UITabBarController.swift in Sources */,
 				286EBDCB268D3ECF0002CBED /* Capture.swift in Sources */,
 				28E24DBF27CD298500CEAD28 /* TabViewController.swift in Sources */,
 				286EBD94268D3A5D0002CBED /* ViewController.swift in Sources */,
@@ -434,6 +445,7 @@
 				286EBD92268D3A5D0002CBED /* SceneDelegate.swift in Sources */,
 				289DDC66275432FD00A246C0 /* CameraButton.swift in Sources */,
 				286EBDE1268D45350002CBED /* CaptureViewController.swift in Sources */,
+				280CCF422832981F00488F6C /* CapturePreviewOptionsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

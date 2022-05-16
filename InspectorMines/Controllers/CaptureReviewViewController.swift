@@ -17,7 +17,9 @@ class CaptureReviewViewController: UIViewController {
     var collectionView = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: UICollectionViewFlowLayout())
     var collectionContainer = UIView()
     var submitButton = UIButton()
-    var totalItems = 4
+    var topRightBarButton = UIBarButtonItem()
+
+    var listOfPhotos = [UIImage]()
 
     private let spacing:CGFloat = 16.0
     private let topHeaderHeight:CGFloat = 20
@@ -65,6 +67,13 @@ class CaptureReviewViewController: UIViewController {
         self.navigationController?.navigationBar.compactAppearance = appearance
         self.navigationController?.navigationBar.standardAppearance = appearance
         self.navigationController?.navigationBar.prefersLargeTitles = false
+
+        let config = UIImage.SymbolConfiguration(scale: .large)
+        let image = UIImage(systemName: "pencil", withConfiguration: config)
+        topRightBarButton = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(editCaptures(_:)))
+        topRightBarButton.tintColor = .white
+        self.navigationItem.rightBarButtonItem = topRightBarButton
+
     }
 
     func setupUI() {
@@ -110,6 +119,7 @@ class CaptureReviewViewController: UIViewController {
         self.view.addSubview(bottomView)
         collectionContainer.addSubview(collectionView)
 
+        self.submitButton.addTarget(self, action: #selector(submitCapture(_:)), for: .touchUpInside)
     }
 
     func setupConstraints() {
@@ -146,24 +156,77 @@ class CaptureReviewViewController: UIViewController {
         collectionView.rightAnchor.constraint(equalTo: collectionContainer.rightAnchor).isActive = true
     }
 
+    @objc
+    private func editCaptures(_ sender: UIButton) {
+
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
+        }
+
+        if isEditing {
+            isEditing = false
+            topRightBarButton.image = UIImage(systemName: "pencil")
+            self.navigationItem.leftBarButtonItem = nil
+        }
+        else {
+            isEditing = true
+            topRightBarButton.image = UIImage(systemName: "checkmark")
+        }
+    }
+
+    @objc func submitCapture(_ sender: UIButton) {
+        let captureDetail = CaptureDetailViewController()
+        captureDetail.listOfPhotos = self.listOfPhotos
+        self.navigationController?.pushViewController(captureDetail, animated: true)
+    }
+
 }
 
 extension CaptureReviewViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return totalItems + 1
+        return listOfPhotos.count + 1
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 
-        if indexPath.row < totalItems {
+        if indexPath.row < listOfPhotos.count {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? CaptureDetailCollectionViewCell
-             cell?.imageView.image = UIImage(named: "backgroundImage")
+            cell?.imageView.image =  listOfPhotos[indexPath.row] // UIImage(named: "backgroundImage")
+            if self.isEditing {
+                cell?.button.isHidden = false
+            }
+            else { cell?.button.isHidden = true }
             return cell ?? UICollectionViewCell()
         }
         else {
             let captureCell = collectionView.dequeueReusableCell(withReuseIdentifier: "CaptureCell", for: indexPath) as? NewCaptureCollectionViewCell
             return captureCell ?? UICollectionViewCell()
+        }
+    }
+
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+
+        // https://stackoverflow.com/a/40808295 https://stackoverflow.com/a/44122977
+        if indexPath.row == listOfPhotos.count {
+            if let navController = self.navigationController {
+                for controller in navController.viewControllers {
+                    if controller is CaptureCameraViewController {
+                        navController.popToViewController(controller, animated:true)
+                        if let previousViewController = self.navigationController?.viewControllers.last as? CaptureCameraViewController {
+                            previousViewController.photoList = self.listOfPhotos
+                        }
+                        break
+                    }
+                }
+            }
+        }
+        else {
+            if self.isEditing {
+                self.listOfPhotos.remove(at: indexPath.row)
+                collectionView.reloadData()
+            }
         }
     }
 

@@ -51,19 +51,19 @@ class CaptureDetailCollectionViewCell: UICollectionViewCell {
 
         self.button.widthAnchor.constraint(equalToConstant: 40).isActive = true
         self.button.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        self.button.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: -10).isActive = true
+        self.button.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: -8).isActive = true
         self.button.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: -10).isActive = true
     }
 
-//    override func prepareForReuse() {
-//        super.prepareForReuse()
-////        imageView.image = nil
-//
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageView.image = nil
+
 //        for subview in subviews {
 //            subview.removeConstraints(subview.constraints)
 //            subview.removeFromSuperview()
 //        }
 //
 //        self.removeFromSuperview() // BURN EVERYTHING
-//    }
+    }
 }

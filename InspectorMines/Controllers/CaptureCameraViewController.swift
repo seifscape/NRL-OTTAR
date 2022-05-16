@@ -23,6 +23,8 @@ class CaptureCameraViewController: UIViewController {
     var previewView   = PreviewView()
     var photoButton   = UIButton()
 
+    var photoList = [UIImage]()
+
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setupUI()
@@ -91,12 +93,14 @@ class CaptureCameraViewController: UIViewController {
 
         captureButton.subscribeButtonAction = { [unowned self] in
             self.capturePhoto(captureButton)
+            captureButton.isEnabled = false
         }
 
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.navigationController?.setNavigationBarHidden(true, animated: true)
 
         sessionQueue.async {
             switch self.setupResult {
@@ -201,16 +205,25 @@ class CaptureCameraViewController: UIViewController {
 
         let closeButton = UIButton()
         closeButton.setImage(closeSymbol, for: .normal)
-        closeButton.tintColor = .black
 
         let torchButton = UIButton()
         torchButton.setImage(torchSymbolOn, for: .normal)
         torchButton.setImage(torchSymbolOff, for: .selected)
-        torchButton.tintColor = .black
 
 
         photoButton.setImage(rotateCameraSymbol, for: .normal)
-        photoButton.tintColor = .black
+
+        if  UIScreen.main.traitCollection.userInterfaceStyle == .dark {
+            // User Interface is Dark
+            photoButton.tintColor = .white
+            torchButton.tintColor = .white
+            closeButton.tintColor = .white
+        } else {
+            // User Interface is Light
+            photoButton.tintColor = .black
+            torchButton.tintColor = .black
+            closeButton.tintColor = .black
+        }
 
         mainStackView.addArrangedSubview(closeButton)
         mainStackView.addArrangedSubview(torchButton)
@@ -600,7 +613,7 @@ class CaptureCameraViewController: UIViewController {
          */
         let videoPreviewLayerOrientation = previewView.videoPreviewLayer.connection?.videoOrientation
 
-        AudioServicesPlaySystemSound(1108);
+        // AudioServicesPlaySystemSound(1108);
         sessionQueue.async {
             if let photoOutputConnection = self.photoOutput.connection(with: .video) {
                 photoOutputConnection.videoOrientation = videoPreviewLayerOrientation!
@@ -642,6 +655,22 @@ class CaptureCameraViewController: UIViewController {
                     }
                 }
             }, completionHandler: { photoCaptureProcessor in
+
+                DispatchQueue.main.async {
+                    if let capturedImage = photoCaptureProcessor.photoData {
+                        if let image = UIImage(data: capturedImage) {
+                            self.photoList.append(image)
+                        }
+                    }
+                    let capturePreview = CapturePreviewViewController()
+                    capturePreview.delegate = self
+                    capturePreview.photoList = self.photoList
+                    capturePreview.modalPresentationStyle = .fullScreen
+                    capturePreview.navigationItem.backButtonDisplayMode = .minimal
+                    self.navigationController?.pushViewController(capturePreview, animated: true)
+                    self.captureButton.isEnabled = true
+                }
+
                 // When the capture is complete, remove a reference to the photo capture delegate so it can be deallocated.
                 self.sessionQueue.async {
                     self.inProgressPhotoCaptureDelegates[photoCaptureProcessor.requestedPhotoSettings.uniqueID] = nil
@@ -668,18 +697,6 @@ class CaptureCameraViewController: UIViewController {
             self.photoOutput.capturePhoto(with: photoSettings, delegate: photoCaptureProcessor)
         }
     }
-
-
-    func convert() {
-//        guard let imageData = photo.fileDataRepresentation() else { return }
-//        let previewImage = UIImage(data: imageData)
-//
-//        if let image = previewImage {
-//            let b64 = self.convertImageToBase64String(img: image)
-//            photosTakens.append(b64)
-//        }
-    }
-
 
     // MARK: KVO and Notifications
 
@@ -857,5 +874,21 @@ extension AVCaptureDevice.DiscoverySession {
             uniqueDevicePositions.append(device.position)
         }
         return uniqueDevicePositions.count
+    }
+}
+
+extension CaptureCameraViewController: CapturePreviewControllerDelegate {
+
+    func removeLastPhoto(targetImage targetPhoto: UIImage) {
+        print("Called")
+        if self.photoList.last == targetPhoto {
+            self.photoList.removeLast()
+            print("Hit")
+        }
+    }
+
+    func willTakeAditionalPhotos(withImage image: UIImage) {
+        // self.photoList.append(image)
+        print(image.size)
     }
 }

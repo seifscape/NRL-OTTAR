@@ -20,7 +20,7 @@ class PhotoCaptureProcessor: NSObject {
 
     private let photoProcessingHandler: (Bool) -> Void
 
-    private var photoData: Data?
+    internal var photoData: Data?
 
     private var portraitEffectsMatteData: Data?
 

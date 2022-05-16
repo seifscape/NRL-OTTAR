@@ -20,6 +20,9 @@ class CaptureDetailViewController: UIViewController {
     var floatingButton = UIButton()
     private let spacing:CGFloat = 16.0
     private let topHeaderHeight:CGFloat = 150.0
+    var listOfPhotos = [UIImage]()
+
+
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .darkContent
@@ -203,12 +206,14 @@ class CaptureDetailViewController: UIViewController {
 extension CaptureDetailViewController: UICollectionViewDelegate, UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 8
+        return listOfPhotos.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "captureDetailCell", for: indexPath) as! CaptureDetailCollectionViewCell
-        cell.imageView.image = UIImage(named: "backgroundImage")
+        cell.imageView.image = listOfPhotos[indexPath.row]   //UIImage(named: "backgroundImage")
+        cell.imageView.contentMode = .scaleToFill
+
         if self.isEditing {
             cell.button.isHidden = false
         }
@@ -231,6 +236,35 @@ extension CaptureDetailViewController: UICollectionViewDelegate, UICollectionVie
             let width = floor((collectionView.bounds.width - totalSpacing)/numberOfItemsPerRow)
             return CGSize(width: width, height: width)
     }
+
+    func downsample(imageAt imageURL: URL,
+                    to pointSize: CGSize,
+                    scale: CGFloat = UIScreen.main.scale) -> UIImage? {
+
+        // Create an CGImageSource that represent an image
+        let imageSourceOptions = [kCGImageSourceShouldCache: false] as CFDictionary
+        guard let imageSource = CGImageSourceCreateWithURL(imageURL as CFURL, imageSourceOptions) else {
+            return nil
+        }
+
+        // Calculate the desired dimension
+        let maxDimensionInPixels = max(pointSize.width, pointSize.height) * scale
+
+        // Perform downsampling
+        let downsampleOptions = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceShouldCacheImmediately: true,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceThumbnailMaxPixelSize: maxDimensionInPixels
+        ] as CFDictionary
+        guard let downsampledImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, downsampleOptions) else {
+            return nil
+        }
+
+        // Return the downsampled image as UIImage
+        return UIImage(cgImage: downsampledImage)
+    }
+
 }
 
 extension UIButton {
