@@ -879,7 +879,7 @@ extension AVCaptureDevice.DiscoverySession {
 
 extension CaptureCameraViewController: CapturePreviewControllerDelegate {
 
-    func removeLastPhoto(targetImage targetPhoto: UIImage) {
+    func removeSelectedPhoto(targetImage targetPhoto: UIImage) {
         print("Called")
         if self.photoList.last == targetPhoto {
             self.photoList.removeLast()

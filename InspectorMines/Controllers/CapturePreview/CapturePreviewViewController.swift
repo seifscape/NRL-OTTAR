@@ -8,11 +8,12 @@
 
 import UIKit
 import FINNBottomSheet
+import CollectionViewPagingLayout
 
 
 protocol CapturePreviewControllerDelegate: AnyObject {
     func willTakeAditionalPhotos(withImage image: UIImage)
-    func removeLastPhoto(targetImage targetPhoto: UIImage)
+    func removeSelectedPhoto(targetImage targetPhoto: UIImage)
 }
 
 class CapturePreviewViewController: UIViewController {
@@ -21,8 +22,25 @@ class CapturePreviewViewController: UIViewController {
     var imagePreview     = UIImageView()
     var safeArea: UILayoutGuide!
     weak var delegate: CapturePreviewControllerDelegate?
-
     var photoList = [UIImage]()
+    var indexOfCellBeforeDragging: Int = 0
+
+
+    private let cellWitdhPercentage: CGFloat = 0.85
+    private let idealCellDistance: CGFloat = 16
+
+    private var currentPositionIndex = 0
+
+    private let collectionView: UICollectionView = {
+        let viewLayout = UICollectionViewFlowLayout()
+        viewLayout.scrollDirection = .horizontal
+
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: viewLayout)
+        collectionView.backgroundColor = UIColor(red:0.09, green:0.16, blue:0.34, alpha:1.00)
+        collectionView.contentInsetAdjustmentBehavior = .always
+        collectionView.decelerationRate = .fast
+        return collectionView
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,6 +53,12 @@ class CapturePreviewViewController: UIViewController {
         self.setupConstraints()
         self.displayBottomOptions()
         self.imagePreview.image = photoList.last
+        self.collectionView.decelerationRate = .fast
+
+        collectionView.register(CaptureDetailCollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.decelerationRate = .fast
 
         BottomSheetView.cameraButton.addTarget(self, action: #selector(addMorePhotos(_:)), for: .touchUpInside)
         BottomSheetView.checkmarkButton.addTarget(self, action: #selector(completeCapture(_:)), for: .touchUpInside)
@@ -50,6 +74,11 @@ class CapturePreviewViewController: UIViewController {
 
     }
 
+//    override func viewDidLayoutSubviews() {
+//        super.viewDidLayoutSubviews()
+//        collectionView.collectionViewLayout.invalidateLayout()
+//    }
+
     func setupUI() {
         view.backgroundColor = UIColor(red:0.09, green:0.16, blue:0.34, alpha:1.00)
         previewContainer = UIView(frame: .zero)
@@ -59,19 +88,21 @@ class CapturePreviewViewController: UIViewController {
         imagePreview.translatesAutoresizingMaskIntoConstraints = false
         imagePreview.contentMode = .scaleToFill
         view.addSubview(previewContainer)
-        previewContainer.addSubview(imagePreview)
+        previewContainer.addSubview(collectionView)
     }
 
     func setupConstraints() {
-        previewContainer.topAnchor.constraint(equalTo: safeArea.topAnchor, constant: 50).isActive = true
-        previewContainer.rightAnchor.constraint(equalTo: safeArea.rightAnchor, constant: -20).isActive = true
-        previewContainer.leftAnchor.constraint(equalTo: safeArea.leftAnchor, constant: 20).isActive = true
+        previewContainer.topAnchor.constraint(equalTo: safeArea.topAnchor, constant: 25).isActive = true
+        previewContainer.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant:0).isActive = true
+        previewContainer.leftAnchor.constraint(equalTo: self.view.leftAnchor, constant: 0).isActive = true
         previewContainer.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: -100).isActive = true
 
-        imagePreview.topAnchor.constraint(equalTo: previewContainer.topAnchor).isActive = true
-        imagePreview.leftAnchor.constraint(equalTo: previewContainer.leftAnchor).isActive = true
-        imagePreview.bottomAnchor.constraint(equalTo: previewContainer.bottomAnchor).isActive = true
-        imagePreview.rightAnchor.constraint(equalTo: previewContainer.rightAnchor).isActive = true
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.topAnchor.constraint(equalTo: previewContainer.topAnchor).isActive = true
+        collectionView.leftAnchor.constraint(equalTo: previewContainer.leftAnchor).isActive = true
+        collectionView.bottomAnchor.constraint(equalTo: previewContainer.bottomAnchor).isActive = true
+        collectionView.rightAnchor.constraint(equalTo: previewContainer.rightAnchor).isActive = true
+
     }
 
     private func displayBottomOptions() {
@@ -97,7 +128,7 @@ class CapturePreviewViewController: UIViewController {
         defer {
             sender.isUserInteractionEnabled = true
         }
-        delegate?.removeLastPhoto(targetImage: self.photoList.last ?? UIImage())
+        delegate?.removeSelectedPhoto(targetImage: self.photoList.last ?? UIImage())
         DispatchQueue.main.async {
             self.navigationController?.popViewController(animated: true)
             sender.isEnabled = true
@@ -198,3 +229,92 @@ private extension UIView {
         return view
     }
 }
+
+extension CapturePreviewViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return photoList.count
+    }
+
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! CaptureDetailCollectionViewCell
+        cell.imageView.image = photoList[indexPath.row] //UIImage(named: "backgroundImage")
+        cell.imageView.contentMode = .scaleAspectFill
+        // Configure the cell
+        return cell
+    }
+}
+
+// https://gist.github.com/danielCarlosCE/7a5f80dc6087773ba147be4dc72da826
+// https://stackoverflow.com/a/66289855
+// https://stackoverflow.com/questions/35045155/how-to-create-a-centered-uicollectionview-like-in-spotifys-player/49844718#49844718
+extension CapturePreviewViewController: UICollectionViewDelegateFlowLayout {
+
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let cellWidth = cellWidth(forCollectionViewWidth: collectionView.frame.width)
+        return CGSize(width: cellWidth, height: collectionView.frame.height)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return cellDistance(forCollectionViewWidth: collectionView.frame.width)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        let collectionViewWidth = collectionView.frame.width
+        let sides = collectionViewWidth - cellWidth(forCollectionViewWidth: collectionViewWidth)
+        let horizontalInset: CGFloat = sides/2
+        return UIEdgeInsets(top: 0, left: horizontalInset, bottom: 0, right: horizontalInset)
+    }
+
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        let offsetWidthForOneItem = caculateContentOffsetForOneItem(scrollView)
+        let offsetForCurrentItem = { CGPoint(x: offsetWidthForOneItem * CGFloat(self.currentPositionIndex), y: targetContentOffset.pointee.y) }
+
+        enum HorizontalDirection { case left, right }
+        let horizontalDirection: HorizontalDirection = velocity.x > 0 ? .right : .left
+
+        switch horizontalDirection {
+        case .left:
+            let isFirstItem = currentPositionIndex <= 0
+            guard isFirstItem == false else {
+                targetContentOffset.pointee = offsetForCurrentItem()
+                return
+            }
+
+            currentPositionIndex -= 1
+            targetContentOffset.pointee = offsetForCurrentItem()
+
+        case .right:
+            let isLastItem = (scrollView.contentOffset.x + offsetWidthForOneItem >= scrollView.contentSize.width)
+            guard isLastItem == false else {
+                targetContentOffset.pointee = offsetForCurrentItem()
+                return
+            }
+
+            currentPositionIndex += 1
+            targetContentOffset.pointee = offsetForCurrentItem()
+        }
+    }
+
+    private func cellWidth(forCollectionViewWidth collectionViewWidth: CGFloat) -> CGFloat {
+        let itemWidth = collectionViewWidth * cellWitdhPercentage
+        return itemWidth
+    }
+
+    private func cellDistance(forCollectionViewWidth collectionViewWidth: CGFloat) -> CGFloat {
+        let sides = collectionViewWidth - cellWidth(forCollectionViewWidth: collectionViewWidth)
+        let oneSide = sides/2
+        let final = min(idealCellDistance, oneSide/2)
+        return final
+    }
+
+    private func caculateContentOffsetForOneItem(_ scrollView: UIScrollView) -> CGFloat {
+        let cellItemWidth = cellWidth(forCollectionViewWidth: scrollView.frame.width)
+        let sides = scrollView.frame.width - cellItemWidth
+        let oneSide: CGFloat = sides/2
+        let nextItemVisiblePart = scrollView.frame.width - (oneSide + cellItemWidth + cellDistance(forCollectionViewWidth: scrollView.frame.width))
+        return oneSide + (cellItemWidth - nextItemVisiblePart)
+    }
+}
+

@@ -51,7 +51,7 @@ class CaptureDetailCollectionViewCell: UICollectionViewCell {
 
         self.button.widthAnchor.constraint(equalToConstant: 40).isActive = true
         self.button.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        self.button.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: -8).isActive = true
+        self.button.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: -12).isActive = true
         self.button.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: -10).isActive = true
     }
 
