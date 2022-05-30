@@ -10,6 +10,7 @@ import UIKit
 
 class CaptureDetailCollectionViewCell: UICollectionViewCell {
 
+    let card      = UIView(frame: .zero)
     let imageView = UIImageView(frame: .zero)
     let button    = UIButton()
 
@@ -25,10 +26,14 @@ class CaptureDetailCollectionViewCell: UICollectionViewCell {
     }
 
     private func setupUI() {
-        self.contentView.addSubview(self.imageView)
+        self.contentView.addSubview(self.card)
+        self.card.addSubview(self.imageView)
+        self.card.translatesAutoresizingMaskIntoConstraints = false
+        self.card.layer.cornerRadius = 15.0
+        self.card.clipsToBounds = true
         self.imageView.clipsToBounds = true
         self.imageView.backgroundColor = .systemGray
-        self.imageView.layer.cornerRadius = 15.0
+        //self.imageView.layer.cornerRadius = 15.0
         self.imageView.contentMode = .scaleAspectFill
         self.imageView.translatesAutoresizingMaskIntoConstraints = false
 
@@ -39,15 +44,21 @@ class CaptureDetailCollectionViewCell: UICollectionViewCell {
         self.button.tintColor = .black
         self.button.layer.cornerRadius = 20
         self.button.translatesAutoresizingMaskIntoConstraints = false
-        self.contentView.addSubview(self.button)
-        self.contentView.bringSubviewToFront(self.button)
+        self.card.addSubview(self.button)
+        self.card.bringSubviewToFront(self.button)
     }
 
     private func setupConstrainsts() {
-        self.imageView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
-        self.imageView.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true
-        self.imageView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
-        self.imageView.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
+
+        self.card.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
+        self.card.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true
+        self.card.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
+        self.card.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
+
+        self.imageView.topAnchor.constraint(equalTo: self.card.topAnchor).isActive = true
+        self.imageView.leftAnchor.constraint(equalTo: self.card.leftAnchor).isActive = true
+        self.imageView.bottomAnchor.constraint(equalTo: self.card.bottomAnchor).isActive = true
+        self.imageView.rightAnchor.constraint(equalTo: self.card.rightAnchor).isActive = true
 
         self.button.widthAnchor.constraint(equalToConstant: 40).isActive = true
         self.button.heightAnchor.constraint(equalToConstant: 40).isActive = true
@@ -65,5 +76,18 @@ class CaptureDetailCollectionViewCell: UICollectionViewCell {
 //        }
 //
 //        self.removeFromSuperview() // BURN EVERYTHING
+    }
+
+    func transformToLarge() {
+        UIView.animate(withDuration:0.2){
+            self.transform = CGAffineTransform(translationX: 1.0, y: -14.0)
+            self.card.layoutSubviews()
+        }
+    }
+
+    func transformToStandard() {
+        UIView.animate(withDuration:0.2){
+            self.transform = CGAffineTransform.identity
+        }
     }
 }

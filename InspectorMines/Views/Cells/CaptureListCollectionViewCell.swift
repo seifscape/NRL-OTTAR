@@ -14,7 +14,7 @@ class CaptureListCollectionViewCell: UICollectionViewCell {
     let locationLabel = UILabel()
     let dateLabel = UILabel()
     let timeLabel = UILabel()
-
+    let mainStackView = UIStackView()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -23,17 +23,10 @@ class CaptureListCollectionViewCell: UICollectionViewCell {
     }
 
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setupUI()
+        fatalError("init(coder:) has not been implemented")
     }
 
-//    required init?(coder: NSCoder) {
-//        fatalError("init(coder:) has not been implemented")
-//    }
-
     private func setupUI() {
-
-
         titleLabel.text = "First Capture"
         titleLabel.font = .boldSystemFont(ofSize: 16)
         titleLabel.textColor = .black
@@ -44,7 +37,7 @@ class CaptureListCollectionViewCell: UICollectionViewCell {
         titleLabel.heightAnchor.constraint(equalToConstant: self.frame.height/2).isActive = true
 
 
-        let mainStackView = UIStackView()
+
         mainStackView.translatesAutoresizingMaskIntoConstraints = false
         mainStackView.axis = .horizontal
         mainStackView.distribution = .fill

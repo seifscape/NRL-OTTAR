@@ -39,32 +39,48 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "B05303D6-C712-4A5A-941D-4D4485791866"
-            shouldBeEnabled = "Yes"
+            uuid = "547B0FA4-9C4E-4B19-AC90-F3E2371BC735"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "InspectorMines/Controllers/CapturePreview/CapturePreviewViewController.swift"
+            filePath = "InspectorMines/Controllers/CaptureCameraViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "131"
-            endingLineNumber = "131"
-            landmarkName = "removePhoto(_:)"
+            startingLineNumber = "599"
+            endingLineNumber = "599"
+            landmarkName = "goToPreviewController(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "CF8462F9-5CA0-4FA5-AA80-A463B7DFC512"
+            uuid = "20AD3D57-CF59-486D-90DC-BFDE8EE8A970"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "InspectorMines/Controllers/CaptureCameraViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "923"
+            endingLineNumber = "923"
+            landmarkName = "removeSelectedPhoto(targetImage:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "D01D939B-6CEF-4963-B5CD-32AC2872A847"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "InspectorMines/Controllers/CapturePreview/CapturePreviewViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "241"
-            endingLineNumber = "241"
-            landmarkName = "collectionView(_:cellForItemAt:)"
+            startingLineNumber = "139"
+            endingLineNumber = "139"
+            landmarkName = "removePhoto(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

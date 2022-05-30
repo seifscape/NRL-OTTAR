@@ -22,14 +22,16 @@ class CaptureCameraViewController: UIViewController {
     var captureButton = CameraButton()
     var previewView   = PreviewView()
     var photoButton   = UIButton()
-
+    var previewButton = UIButton()
     var photoList = [UIImage]()
+    let capturePreview = CapturePreviewViewController()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setupUI()
         self.setupConstraints()
         self.setupCameraOptionsUI()
+        capturePreview.delegate = self
 
         // Set up the video preview view.
         previewView.videoPreviewLayer.videoGravity = .resizeAspectFill
@@ -144,6 +146,11 @@ class CaptureCameraViewController: UIViewController {
                     self.present(alertController, animated: true, completion: nil)
                 }
             }
+            if self.photoList.count > 0 {
+                DispatchQueue.main.async {
+                    self.previewButton.isHidden = false
+                }
+            }
         }
     }
 
@@ -178,6 +185,25 @@ class CaptureCameraViewController: UIViewController {
         resumeButton.isHidden = true
         resumeButton.translatesAutoresizingMaskIntoConstraints = false
         previewContainer.addSubview(resumeButton)
+
+        // Floating Button
+        let largeConfig = UIImage.SymbolConfiguration(pointSize: 48, weight: .bold, scale: .large)
+        let largeBoldDoc = UIImage(systemName: "chevron.forward.circle", withConfiguration: largeConfig)
+        self.previewButton.setImage(largeBoldDoc, for: .normal)
+        self.previewButton.tintColor = .white
+        self.previewButton.layer.cornerRadius = 25
+        self.previewContainer.addSubview(self.previewButton)
+        self.previewButton.translatesAutoresizingMaskIntoConstraints = false
+        self.previewButton.layer.shadowColor = UIColor(red:0.09, green:0.16, blue:0.34, alpha:1.00).cgColor
+        self.previewButton.layer.shadowOffset = CGSize(width: 0, height: 1.0)
+        self.previewButton.layer.shadowOpacity = 0.2
+        self.previewButton.layer.shadowRadius = 4.0
+        self.previewButton.layer.masksToBounds = true
+        DispatchQueue.main.async {
+            self.previewButton.isHidden = true
+        }
+        self.previewButton.addBlurEffect(style: .dark, cornerRadius: 25, padding: 0)
+        self.previewButton.addTarget(self, action: #selector(goToPreviewController(_:)), for: .touchUpInside)
     }
 
     func setupCameraOptionsUI() {
@@ -306,6 +332,11 @@ class CaptureCameraViewController: UIViewController {
 
         cameraUnavailableLabel.centerXAnchor.constraint(equalTo: previewContainer.centerXAnchor).isActive = true
         cameraUnavailableLabel.centerYAnchor.constraint(equalTo: previewContainer.centerYAnchor).isActive = true
+
+        previewButton.widthAnchor.constraint(equalToConstant: 50).isActive = true
+        previewButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        previewButton.trailingAnchor.constraint(equalTo: previewContainer.trailingAnchor, constant: -20).isActive = true
+        previewButton.bottomAnchor.constraint(equalTo: previewContainer.layoutMarginsGuide.bottomAnchor).isActive = true
     }
 
 
@@ -560,6 +591,20 @@ class CaptureCameraViewController: UIViewController {
         self.navigationController?.popViewController(animated: true)
     }
 
+    @objc
+    private func goToPreviewController(_ sender: UIButton) {
+
+        let isEqual = self.photoList.elementsEqual(capturePreview.photoList, by: { $0 == $1} )
+
+        if !isEqual {
+            capturePreview.photoList = self.photoList
+        }
+
+        capturePreview.modalPresentationStyle = .fullScreen
+        capturePreview.navigationItem.backButtonDisplayMode = .minimal
+        self.navigationController?.pushViewController(capturePreview, animated: true)
+    }
+
 
     @objc private func focusAndExposeTap(_ gestureRecognizer: UITapGestureRecognizer) {
         let devicePoint = previewView.videoPreviewLayer.captureDevicePointConverted(fromLayerPoint: gestureRecognizer.location(in: gestureRecognizer.view))
@@ -662,12 +707,7 @@ class CaptureCameraViewController: UIViewController {
                             self.photoList.append(image)
                         }
                     }
-                    let capturePreview = CapturePreviewViewController()
-                    capturePreview.delegate = self
-                    capturePreview.photoList = self.photoList
-                    capturePreview.modalPresentationStyle = .fullScreen
-                    capturePreview.navigationItem.backButtonDisplayMode = .minimal
-                    self.navigationController?.pushViewController(capturePreview, animated: true)
+                    self.previewButton.sendActions(for: .touchUpInside)
                     self.captureButton.isEnabled = true
                 }
 
@@ -879,16 +919,33 @@ extension AVCaptureDevice.DiscoverySession {
 
 extension CaptureCameraViewController: CapturePreviewControllerDelegate {
 
-    func removeSelectedPhoto(targetImage targetPhoto: UIImage) {
-        print("Called")
-        if self.photoList.last == targetPhoto {
-            self.photoList.removeLast()
-            print("Hit")
+    func removeSelectedPhoto(targetImage targetIndex: Int) {
+        print(targetIndex)
+        if self.photoList.count < targetIndex {
+            return
         }
+        else {
+            self.photoList.remove(at: targetIndex)
+
+        }
+
+//        for (index, object) in self.photoList.enumerated() {
+//            if targetPhoto == self.photoList[index] {
+//                print("Item at \(index): \(object)")
+//            }
+//        }
+
+//        for element in 0..<self.photoList.count {
+//            print(element)
+//        }
+//        if self.photoList.last == targetPhoto {
+//            self.photoList.removeLast()
+//            print("Hit")
+//        }
     }
 
     func willTakeAditionalPhotos(withImage image: UIImage) {
-        // self.photoList.append(image)
-        print(image.size)
+        //self.photoList.append(image)
     }
 }
+

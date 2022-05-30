@@ -8,6 +8,15 @@
         "revision" : "2287df38e0f5cfb9ba747bae234eddf169ad00c6",
         "version" : "5.2.0"
       }
+    },
+    {
+      "identity" : "get",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/kean/Get",
+      "state" : {
+        "revision" : "b1137bf8315479cddc79fcb04d9db7bc8117e16f",
+        "version" : "0.8.0"
+      }
     }
   ],
   "version" : 2
