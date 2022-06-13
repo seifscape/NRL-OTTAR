@@ -14,6 +14,17 @@ class CaptureDetailCollectionViewCell: UICollectionViewCell {
     let imageView = UIImageView(frame: .zero)
     let button    = UIButton()
 
+    var isMarked: Bool = false {
+        didSet {
+            if isMarked {
+                self.button.isHidden = false
+
+            } else {
+                self.button.isHidden = true
+            }
+        }
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.setupUI()
@@ -44,8 +55,9 @@ class CaptureDetailCollectionViewCell: UICollectionViewCell {
         self.button.tintColor = .black
         self.button.layer.cornerRadius = 20
         self.button.translatesAutoresizingMaskIntoConstraints = false
-        self.card.addSubview(self.button)
-        self.card.bringSubviewToFront(self.button)
+        self.contentView.addSubview(self.button)
+        self.contentView.bringSubviewToFront(self.button)
+        self.button.isHidden = true
     }
 
     private func setupConstrainsts() {

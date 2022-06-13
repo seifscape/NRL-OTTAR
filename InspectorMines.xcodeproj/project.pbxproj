@@ -10,6 +10,7 @@
 		280CCF422832981F00488F6C /* CapturePreviewOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280CCF412832981F00488F6C /* CapturePreviewOptionsView.swift */; };
 		280CCF442832B62400488F6C /* Ext+UITabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280CCF432832B62400488F6C /* Ext+UITabBarController.swift */; };
 		280E72FF27DE99B900B701DC /* CaptureDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280E72FE27DE99B900B701DC /* CaptureDetailViewController.swift */; };
+		2835FB0728568DCF00551656 /* SPAlert in Frameworks */ = {isa = PBXBuildFile; productRef = 2835FB0628568DCF00551656 /* SPAlert */; };
 		2842B6C9284546F8001D79FE /* Entities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2842B6C7284546F8001D79FE /* Entities.swift */; };
 		2842B6CA284546F8001D79FE /* Paths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2842B6C8284546F8001D79FE /* Paths.swift */; };
 		2842B6CC2845674F001D79FE /* InspectorMinesClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2842B6CB2845674F001D79FE /* InspectorMinesClient.swift */; };
@@ -29,11 +30,8 @@
 		286EBDD1268D41420002CBED /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286EBDD0268D41420002CBED /* Note.swift */; };
 		286EBDDF268D44610002CBED /* RegistrationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286EBDDE268D44610002CBED /* RegistrationViewController.swift */; };
 		286EBDE1268D45350002CBED /* CaptureViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286EBDE0268D45350002CBED /* CaptureViewController.swift */; };
-		288079F527EF97FA0069BC0B /* CaptureReviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288079F427EF97FA0069BC0B /* CaptureReviewViewController.swift */; };
 		289DDC6427542CE400A246C0 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 289DDC6327542CE400A246C0 /* CameraViewController.swift */; };
 		289DDC66275432FD00A246C0 /* CameraButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 289DDC65275432FD00A246C0 /* CameraButton.swift */; };
-		28A0604D28304ED2001531DE /* FINNBottomSheet in Frameworks */ = {isa = PBXBuildFile; productRef = 28A0604C28304ED2001531DE /* FINNBottomSheet */; };
-		28A0604F28309092001531DE /* tina-boujemil-TX-9Ze-9nk8-unsplash.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 28A0604E28309092001531DE /* tina-boujemil-TX-9Ze-9nk8-unsplash.jpg */; };
 		28B379F52841671500697A9F /* Ext+URLSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28B379F42841671500697A9F /* Ext+URLSession.swift */; };
 		28BD0B2C282DFD71009292F1 /* PhotoCaptureDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28BD0B2B282DFD71009292F1 /* PhotoCaptureDelegate.swift */; };
 		28BD0B2E282E01E8009292F1 /* CaptureCameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28BD0B2D282E01E8009292F1 /* CaptureCameraViewController.swift */; };
@@ -45,6 +43,8 @@
 		28D6031327BAF2EA0060D2D2 /* CaptureListCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D6031227BAF2EA0060D2D2 /* CaptureListCollectionViewCell.swift */; };
 		28E0036E284586D400752283 /* Rest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28E0036D284586D400752283 /* Rest.swift */; };
 		28E24DBF27CD298500CEAD28 /* TabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28E24DBE27CD298500CEAD28 /* TabViewController.swift */; };
+		28EA4B3928539A0300384763 /* BLTNBoard in Frameworks */ = {isa = PBXBuildFile; productRef = 28EA4B3828539A0300384763 /* BLTNBoard */; };
+		28F9AC67284FD24500133967 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 28F9AC66284FD24500133967 /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -97,7 +97,6 @@
 		288079F427EF97FA0069BC0B /* CaptureReviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureReviewViewController.swift; sourceTree = "<group>"; };
 		289DDC6327542CE400A246C0 /* CameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		289DDC65275432FD00A246C0 /* CameraButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraButton.swift; sourceTree = "<group>"; };
-		28A0604E28309092001531DE /* tina-boujemil-TX-9Ze-9nk8-unsplash.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "tina-boujemil-TX-9Ze-9nk8-unsplash.jpg"; path = "Assets.xcassets/backgroundImage.imageset/tina-boujemil-TX-9Ze-9nk8-unsplash.jpg"; sourceTree = "<group>"; };
 		28B379F42841671500697A9F /* Ext+URLSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ext+URLSession.swift"; sourceTree = "<group>"; };
 		28BD0B2B282DFD71009292F1 /* PhotoCaptureDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureDelegate.swift; sourceTree = "<group>"; };
 		28BD0B2D282E01E8009292F1 /* CaptureCameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureCameraViewController.swift; sourceTree = "<group>"; };
@@ -109,6 +108,7 @@
 		28D6031227BAF2EA0060D2D2 /* CaptureListCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureListCollectionViewCell.swift; sourceTree = "<group>"; };
 		28E0036D284586D400752283 /* Rest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rest.swift; sourceTree = "<group>"; };
 		28E24DBE27CD298500CEAD28 /* TabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabViewController.swift; sourceTree = "<group>"; };
+		28F9AC66284FD24500133967 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,8 +116,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				28A0604D28304ED2001531DE /* FINNBottomSheet in Frameworks */,
 				28CBD9722844224A00C2A527 /* Get in Frameworks */,
+				2835FB0728568DCF00551656 /* SPAlert in Frameworks */,
+				28EA4B3928539A0300384763 /* BLTNBoard in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -150,6 +151,7 @@
 		286EBD83268D3A5D0002CBED = {
 			isa = PBXGroup;
 			children = (
+				28F9AC66284FD24500133967 /* README.md */,
 				286EBD8E268D3A5D0002CBED /* InspectorMines */,
 				286EBDA8268D3A5F0002CBED /* InspectorMinesTests */,
 				286EBDB3268D3A5F0002CBED /* InspectorMinesUITests */,
@@ -186,7 +188,6 @@
 				286EBD9D268D3A5F0002CBED /* LaunchScreen.storyboard */,
 				286EBDA0268D3A5F0002CBED /* Info.plist */,
 				286EBD98268D3A5D0002CBED /* InspectorMines.xcdatamodeld */,
-				28A0604E28309092001531DE /* tina-boujemil-TX-9Ze-9nk8-unsplash.jpg */,
 			);
 			path = InspectorMines;
 			sourceTree = "<group>";
@@ -333,8 +334,9 @@
 			);
 			name = InspectorMines;
 			packageProductDependencies = (
-				28A0604C28304ED2001531DE /* FINNBottomSheet */,
 				28CBD9712844224A00C2A527 /* Get */,
+				28EA4B3828539A0300384763 /* BLTNBoard */,
+				2835FB0628568DCF00551656 /* SPAlert */,
 			);
 			productName = InspectorMines;
 			productReference = 286EBD8C268D3A5D0002CBED /* InspectorMines.app */;
@@ -409,8 +411,9 @@
 			);
 			mainGroup = 286EBD83268D3A5D0002CBED;
 			packageReferences = (
-				28A0604B28304ED2001531DE /* XCRemoteSwiftPackageReference "BottomSheet" */,
 				28CBD9702844224A00C2A527 /* XCRemoteSwiftPackageReference "Get" */,
+				28EA4B3728539A0300384763 /* XCRemoteSwiftPackageReference "BulletinBoard" */,
+				2835FB0528568DCF00551656 /* XCRemoteSwiftPackageReference "SPAlert" */,
 			);
 			productRefGroup = 286EBD8D268D3A5D0002CBED /* Products */;
 			projectDirPath = "";
@@ -428,7 +431,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				28A0604F28309092001531DE /* tina-boujemil-TX-9Ze-9nk8-unsplash.jpg in Resources */,
+				28F9AC67284FD24500133967 /* README.md in Resources */,
 				286EBD9F268D3A5F0002CBED /* LaunchScreen.storyboard in Resources */,
 				286EBD9C268D3A5F0002CBED /* Assets.xcassets in Resources */,
 			);
@@ -475,7 +478,6 @@
 				28BD0B2C282DFD71009292F1 /* PhotoCaptureDelegate.swift in Sources */,
 				2842B6CC2845674F001D79FE /* InspectorMinesClient.swift in Sources */,
 				28B379F52841671500697A9F /* Ext+URLSession.swift in Sources */,
-				288079F527EF97FA0069BC0B /* CaptureReviewViewController.swift in Sources */,
 				28C73F6E27E805D400EF735D /* CaptureDetailCollectionViewCell.swift in Sources */,
 				286EBD90268D3A5D0002CBED /* AppDelegate.swift in Sources */,
 				28625DC128035B1A003CAAA6 /* NewCaptureCollectionViewCell.swift in Sources */,
@@ -583,7 +585,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -638,7 +640,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -656,7 +658,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 55KEXMK3QR;
 				INFOPLIST_FILE = InspectorMines/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -676,7 +678,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 55KEXMK3QR;
 				INFOPLIST_FILE = InspectorMines/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -814,12 +816,12 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		28A0604B28304ED2001531DE /* XCRemoteSwiftPackageReference "BottomSheet" */ = {
+		2835FB0528568DCF00551656 /* XCRemoteSwiftPackageReference "SPAlert" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/finn-no/BottomSheet.git";
+			repositoryURL = "https://github.com/ivanvorobei/SPAlert";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 5.0.0;
+				minimumVersion = 4.0.0;
 			};
 		};
 		28CBD9702844224A00C2A527 /* XCRemoteSwiftPackageReference "Get" */ = {
@@ -830,18 +832,31 @@
 				minimumVersion = 0.8.0;
 			};
 		};
+		28EA4B3728539A0300384763 /* XCRemoteSwiftPackageReference "BulletinBoard" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/alexaubry/BulletinBoard.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		28A0604C28304ED2001531DE /* FINNBottomSheet */ = {
+		2835FB0628568DCF00551656 /* SPAlert */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 28A0604B28304ED2001531DE /* XCRemoteSwiftPackageReference "BottomSheet" */;
-			productName = FINNBottomSheet;
+			package = 2835FB0528568DCF00551656 /* XCRemoteSwiftPackageReference "SPAlert" */;
+			productName = SPAlert;
 		};
 		28CBD9712844224A00C2A527 /* Get */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 28CBD9702844224A00C2A527 /* XCRemoteSwiftPackageReference "Get" */;
 			productName = Get;
+		};
+		28EA4B3828539A0300384763 /* BLTNBoard */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 28EA4B3728539A0300384763 /* XCRemoteSwiftPackageReference "BulletinBoard" */;
+			productName = BLTNBoard;
 		};
 /* End XCSwiftPackageProductDependency section */
 

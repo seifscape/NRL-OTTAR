@@ -1,12 +1,12 @@
 {
   "pins" : [
     {
-      "identity" : "bottomsheet",
+      "identity" : "bulletinboard",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/finn-no/BottomSheet.git",
+      "location" : "https://github.com/alexaubry/BulletinBoard.git",
       "state" : {
-        "revision" : "2287df38e0f5cfb9ba747bae234eddf169ad00c6",
-        "version" : "5.2.0"
+        "revision" : "e8ba81d25e41e5d24d6a4f404ed28443d728723b",
+        "version" : "5.0.0"
       }
     },
     {
@@ -16,6 +16,15 @@
       "state" : {
         "revision" : "b1137bf8315479cddc79fcb04d9db7bc8117e16f",
         "version" : "0.8.0"
+      }
+    },
+    {
+      "identity" : "spalert",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ivanvorobei/SPAlert",
+      "state" : {
+        "revision" : "5fd3e2923d26f0f0b40f0e6c10fca458a61a73c4",
+        "version" : "4.2.0"
       }
     }
   ],

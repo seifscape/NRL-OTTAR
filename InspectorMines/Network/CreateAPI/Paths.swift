@@ -6,28 +6,50 @@
 import Foundation
 import Get
 
-extension Paths.Captures {
-    public func captureID(_ captureID: Int) -> WithCaptureID {
-        WithCaptureID(path: "\(path)/\(captureID)")
+extension Paths.Captures.WithCaptureID {
+    public var addImages: AddImages {
+        AddImages(path: path + "/add_images")
     }
 
-    public struct WithCaptureID {
-        /// Path: `/captures/{capture_id}`
+    public struct AddImages {
+        /// Path: `/captures/{capture_id}/add_images`
         public let path: String
 
-        /// Get Capture By Id
-        public var get: Request<InspectorMines.Capture> {
-            .get(path)
+        /// Add Images To Album
+        public func post(_ body: InspectorMines.CreateImages) -> Request<InspectorMines.CreateImages> {
+            .post(path, body: body)
         }
+    }
+}
 
-        /// Update Capture By Id
-        public func patch(_ body: InspectorMines.Capture) -> Request<AnyJSON> {
-            .patch(path, body: body)
+extension Paths.Captures.WithCaptureID {
+    public var removeImages: RemoveImages {
+        RemoveImages(path: path + "/remove_images")
+    }
+
+    public struct RemoveImages {
+        /// Path: `/captures/{capture_id}/remove_images`
+        public let path: String
+
+        /// Delete Images From Album
+        public func delete(_ body: InspectorMines.DeleteImages) -> Request<InspectorMines.DeleteImages> {
+            .delete(path, body: body)
         }
+    }
+}
 
-        /// Delete Capture By Id
-        public var delete: Request<AnyJSON> {
-            .delete(path)
+extension Paths.Captures.WithCaptureID {
+    public var addImage: AddImage {
+        AddImage(path: path + "/add_image")
+    }
+
+    public struct AddImage {
+        /// Path: `/captures/{capture_id}/add_image`
+        public let path: String
+
+        /// Add Image To Album
+        public func post(_ body: InspectorMines.Image) -> Request<InspectorMines.CreateImage> {
+            .post(path, body: body)
         }
     }
 }
@@ -42,82 +64,23 @@ extension Paths {
         public let path: String
 
         /// Create Capture
-        public func post(_ body: InspectorMines.Capture) -> Request<InspectorMines.Capture> {
+        public func post(_ body: InspectorMines.CreateAndUpdateCapture) -> Request<InspectorMines.Capture> {
             .post(path, body: body)
-        }
-    }
-}
-
-extension Paths.Captures {
-    public func albumID(_ albumID: String) -> WithAlbumID {
-        WithAlbumID(path: "\(path)/\(albumID)")
-    }
-
-    public struct WithAlbumID {
-        /// Path: `/captures/{album_id}`
-        public let path: String
-    }
-}
-
-extension Paths.Captures.WithAlbumID {
-    public var removeImages: RemoveImages {
-        RemoveImages(path: path + "/remove_images")
-    }
-
-    public struct RemoveImages {
-        /// Path: `/captures/{album_id}/remove_images`
-        public let path: String
-
-        /// Delete Images From Album
-        public func delete(_ body: InspectorMines.DeleteImages) -> Request<AnyJSON> {
-            .delete(path, body: body)
         }
     }
 }
 
 extension Paths {
-    public static var captures: Captures {
-        Captures(path: "/captures")
+    public static var image: Image {
+        Image(path: "/image")
     }
 
-    public struct Captures {
-        /// Path: `/captures`
+    public struct Image {
+        /// Path: `/image`
         public let path: String
 
-        /// Get All Captures
-        public var get: Request<InspectorMines.Captures> {
-            .get(path)
-        }
-    }
-}
-
-extension Paths.Captures.WithAlbumID {
-    public var addImages: AddImages {
-        AddImages(path: path + "/add_images")
-    }
-
-    public struct AddImages {
-        /// Path: `/captures/{album_id}/add_images`
-        public let path: String
-
-        /// Add Images To Album
-        public func post(_ body: InspectorMines.CreateImages) -> Request<AnyJSON> {
-            .post(path, body: body)
-        }
-    }
-}
-
-extension Paths.Captures.WithAlbumID {
-    public var addImage: AddImage {
-        AddImage(path: path + "/add_image")
-    }
-
-    public struct AddImage {
-        /// Path: `/captures/{album_id}/add_image`
-        public let path: String
-
-        /// Add Image To Album
-        public func post(_ body: InspectorMines.Image) -> Request<AnyJSON> {
+        /// Add Image
+        public func post(_ body: InspectorMines.CreateImage) -> Request<InspectorMines.Image> {
             .post(path, body: body)
         }
     }
@@ -150,18 +113,44 @@ extension Paths.Images {
     }
 }
 
-extension Paths {
-    public static var image: Image {
-        Image(path: "/image")
+extension Paths.Captures {
+    public func captureID(_ captureID: Int) -> WithCaptureID {
+        WithCaptureID(path: "\(path)/\(captureID)")
     }
 
-    public struct Image {
-        /// Path: `/image`
+    public struct WithCaptureID {
+        /// Path: `/captures/{capture_id}`
         public let path: String
 
-        /// Add Image
-        public func post(_ body: InspectorMines.Image) -> Request<InspectorMines.Image> {
-            .post(path, body: body)
+        /// Get Capture By Id
+        public var get: Request<InspectorMines.Capture> {
+            .get(path)
+        }
+
+        /// Update Capture By Id
+        public func patch(_ body: InspectorMines.CreateAndUpdateCapture) -> Request<InspectorMines.Capture> {
+            .patch(path, body: body)
+        }
+
+        /// Delete Capture By Id
+        public var delete: Request<AnyJSON> {
+            .delete(path)
+        }
+    }
+}
+
+extension Paths {
+    public static var captures: Captures {
+        Captures(path: "/captures")
+    }
+
+    public struct Captures {
+        /// Path: `/captures`
+        public let path: String
+
+        /// Get All Captures
+        public var get: Request<InspectorMines.Captures> {
+            .get(path)
         }
     }
 }

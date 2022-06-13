@@ -25,10 +25,6 @@ class CaptureReviewViewController: UIViewController {
     private let topHeaderHeight:CGFloat = 20
 
 
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
         edgesForExtendedLayout = []

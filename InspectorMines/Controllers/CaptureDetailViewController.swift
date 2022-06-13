@@ -7,12 +7,13 @@
 //
 
 import UIKit
+import Get
 
 class CaptureDetailViewController: UIViewController {
 
     var topHeaderView  = UIView()
     var textViewContainer = UIView()
-    let textView = UITextView()
+    var textView = UITextView()
     var collectionContainer = UIView()
     var safeArea: UILayoutGuide!
     var collectionView = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: UICollectionViewFlowLayout())
@@ -20,14 +21,27 @@ class CaptureDetailViewController: UIViewController {
     var floatingButton = UIButton()
     private let spacing:CGFloat = 16.0
     private let topHeaderHeight:CGFloat = 150.0
-    var listOfPhotos = [UIImage]()
+    var listOfImagesToRemove:[Int] = []
+    var deleteResponseCapture : ((Capture?, Bool?) -> Void)?
 
-
-
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .darkContent
+    private var capture: Capture? {
+        didSet {
+            DispatchQueue.main.async {
+                self.collectionView.reloadData()
+            }
+        }
     }
 
+    init(capture:Capture?) {
+        super.init(nibName: nil, bundle: nil)
+        Task {
+            self.capture = await self.loadCapture(captureID:capture?.captureID ?? 0)
+        }
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) is not supported")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,32 +72,52 @@ class CaptureDetailViewController: UIViewController {
         self.setupConstraints()
         self.setupCollectionView()
         self.collectionView.contentInsetAdjustmentBehavior = .never
-        
+        self.setupNavBar()
+        self.textView.text = "Attribution information placeholder"
+        self.textView.delegate = self
+        self.navigationController?.navigationBar.barStyle = .black
+    }
+
+
+    func setupNavBar() {
+        self.navigationController?.setNavigationBarHidden(false, animated: true)
+        let appearance = UINavigationBarAppearance()
+        // Set background color
+        appearance.backgroundColor = .white
+        // Set font
+        appearance.largeTitleTextAttributes = [
+            NSAttributedString.Key.font: UIFont.systemFont(ofSize: 30),
+            NSAttributedString.Key.foregroundColor: UIColor.white
+        ]
+        appearance.titleTextAttributes = [
+            NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16)
+        ]
+
+        appearance.shadowColor = .clear
+        // Apply the appearance
+        self.navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        self.navigationController?.navigationBar.compactAppearance = appearance
+        self.navigationController?.navigationBar.standardAppearance = appearance
+        self.navigationController?.navigationBar.prefersLargeTitles = false
+
+        let config = UIImage.SymbolConfiguration(scale: .large)
+        let image = UIImage(systemName: "pencil", withConfiguration: config)
+        topRightBarButton = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(editCaptures(_:)))
+        topRightBarButton.tintColor = .black
+        self.navigationItem.rightBarButtonItem = topRightBarButton
+        self.navigationController?.navigationBar.tintColor = .black
 
     }
 
-    @objc
-    private func editCaptures(_ sender: UIButton) {
+    func loadCapture(captureID: Int) async -> Capture? {
 
-        DispatchQueue.main.async {
-            self.collectionView.reloadData()
+        do {
+            let capture = try await InspectorMinesNetworkAPI.sharedInstance.client.send(Paths.captures.captureID(captureID).get).value
+            return capture
         }
-        
-        if isEditing {
-            isEditing = false
-            topHeaderView.isUserInteractionEnabled = false
-            textView.isEditable = false
-            topRightBarButton.image = UIImage(systemName: "pencil")
-            self.navigationItem.leftBarButtonItem = nil
-            self.floatingButton.isHidden = true
-        }
-        else {
-            isEditing = true
-            topHeaderView.isUserInteractionEnabled = true
-            textView.isEditable = true
-            textView.isSelectable = true
-            topRightBarButton.image = UIImage(systemName: "checkmark")
-            self.floatingButton.isHidden = false
+        catch {
+            print("Fetching capture failed with error \(error)")
+            return nil
         }
     }
 
@@ -111,17 +145,14 @@ class CaptureDetailViewController: UIViewController {
         safeArea = self.view.layoutMarginsGuide
         topHeaderView.addSubview(textView)
 
-        let textView = UITextView(frame: .zero)
+        textView = UITextView(frame: .zero)
         textView.translatesAutoresizingMaskIntoConstraints = false
-        //textView.center = topHeaderView.center
         textView.contentInsetAdjustmentBehavior = .never
-         textView.textAlignment = NSTextAlignment.justified
+        textView.textAlignment = NSTextAlignment.justified
         textView.textColor = UIColor.black
         textView.font = .preferredFont(forTextStyle: .body, compatibleWith: .current)
         textView.isEditable = false
         textView.isSelectable = false
-        // textView.backgroundColor = UIColor.lightGray
-//        textView.sizeToFit()
         topHeaderView.addSubview(textView)
 
         // Floating Button
@@ -140,32 +171,8 @@ class CaptureDetailViewController: UIViewController {
         self.floatingButton.isHidden = true
 
         self.floatingButton.addBlurEffect(style: .dark, cornerRadius: 25, padding: 0)
-        self.floatingButton.addTarget(self, action: #selector(addMorePhotos(sender:)), for: .touchUpInside)
+        self.floatingButton.addTarget(self, action: #selector(addMorePhotos(_:)), for: .touchUpInside)
 
-    }
-
-    @objc func addMorePhotos(sender:UIButton) {
-        self.navigationController?.pushViewController(CameraViewController.init(), animated: true)
-    }
-
-
-    func setupUIManual() {
-        var topHeaderView  = UIView()
-        var collectionContainer = UIView()
-        topHeaderView = UIView(frame: CGRect(x: 0,
-                                           y: 0,
-                                           width: view.frame.width,
-                                           height: 250))
-
-        collectionContainer = UIView(frame: CGRect(x: 0,
-                                                   y: topHeaderView.frame.height + 3,
-                                                   width: view.frame.width,
-                                                   height: view.frame.height - topHeaderView.frame.height - 5 ))
-        topHeaderView.backgroundColor = .systemBlue
-        collectionContainer.backgroundColor = .systemRed
-
-        self.view.addSubview(topHeaderView)
-        self.view.addSubview(collectionContainer)
     }
 
     func setupConstraints() {
@@ -200,26 +207,123 @@ class CaptureDetailViewController: UIViewController {
         collectionView.rightAnchor.constraint(equalTo: collectionContainer.rightAnchor).isActive = true
 
     }
+
+    private func refreshAfterDelete() async throws {
+        let deleteTask = try await self.deleteImages(listOfImages:self.listOfImagesToRemove)
+        Task {
+            self.capture = await self.loadCapture(captureID:self.capture?.captureID ?? 0)
+            self.collectionView.reloadData()
+        }
+    }
+
+    @objc
+    private func editCaptures(_ sender: UIButton) {
+
+//        DispatchQueue.main.async {
+//            self.collectionView.reloadData()
+//        }
+
+        if isEditing {
+
+            if let indexPaths = self.collectionView.indexPathsForSelectedItems {
+                if let currentCapture = self.capture {
+                    for i in indexPaths {
+                        if let targetImageId = currentCapture.images?[i.row].imageID {
+                            self.listOfImagesToRemove.append(targetImageId)
+                        }
+                    }
+                }
+                Task {
+                    try await self.refreshAfterDelete()
+                }
+            }
+
+            isEditing = false
+            topHeaderView.isUserInteractionEnabled = false
+            textView.isEditable = false
+            topRightBarButton.image = UIImage(systemName: "pencil")
+            self.navigationItem.leftBarButtonItem = nil
+            self.floatingButton.isHidden = true
+            self.collectionView.allowsSelection = true
+            self.collectionView.allowsMultipleSelection = false
+        }
+        else {
+            isEditing = true
+            topHeaderView.isUserInteractionEnabled = true
+            textView.isEditable = true
+            textView.isSelectable = true
+            topRightBarButton.image = UIImage(systemName: "checkmark")
+            self.floatingButton.isHidden = false
+            self.collectionView.allowsSelection = false
+            self.collectionView.allowsMultipleSelection = true
+        }
+    }
+
+    @objc
+    func addMorePhotos(_ sender:UIButton) {
+
+        let cameraVC = CaptureCameraViewController(capture: capture)
+
+        // use back the old iOS 12 modal full screen style
+        cameraVC.modalPresentationStyle = .fullScreen
+
+        cameraVC.capturePreview.responseCapture = { (value, boolean) in
+            DispatchQueue.main.async {
+                if boolean != nil {
+                    Task {
+                        self.capture = await self.loadCapture(captureID:value?.captureID ?? 0)
+                        self.collectionView.reloadData()
+                    }
+                }
+            }
+        }
+        let navigationController = UINavigationController(rootViewController: cameraVC)
+        navigationController.modalPresentationStyle = .overCurrentContext
+        self.present(navigationController, animated: true)
+    }
 }
 
 
 extension CaptureDetailViewController: UICollectionViewDelegate, UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return listOfPhotos.count
+        return capture?.images?.count ?? 0
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "captureDetailCell", for: indexPath) as! CaptureDetailCollectionViewCell
-        cell.imageView.image = listOfPhotos[indexPath.row]   //UIImage(named: "backgroundImage")
+
+        let imageData = Data(base64Encoded: capture?.images?[indexPath.row].encoded ?? "", options: .init(rawValue: 0))
+        if let imgData = imageData {
+            cell.imageView.image = UIImage(data: imgData)
+        }
+
         cell.imageView.contentMode = .scaleToFill
 
-        if self.isEditing {
-            cell.button.isHidden = false
+        if !self.isEditing {
+            cell.isMarked = false
         }
-        else { cell.button.isHidden = true }
+
+//        if self.isEditing {
+//            cell.button.isHidden = false
+//        }
+//        else { cell.button.isHidden = true }
         // Configure the cell
         return cell
+    }
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+         guard let cell: CaptureDetailCollectionViewCell = collectionView.cellForItem(at: indexPath) as? CaptureDetailCollectionViewCell else { return }
+         if self.collectionView.allowsMultipleSelection {
+             cell.isMarked = true
+         }
+    }
+
+    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        guard let cell: CaptureDetailCollectionViewCell = collectionView.cellForItem(at: indexPath) as? CaptureDetailCollectionViewCell else { return }
+        if self.collectionView.allowsMultipleSelection {
+            cell.isMarked = false
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
@@ -237,32 +341,24 @@ extension CaptureDetailViewController: UICollectionViewDelegate, UICollectionVie
             return CGSize(width: width, height: width)
     }
 
-    func downsample(imageAt imageURL: URL,
-                    to pointSize: CGSize,
-                    scale: CGFloat = UIScreen.main.scale) -> UIImage? {
 
-        // Create an CGImageSource that represent an image
-        let imageSourceOptions = [kCGImageSourceShouldCache: false] as CFDictionary
-        guard let imageSource = CGImageSourceCreateWithURL(imageURL as CFURL, imageSourceOptions) else {
-            return nil
+    func updateCapture(updatedAnnotation: String) async throws -> Capture? {
+
+        let updateTask = Task {() ->  Capture? in
+            return try await
+            InspectorMinesNetworkAPI.sharedInstance.client.send(Paths.captures.captureID(capture?.captureID ?? -1).patch(CreateAndUpdateCapture(annotation: textView.text))).value
         }
+        return try await updateTask.value
+    }
 
-        // Calculate the desired dimension
-        let maxDimensionInPixels = max(pointSize.width, pointSize.height) * scale
+    func deleteImages(listOfImages: [Int]) async throws -> DeleteImages? {
+        let delete = DeleteImages(imageIDs: listOfImages)
 
-        // Perform downsampling
-        let downsampleOptions = [
-            kCGImageSourceCreateThumbnailFromImageAlways: true,
-            kCGImageSourceShouldCacheImmediately: true,
-            kCGImageSourceCreateThumbnailWithTransform: true,
-            kCGImageSourceThumbnailMaxPixelSize: maxDimensionInPixels
-        ] as CFDictionary
-        guard let downsampledImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, downsampleOptions) else {
-            return nil
+        let deleteTask = Task {() ->  DeleteImages? in
+            return try await
+            InspectorMinesNetworkAPI.sharedInstance.client.send(Paths.captures.captureID(self.capture?.captureID ?? 0).removeImages.delete(delete)).value
         }
-
-        // Return the downsampled image as UIImage
-        return UIImage(cgImage: downsampledImage)
+        return try await deleteTask.value
     }
 
 }
@@ -300,6 +396,14 @@ extension CaptureDetailViewController: UITextViewDelegate {
         }
         else {
             return false
+        }
+    }
+
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if !self.isEditing {
+            Task {
+                try await self.updateCapture(updatedAnnotation: textView.text)
+            }
         }
     }
 }

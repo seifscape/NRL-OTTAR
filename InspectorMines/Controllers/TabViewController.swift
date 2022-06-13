@@ -57,7 +57,7 @@ class TabViewController: UITabBarController, UITabBarControllerDelegate {
         let configuration = UIImage.SymbolConfiguration(pointSize: 24, weight: .medium, scale: .medium)
         let docSymbol         = UIImage(systemName: "doc.richtext", withConfiguration: configuration)?.withBaselineOffset(fromBottom: UIFont.systemFontSize / 2)
         // Create Tab one
-        let tabOne = UINavigationController.init(rootViewController: CaptureListViewController()) // CapturePreviewViewController()
+        let tabOne = UINavigationController(rootViewController: CaptureListViewController())
         let tabOneBarItem = UITabBarItem(title: "", image: docSymbol, selectedImage: nil)
         tabOne.tabBarItem = tabOneBarItem
         self.viewControllers = [tabOne]

@@ -5,56 +5,62 @@
 
 import Foundation
 
-public struct CreateImages: Codable {
-    public var images: [Image]?
+public struct Image: Codable {
+    public var imageID: Int
+    public var encoded: String
+    public var dateCreated: Date?
 
-    public init(images: [Image]? = nil) {
-        self.images = images
-    }
-}
-
-public struct Capture: Codable {
-    public var albumID: Int?
-    public var annotation: String
-    public var images: [Image]?
-    public var dateUpdated: String
-    public var coordinates: String
-    public var dateCreated: String
-
-    public init(albumID: Int? = nil, annotation: String, images: [Image]? = nil, dateUpdated: String, coordinates: String, dateCreated: String) {
-        self.albumID = albumID
-        self.annotation = annotation
-        self.images = images
-        self.dateUpdated = dateUpdated
-        self.coordinates = coordinates
+    public init(imageID: Int, encoded: String, dateCreated: Date? = nil) {
+        self.imageID = imageID
+        self.encoded = encoded
         self.dateCreated = dateCreated
     }
 
     private enum CodingKeys: String, CodingKey {
-        case albumID = "album_id"
-        case annotation
-        case images
-        case dateUpdated = "date_updated"
-        case coordinates
+        case imageID = "image_id"
+        case encoded
         case dateCreated = "date_created"
     }
 }
 
-public struct Captures: Codable {
-    public var captures: [Capture]
+public struct CreateImages: Codable {
+    public var images: [CreateImage]?
 
-    public init(captures: [Capture]) {
-        self.captures = captures
+    public init(images: [CreateImage]? = nil) {
+        self.images = images
+    }
+}
+
+public struct CreateImage: Codable {
+    public var dateCreated: Date?
+    public var encoded: String
+
+    public init(dateCreated: Date? = nil, encoded: String) {
+        self.dateCreated = dateCreated
+        self.encoded = encoded
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case dateCreated = "date_created"
+        case encoded
+    }
+}
+
+public struct HTTPValidationError: Codable {
+    public var detail: [ValidationError]?
+
+    public init(detail: [ValidationError]? = nil) {
+        self.detail = detail
     }
 }
 
 public struct ValidationError: Codable {
+    /// Error Type
+    public var type: String
     /// Location
     public var loc: [LocItem]
     /// Message
     public var msg: String
-    /// Error Type
-    public var type: String
 
     public struct LocItem: Codable {
         public var string: String?
@@ -78,18 +84,34 @@ public struct ValidationError: Codable {
         }
     }
 
-    public init(loc: [LocItem], msg: String, type: String) {
+    public init(type: String, loc: [LocItem], msg: String) {
+        self.type = type
         self.loc = loc
         self.msg = msg
-        self.type = type
     }
 }
 
-public struct HTTPValidationError: Codable {
-    public var detail: [ValidationError]?
+public struct CreateAndUpdateCapture: Codable {
+    public var dateUpdated: Date?
+    public var images: [CreateImage]?
+    public var coordinates: String?
+    public var dateCreated: Date?
+    public var annotation: String
 
-    public init(detail: [ValidationError]? = nil) {
-        self.detail = detail
+    public init(dateUpdated: Date? = nil, images: [CreateImage]? = nil, coordinates: String? = nil, dateCreated: Date? = nil, annotation: String) {
+        self.dateUpdated = dateUpdated
+        self.images = images
+        self.coordinates = coordinates
+        self.dateCreated = dateCreated
+        self.annotation = annotation
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case dateUpdated = "date_updated"
+        case images
+        case coordinates
+        case dateCreated = "date_created"
+        case annotation
     }
 }
 
@@ -105,21 +127,38 @@ public struct DeleteImages: Codable {
     }
 }
 
-public struct Image: Codable {
-    public var dateCreated: Date
-    public var encoded: String
-    public var imageID: Int?
+public struct Captures: Codable {
+    public var captures: [Capture]
 
-    public init(dateCreated: Date, encoded: String, imageID: Int? = nil) {
+    public init(captures: [Capture]) {
+        self.captures = captures
+    }
+}
+
+public struct Capture: Codable {
+    public var annotation: String
+    public var dateCreated: Date?
+    public var captureID: Int
+    public var images: [Image]?
+    public var coordinates: String?
+    public var dateUpdated: Date?
+
+    public init(annotation: String, dateCreated: Date? = nil, captureID: Int, images: [Image]? = nil, coordinates: String? = nil, dateUpdated: Date? = nil) {
+        self.annotation = annotation
         self.dateCreated = dateCreated
-        self.encoded = encoded
-        self.imageID = imageID
+        self.captureID = captureID
+        self.images = images
+        self.coordinates = coordinates
+        self.dateUpdated = dateUpdated
     }
 
     private enum CodingKeys: String, CodingKey {
+        case annotation
         case dateCreated = "date_created"
-        case encoded
-        case imageID = "image_id"
+        case captureID = "capture_id"
+        case images
+        case coordinates
+        case dateUpdated = "date_updated"
     }
 }
 

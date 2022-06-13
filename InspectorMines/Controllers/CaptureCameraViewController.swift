@@ -21,17 +21,42 @@ class CaptureCameraViewController: UIViewController {
     let cameraUnavailableLabel = UILabel()
     var captureButton = CameraButton()
     var previewView   = PreviewView()
-    var photoButton   = UIButton()
-    var previewButton = UIButton()
-    var photoList = [UIImage]()
-    let capturePreview = CapturePreviewViewController()
+    let photoButton   = UIButton()
+    let previewButton = UIButton()
+    var images = [CreateImage]()
+    var capture:Capture?
+    var currentLocation = CLLocation()
+    var capturePreview:CapturePreviewViewController
+
+
+    // this is a convenient way to create this view controller without a capture
+    convenience init() {
+        self.init(capture: nil)
+    }
+
+    init(capture: Capture?) {
+        self.capture = capture
+        capturePreview = CapturePreviewViewController(images: images, capture: capture)
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) is not supported")
+    }
+
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setupUI()
         self.setupConstraints()
         self.setupCameraOptionsUI()
-        capturePreview.delegate = self
+
+        capturePreview.cameraPreviewDelegate = self
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+
+        locationManager.startUpdatingLocation()
 
         // Set up the video preview view.
         previewView.videoPreviewLayer.videoGravity = .resizeAspectFill
@@ -146,11 +171,10 @@ class CaptureCameraViewController: UIViewController {
                     self.present(alertController, animated: true, completion: nil)
                 }
             }
-            if self.photoList.count > 0 {
-                DispatchQueue.main.async {
-                    self.previewButton.isHidden = false
-                }
-            }
+            if self.images.count > 0 {
+                DispatchQueue.main.async { self.previewButton.isHidden = false }
+            } else { DispatchQueue.main.async { self.previewButton.isHidden = true } }
+            print(self.images.count)
         }
     }
 
@@ -162,7 +186,16 @@ class CaptureCameraViewController: UIViewController {
                 self.removeObservers()
             }
         }
+        locationManager.stopUpdatingLocation()
         super.viewWillDisappear(animated)
+    }
+
+    func checkForPreviewButton() {
+        if self.images.count > 0 {
+            DispatchQueue.main.async { self.previewButton.isHidden = false }
+        } else {
+            DispatchQueue.main.async { self.previewView.isHidden = true }
+        }
     }
 
     func setupUI() {
@@ -588,18 +621,18 @@ class CaptureCameraViewController: UIViewController {
     private func closeButton(_ sender: UIButton) {
         self.navigationController?.navigationBar.isHidden = false
         self.tabBarController?.tabBar.isHidden = false
-        self.navigationController?.popViewController(animated: true)
+        self.dismiss(animated: true)
+        // self.navigationController?.popViewController(animated: true)
     }
 
     @objc
     private func goToPreviewController(_ sender: UIButton) {
 
-        let isEqual = self.photoList.elementsEqual(capturePreview.photoList, by: { $0 == $1} )
+        let isEqual = self.images.elementsEqual(capturePreview.images ?? [CreateImage](), by: { $0.encoded == $1.encoded} )
 
-        if !isEqual {
-            capturePreview.photoList = self.photoList
-        }
+        if !isEqual { capturePreview.images = self.images}
 
+        capturePreview.currentLocation = self.currentLocation
         capturePreview.modalPresentationStyle = .fullScreen
         capturePreview.navigationItem.backButtonDisplayMode = .minimal
         self.navigationController?.pushViewController(capturePreview, animated: true)
@@ -658,7 +691,6 @@ class CaptureCameraViewController: UIViewController {
          */
         let videoPreviewLayerOrientation = previewView.videoPreviewLayer.connection?.videoOrientation
 
-        // AudioServicesPlaySystemSound(1108);
         sessionQueue.async {
             if let photoOutputConnection = self.photoOutput.connection(with: .video) {
                 photoOutputConnection.videoOrientation = videoPreviewLayerOrientation!
@@ -704,7 +736,7 @@ class CaptureCameraViewController: UIViewController {
                 DispatchQueue.main.async {
                     if let capturedImage = photoCaptureProcessor.photoData {
                         if let image = UIImage(data: capturedImage) {
-                            self.photoList.append(image)
+                            self.images.append(CreateImage(dateCreated: Date.now, encoded: self.convertImageToBase64String(img: image)))
                         }
                     }
                     self.previewButton.sendActions(for: .touchUpInside)
@@ -920,13 +952,11 @@ extension AVCaptureDevice.DiscoverySession {
 extension CaptureCameraViewController: CapturePreviewControllerDelegate {
 
     func removeSelectedPhoto(targetImage targetIndex: Int) {
-        print(targetIndex)
-        if self.photoList.count < targetIndex {
+        if self.images.count < targetIndex {
             return
         }
         else {
-            self.photoList.remove(at: targetIndex)
-
+            self.images.remove(at: targetIndex)
         }
 
 //        for (index, object) in self.photoList.enumerated() {
@@ -944,8 +974,27 @@ extension CaptureCameraViewController: CapturePreviewControllerDelegate {
 //        }
     }
 
-    func willTakeAditionalPhotos(withImage image: UIImage) {
-        //self.photoList.append(image)
+    func willTakeAditionalPhotos(withImage image: CreateImage) {
+        self.images.append(image)
     }
 }
 
+
+extension CaptureCameraViewController:CLLocationManagerDelegate {
+    func locationManager(
+        _ manager: CLLocationManager,
+        didUpdateLocations locations: [CLLocation]
+    ) {
+        if let location = locations.first {
+            // Handle location update
+            self.currentLocation = location
+        }
+    }
+
+    func locationManager(
+        _ manager: CLLocationManager,
+        didFailWithError error: Error
+    ) {
+        // Handle failure to get a user’s location
+    }
+}

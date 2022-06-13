@@ -13,8 +13,9 @@ class InspectorMinesNetworkAPI {
 
     static let sharedInstance = InspectorMinesNetworkAPI()
     private init() {} //This prevents others from using the default '()' initializer for this class.
+    //server http://144.202.14.244
 
-    var client = APIClient(baseURL: URL(string: "http://127.0.0.1:1111")) { configuration in
+    var client = APIClient(baseURL: URL(string: "http://144.202.14.244")) { configuration in
         configuration.delegate = InspectorMinesClientDelegate(apiKey: "nrl_ottar_2022")
 
         let encoder = JSONEncoder()

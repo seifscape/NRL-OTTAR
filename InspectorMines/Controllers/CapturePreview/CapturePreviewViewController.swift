@@ -8,30 +8,37 @@
 
 import UIKit
 import FINNBottomSheet
+import Get
+import CoreLocation
 
 protocol CapturePreviewControllerDelegate: AnyObject {
-    func willTakeAditionalPhotos(withImage image: UIImage)
+    func willTakeAditionalPhotos(withImage image: CreateImage)
     func removeSelectedPhoto(targetImage targetIndex: Int)
 }
 
 class CapturePreviewViewController: UIViewController {
 
+    var responseCapture : ((Capture?, Bool?) -> Void)?
+    var bottomViewContainer = UIView()
     var previewContainer = UIView()
-    var imagePreview     = UIImageView()
     var safeArea: UILayoutGuide!
-    weak var delegate: CapturePreviewControllerDelegate?
-    var photoList = [UIImage]()
+    weak var cameraPreviewDelegate: CapturePreviewControllerDelegate?
     var indexOfCellBeforeDragging: Int = 0
-
     var initialAnimation:Bool = false
-
     var centerCell:CaptureDetailCollectionViewCell?
     var selectedIndex:IndexPath?
+    var images:[CreateImage]?
+    var capture:Capture?
+
+    let cameraButton = UIButton()
+    let checkmarkButton = UIButton()
+    let cancelButton = UIButton()
+
 
     private let cellWitdhPercentage: CGFloat = 0.85
     private let idealCellDistance: CGFloat = 16
-
     private var currentPositionIndex = 0
+    var currentLocation = CLLocation()
 
     private let collectionView: UICollectionView = {
         let viewLayout = UICollectionViewFlowLayout()
@@ -46,30 +53,55 @@ class CapturePreviewViewController: UIViewController {
         return collectionView
     }()
 
+
+    // this is a convenient way to create this view controller without a capture
+    convenience init() {
+        self.init(images: nil, capture: nil)
+    }
+
+    init(images: [CreateImage]?, capture: Capture?) {
+        self.images = images
+        self.capture = capture
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) is not supported")
+    }
+
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        .lightContent
+    }
+
+
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.setNavigationBarHidden(false, animated: true)
-        navigationItem.backButtonTitle = ""
+//        navigationItem.backButtonTitle = ""
         self.navigationItem.backBarButtonItem?.tintColor = .white
         self.navigationController?.navigationBar.tintColor = .white
-
+        self.navigationItem.setHidesBackButton(true, animated:true);
         self.setupUI()
         self.setupConstraints()
-        self.displayBottomOptions()
-        self.imagePreview.image = photoList.last
+        //self.displayBottomOptions()
+        self.viewDidLayoutSubviews()
 
         collectionView.register(CaptureDetailCollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.decelerationRate = .fast
 
-        BottomSheetView.cameraButton.addTarget(self, action: #selector(addMorePhotos(_:)), for: .touchUpInside)
-        BottomSheetView.checkmarkButton.addTarget(self, action: #selector(completeCapture(_:)), for: .touchUpInside)
-        BottomSheetView.cancelButton.addTarget(self, action: #selector(removePhoto(_:)), for: .touchUpInside)
+//        BottomSheetView.cameraButton.addTarget(self, action: #selector(addMorePhotos(_:)), for: .touchUpInside)
+//        BottomSheetView.cancelButton.addTarget(self, action: #selector(removePhoto(_:)), for: .touchUpInside)
+//        BottomSheetView.checkmarkButton.addTarget(self, action: #selector(completeCapture(_:)), for: .touchUpInside)
+
+
+
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        setNeedsStatusBarAppearanceUpdate()
         self.collectionView.reloadData()
         self.collectionView.collectionViewLayout.collectionView?.layoutIfNeeded()
     }
@@ -91,14 +123,40 @@ class CapturePreviewViewController: UIViewController {
         previewContainer.backgroundColor = .gray
         previewContainer.translatesAutoresizingMaskIntoConstraints = false
         safeArea = self.view.layoutMarginsGuide
-        imagePreview.translatesAutoresizingMaskIntoConstraints = false
-        imagePreview.contentMode = .scaleToFill
         view.addSubview(previewContainer)
         previewContainer.addSubview(collectionView)
+
+        bottomViewContainer = UIView(frame: .zero)
+        bottomViewContainer.translatesAutoresizingMaskIntoConstraints = false
+        bottomViewContainer.backgroundColor = .white
+        self.view.addSubview(bottomViewContainer)
+
+
+        cameraButton.translatesAutoresizingMaskIntoConstraints = false
+        checkmarkButton.translatesAutoresizingMaskIntoConstraints = false
+        cancelButton.translatesAutoresizingMaskIntoConstraints = false
+
+        let configuration = UIImage.SymbolConfiguration(pointSize: 30, weight: .regular, scale: .medium)
+        let addSymbol = UIImage(systemName: "camera.badge.ellipsis", withConfiguration: configuration)
+        let checkmarkSymbol = UIImage(systemName: "checkmark.circle", withConfiguration: configuration)
+        let trashSymbol = UIImage(systemName: "trash.circle", withConfiguration: configuration)
+
+        cameraButton.tintColor = .black
+        checkmarkButton.tintColor = .black
+        cancelButton.tintColor = .black
+
+        checkmarkButton.setImage(checkmarkSymbol, for: .normal)
+        bottomViewContainer.addSubview(checkmarkButton)
+
+        cameraButton.setImage(addSymbol, for: .normal)
+        bottomViewContainer.addSubview(cameraButton)
+
+        cancelButton.setImage(trashSymbol, for: .normal)
+        bottomViewContainer.addSubview(cancelButton)
     }
 
     func setupConstraints() {
-        previewContainer.topAnchor.constraint(equalTo: safeArea.topAnchor, constant: 44).isActive = true
+        previewContainer.topAnchor.constraint(equalTo: safeArea.topAnchor, constant: 25).isActive = true
         previewContainer.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant:0).isActive = true
         previewContainer.leftAnchor.constraint(equalTo: self.view.leftAnchor, constant: 0).isActive = true
         previewContainer.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: -110).isActive = true
@@ -109,21 +167,41 @@ class CapturePreviewViewController: UIViewController {
         collectionView.bottomAnchor.constraint(equalTo: previewContainer.bottomAnchor).isActive = true
         collectionView.rightAnchor.constraint(equalTo: previewContainer.rightAnchor).isActive = true
 
+
+        bottomViewContainer.topAnchor.constraint(equalTo: previewContainer.bottomAnchor, constant: 20).isActive = true
+        bottomViewContainer.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        bottomViewContainer.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        bottomViewContainer.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+
+        NSLayoutConstraint.activate([
+
+            cameraButton.centerYAnchor.constraint(equalTo: bottomViewContainer.centerYAnchor),
+            cameraButton.leadingAnchor.constraint(equalTo: bottomViewContainer.leadingAnchor, constant: 50),
+
+            checkmarkButton.centerYAnchor.constraint(equalTo: bottomViewContainer.centerYAnchor),
+            checkmarkButton.trailingAnchor.constraint(equalTo: bottomViewContainer.trailingAnchor, constant: -50),
+
+            cancelButton.centerYAnchor.constraint(equalTo: bottomViewContainer.centerYAnchor),
+            cancelButton.centerXAnchor.constraint(equalTo: bottomViewContainer.centerXAnchor),
+        ])
+
+
     }
 
     private func displayBottomOptions() {
         let bottomSheetView = BottomSheetView(
             contentView: UIView.makeView(withTitle: ""),
-            contentHeights: [80, 80]
+            contentHeights: [90, 90]
         )
         bottomSheetView.present(in: view)
     }
 
     @objc func addMorePhotos(_ sender: UIButton) {
 
-        if let image = imagePreview.image {
-            delegate?.willTakeAditionalPhotos(withImage: image)
-        }
+//        cameraPreviewDelegate?.willTakeAditionalPhotos(withImage:)
+//        if let image = imagePreview.image {
+//            delegate?.willTakeAditionalPhotos(withImage: image)
+//        }
         DispatchQueue.main.async {
             self.navigationController?.popViewController(animated: true)
         }
@@ -131,35 +209,79 @@ class CapturePreviewViewController: UIViewController {
 
     @objc func removePhoto(_ sender: UIButton) {
         sender.isUserInteractionEnabled = false
-        defer {
-            sender.isUserInteractionEnabled = true
-        }
+//        defer {
+//            sender.isUserInteractionEnabled = true
+//        }
 
 
         if let index = self.selectedIndex?.row {
-            delegate?.removeSelectedPhoto(targetImage: index)
+            cameraPreviewDelegate?.removeSelectedPhoto(targetImage: index)
+            sender.isUserInteractionEnabled = true
             // self.photoList.remove(at: index)
         }
-        else if self.photoList.count >= 1 {
-            // We will default to 0 since the user did not scroll
-            delegate?.removeSelectedPhoto(targetImage: 0)
-        }
+//        else if self.images?.count ?? 0 >= 1 {
+//            // We will default to 0 since the user did not scroll
+//            cameraPreviewDelegate?.removeSelectedPhoto(targetImage: 0)
+//        }
         DispatchQueue.main.async {
+//            sender.isEnabled = true
             self.navigationController?.popViewController(animated: true)
-            sender.isUserInteractionEnabled = true
-            sender.isEnabled = true
             return
         }
     }
 
     @objc func completeCapture(_ sender: UIButton) {
-        let captureDetail = CaptureDetailViewController()
-        captureDetail.listOfPhotos = self.photoList
+        sender.isEnabled = false
+        if self.capture?.captureID != nil {
+            Task {
+                do {
+                    let value = try await updateCapture(images: CreateImages(images: self.images))
+                    if value != nil {
+                        self.responseCapture?(self.capture, true)
+                        sender.isEnabled = true
+                        self.dismissMe()
+                    }
+                } catch { print("Unknown error: \(error)") }
+            }
+        } else {
+            Task {
+                if let images = self.images {
+                    let capture = try await self.createCapture(images: images)
+                    if let unwrapedCapture = capture {
+                        self.responseCapture?(unwrapedCapture, nil)
+                        sender.isEnabled = true
+                        self.dismissMe()
+                    }
+                }
+            }
+        }
+    }
+
+    func dismissMe() {
         DispatchQueue.main.async {
             // https://stackoverflow.com/a/53496233
             guard self.navigationController?.topViewController == self else { return }
-            self.navigationController?.pushViewController(captureDetail, animated: true)
+            self.dismiss(animated: true)
         }
+    }
+
+    func updateCapture(images: CreateImages) async throws -> CreateImages? {
+        let updateTask =  Task { () -> CreateImages? in
+            return try await InspectorMinesNetworkAPI.sharedInstance.client.send(Paths.captures.captureID(self.capture?.captureID ?? 0).addImages.post(images)).value
+        }
+        return try await updateTask.value
+    }
+
+    func createCapture(images: [CreateImage]) async throws -> Capture? {
+        let long = String(currentLocation.coordinate.longitude)
+        let lat = String(currentLocation.coordinate.latitude)
+        let coordinateString = long + "," + lat
+        print(images.count)
+        let captureTask = Task { () -> Capture? in
+            let capture = CreateAndUpdateCapture(dateUpdated: nil, images: images, coordinates: coordinateString, dateCreated: Date.now, annotation: "")
+            return try await InspectorMinesNetworkAPI.sharedInstance.client.send(Paths.capture.post(capture)).value
+        }
+        return try await captureTask.value
     }
 }
 
@@ -249,24 +371,21 @@ private extension UIView {
 extension CapturePreviewViewController: UICollectionViewDelegate, UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return  photoList.count
+        return  images?.count ?? 0
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! CaptureDetailCollectionViewCell
         // Configure the cell
-        cell.imageView.image = photoList[indexPath.row] // UIImage(named: "backgroundImage")
+        let imageData = Data(base64Encoded: images?[indexPath.row].encoded ?? "", options: .init(rawValue: 0))
+        if let imgData = imageData {
+            cell.imageView.image = UIImage(data: imgData)
+        }
+
         cell.imageView.contentMode = .scaleAspectFill
 
         // if user does not scroll, assign the value
         self.selectedIndex = indexPath
-
-        if self.photoList.count > 1 && !initialAnimation {
-            DispatchQueue.main.async {
-                cell.transformToLarge()
-            }
-            initialAnimation = true
-        }
 
         return cell
     }
