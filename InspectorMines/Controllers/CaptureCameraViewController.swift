@@ -174,7 +174,6 @@ class CaptureCameraViewController: UIViewController {
             if self.images.count > 0 {
                 DispatchQueue.main.async { self.previewButton.isHidden = false }
             } else { DispatchQueue.main.async { self.previewButton.isHidden = true } }
-            print(self.images.count)
         }
     }
 
@@ -974,8 +973,10 @@ extension CaptureCameraViewController: CapturePreviewControllerDelegate {
 //        }
     }
 
-    func willTakeAditionalPhotos(withImage image: CreateImage) {
-        self.images.append(image)
+    func willTakeAditionalPhotos(withImage image: [CreateImage]?) {
+        if let images = image {
+            self.images = images
+        }
     }
 }
 

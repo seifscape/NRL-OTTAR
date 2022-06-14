@@ -7,18 +7,19 @@
 //
 
 import UIKit
-import FINNBottomSheet
 import Get
+import CoreLocation
+import SPAlert
 import CoreLocation
 
 protocol CapturePreviewControllerDelegate: AnyObject {
-    func willTakeAditionalPhotos(withImage image: CreateImage)
+    func willTakeAditionalPhotos(withImage image: [CreateImage]?)
     func removeSelectedPhoto(targetImage targetIndex: Int)
 }
 
 class CapturePreviewViewController: UIViewController {
 
-    var responseCapture : ((Capture?, Bool?) -> Void)?
+    var responseCapture : ((Capture, Bool?) -> Void)?
     var bottomViewContainer = UIView()
     var previewContainer = UIView()
     var safeArea: UILayoutGuide!
@@ -29,7 +30,6 @@ class CapturePreviewViewController: UIViewController {
     var selectedIndex:IndexPath?
     var images:[CreateImage]?
     var capture:Capture?
-
     let cameraButton = UIButton()
     let checkmarkButton = UIButton()
     let cancelButton = UIButton()
@@ -91,9 +91,9 @@ class CapturePreviewViewController: UIViewController {
         collectionView.dataSource = self
         collectionView.decelerationRate = .fast
 
-//        BottomSheetView.cameraButton.addTarget(self, action: #selector(addMorePhotos(_:)), for: .touchUpInside)
-//        BottomSheetView.cancelButton.addTarget(self, action: #selector(removePhoto(_:)), for: .touchUpInside)
-//        BottomSheetView.checkmarkButton.addTarget(self, action: #selector(completeCapture(_:)), for: .touchUpInside)
+        cameraButton.addTarget(self, action: #selector(addMorePhotos(_:)), for: .touchUpInside)
+        cancelButton.addTarget(self, action: #selector(removePhoto(_:)), for: .touchUpInside)
+        checkmarkButton.addTarget(self, action: #selector(completeCapture(_:)), for: .touchUpInside)
 
 
 
@@ -188,17 +188,11 @@ class CapturePreviewViewController: UIViewController {
 
     }
 
-    private func displayBottomOptions() {
-        let bottomSheetView = BottomSheetView(
-            contentView: UIView.makeView(withTitle: ""),
-            contentHeights: [90, 90]
-        )
-        bottomSheetView.present(in: view)
-    }
+
 
     @objc func addMorePhotos(_ sender: UIButton) {
 
-//        cameraPreviewDelegate?.willTakeAditionalPhotos(withImage:)
+        cameraPreviewDelegate?.willTakeAditionalPhotos(withImage:self.images)
 //        if let image = imagePreview.image {
 //            delegate?.willTakeAditionalPhotos(withImage: image)
 //        }
@@ -209,14 +203,11 @@ class CapturePreviewViewController: UIViewController {
 
     @objc func removePhoto(_ sender: UIButton) {
         sender.isUserInteractionEnabled = false
-//        defer {
-//            sender.isUserInteractionEnabled = true
-//        }
-
-
+        defer {
+            sender.isUserInteractionEnabled = true
+        }
         if let index = self.selectedIndex?.row {
             cameraPreviewDelegate?.removeSelectedPhoto(targetImage: index)
-            sender.isUserInteractionEnabled = true
             // self.photoList.remove(at: index)
         }
 //        else if self.images?.count ?? 0 >= 1 {
@@ -224,32 +215,41 @@ class CapturePreviewViewController: UIViewController {
 //            cameraPreviewDelegate?.removeSelectedPhoto(targetImage: 0)
 //        }
         DispatchQueue.main.async {
-//            sender.isEnabled = true
             self.navigationController?.popViewController(animated: true)
             return
         }
     }
 
     @objc func completeCapture(_ sender: UIButton) {
+        let alertView = SPAlertView(title: "Uploading", preset: .spinner)
+        alertView.present()
         sender.isEnabled = false
+
         if self.capture?.captureID != nil {
             Task {
                 do {
-                    let value = try await updateCapture(images: CreateImages(images: self.images))
-                    if value != nil {
-                        self.responseCapture?(self.capture, true)
-                        sender.isEnabled = true
-                        self.dismissMe()
+                    if let capture = capture {
+                        if let images = images {
+                            let value = try await CaptureServices.addImages(capture: capture, images: images)
+                            if value != nil {
+                                self.responseCapture?(capture, true)
+                                sender.isEnabled = true
+                                alertView.dismiss()
+                                self.dismissMe()
+                            }
+                        }
                     }
                 } catch { print("Unknown error: \(error)") }
             }
         } else {
             Task {
                 if let images = self.images {
-                    let capture = try await self.createCapture(images: images)
+                    let coordinatesString = "\(String(format: "%.3f", self.currentLocation.coordinate.latitude)),\(String(format: "%.5f", self.currentLocation.coordinate.longitude))"
+                    let capture = try await CaptureServices.createCapture(coordinateString: coordinatesString, images: images)
                     if let unwrapedCapture = capture {
                         self.responseCapture?(unwrapedCapture, nil)
                         sender.isEnabled = true
+                        alertView.dismiss()
                         self.dismissMe()
                     }
                 }
@@ -264,109 +264,8 @@ class CapturePreviewViewController: UIViewController {
             self.dismiss(animated: true)
         }
     }
-
-    func updateCapture(images: CreateImages) async throws -> CreateImages? {
-        let updateTask =  Task { () -> CreateImages? in
-            return try await InspectorMinesNetworkAPI.sharedInstance.client.send(Paths.captures.captureID(self.capture?.captureID ?? 0).addImages.post(images)).value
-        }
-        return try await updateTask.value
-    }
-
-    func createCapture(images: [CreateImage]) async throws -> Capture? {
-        let long = String(currentLocation.coordinate.longitude)
-        let lat = String(currentLocation.coordinate.latitude)
-        let coordinateString = long + "," + lat
-        print(images.count)
-        let captureTask = Task { () -> Capture? in
-            let capture = CreateAndUpdateCapture(dateUpdated: nil, images: images, coordinates: coordinateString, dateCreated: Date.now, annotation: "")
-            return try await InspectorMinesNetworkAPI.sharedInstance.client.send(Paths.capture.post(capture)).value
-        }
-        return try await captureTask.value
-    }
 }
 
-// MARK: - Private extensions
-
-private extension UIView {
-
-    static let cameraButton = UIButton()
-    static let checkmarkButton = UIButton()
-    static let cancelButton = UIButton()
-
-
-    static func makeView(withTitle title: String? = nil) -> UIView {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .systemBackground
-
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = title
-        label.textAlignment = .center
-        view.addSubview(label)
-
-        let borderView = UIView()
-        borderView.translatesAutoresizingMaskIntoConstraints = false
-        borderView.backgroundColor = .white
-        borderView.alpha = 0.4
-        view.addSubview(borderView)
-
-        cameraButton.translatesAutoresizingMaskIntoConstraints = false
-        checkmarkButton.translatesAutoresizingMaskIntoConstraints = false
-        cancelButton.translatesAutoresizingMaskIntoConstraints = false
-
-        let configuration = UIImage.SymbolConfiguration(pointSize: 30, weight: .regular, scale: .medium)
-        let addSymbol = UIImage(systemName: "camera.badge.ellipsis", withConfiguration: configuration)
-        let checkmarkSymbol = UIImage(systemName: "checkmark.circle", withConfiguration: configuration)
-        let trashSymbol = UIImage(systemName: "trash.circle", withConfiguration: configuration)
-
-        if  UIScreen.main.traitCollection.userInterfaceStyle == .dark {
-            // User Interface is Dark
-            cameraButton.tintColor = .white
-            checkmarkButton.tintColor = .white
-            cancelButton.tintColor = .white
-            label.textColor = .white
-        } else {
-            // User Interface is Light
-            cameraButton.tintColor = .black
-            checkmarkButton.tintColor = .black
-            cancelButton.tintColor = .black
-            label.textColor = .black
-        }
-
-
-        checkmarkButton.setImage(checkmarkSymbol, for: .normal)
-        view.addSubview(checkmarkButton)
-
-        cameraButton.setImage(addSymbol, for: .normal)
-        view.addSubview(cameraButton)
-
-        cancelButton.setImage(trashSymbol, for: .normal)
-        view.addSubview(cancelButton)
-
-        NSLayoutConstraint.activate([
-            label.topAnchor.constraint(equalTo: view.topAnchor, constant: 8),
-            label.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            label.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-
-            cameraButton.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            cameraButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 50),
-
-            checkmarkButton.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            checkmarkButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -50),
-
-            cancelButton.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            cancelButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-
-            borderView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            borderView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            borderView.heightAnchor.constraint(equalToConstant: 2),
-            borderView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
-
-        return view
-    }
-}
 
 extension CapturePreviewViewController: UICollectionViewDelegate, UICollectionViewDataSource {
 

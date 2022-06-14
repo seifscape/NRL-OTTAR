@@ -32,7 +32,7 @@ extension Paths.Captures.WithCaptureID {
         public let path: String
 
         /// Delete Images From Album
-        public func delete(_ body: InspectorMines.DeleteImages) -> Request<InspectorMines.DeleteImages> {
+        public func delete(_ body: InspectorMines.DeleteImages) -> Request<AnyJSON> {
             .delete(path, body: body)
         }
     }

@@ -32,7 +32,7 @@ class CaptureListViewController: UIViewController {
 //]
         self.navigationController?.navigationBar.backgroundColor  = .white
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width:self.view.frame.width - 50, height: 120)
+        layout.itemSize = CGSize(width:self.view.frame.width - 30, height: 105)
         captureCollectionView.automaticallyAdjustsScrollIndicatorInsets = false
         captureCollectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
         captureCollectionView.register(CaptureListCollectionViewCell.self, forCellWithReuseIdentifier: "cell")
@@ -43,8 +43,20 @@ class CaptureListViewController: UIViewController {
         self.view.addSubview(captureCollectionView)
         setupUI()
         setupCollectionView()
+        DispatchQueue.main.async {
+            Task {
+                await self.fetchCaptures()
+            }
+        }
+    }
+
+    func fetchCaptures() async {
         Task {
-            await self.getCaptures()
+            self.capturesList =  try await CaptureServices.getCaptures()
+            DispatchQueue.main.async {
+                self.captureCollectionView.reloadData()
+                self.captureCollectionView.collectionViewLayout.invalidateLayout()
+            }
         }
     }
 
@@ -80,18 +92,18 @@ class CaptureListViewController: UIViewController {
     }
 
 
-    func getCaptures() async {
-        do {
-            capturesList = try await
-            InspectorMinesNetworkAPI.sharedInstance.client.send(Paths.captures.get).value
-            DispatchQueue.main.async {
-                self.captureCollectionView.reloadData()
-            }
-        }
-        catch {
-            print("Fetching images failed with error \(error)")
-        }
-    }
+//    func getCaptures() async {
+//        do {
+//            capturesList = try await
+//            InspectorMinesNetworkAPI.sharedInstance.client.send(Paths.captures.get).value
+//            DispatchQueue.main.async {
+//                self.captureCollectionView.reloadData()
+//            }
+//        }
+//        catch {
+//            print("Fetching images failed with error \(error)")
+//        }
+//    }
 
     @objc func myRightSideBarButtonItemTapped(_ sender:UIBarButtonItem!)
     {
@@ -107,17 +119,20 @@ class CaptureListViewController: UIViewController {
         navigationController.navigationBar.barStyle = .black
         cameraVC.capturePreview.responseCapture = { (value, boolean) in
             DispatchQueue.main.async {
-                self.navigationController?.pushViewController(CaptureDetailViewController(capture: value), animated: true)
-                self.reloadTable()
+                let detailController = CaptureDetailViewController(capture: value)
+                detailController.title = "Capture Detail: \(value.captureID)"
+                self.navigationController?.pushViewController(detailController, animated: true)
+                DispatchQueue.main.async {
+                    Task {
+                        self.capturesList =  try await CaptureServices.getCaptures()
+                        DispatchQueue.main.async {
+                            self.captureCollectionView.reloadData()
+                        }
+                    }
+                }
             }
         }
         self.present(navigationController, animated: true, completion: nil)
-    }
-
-    private func reloadTable() {
-        Task {
-            await self.getCaptures()
-        }
     }
 
     private func setupCollectionView() {
@@ -129,13 +144,6 @@ class CaptureListViewController: UIViewController {
         captureCollectionView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
 
     }
-
-//    override func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)? = nil) {
-//       if let _ = viewControllerToPresent as? CaptureCameraViewController {
-//           viewControllerToPresent.modalPresentationStyle = .fullScreen
-//       }
-//       super.present(viewControllerToPresent, animated: flag, completion: completion)
-//   }
 }
 
 extension CaptureListViewController: UICollectionViewDelegate, UICollectionViewDataSource {
@@ -145,11 +153,25 @@ extension CaptureListViewController: UICollectionViewDelegate, UICollectionViewD
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! CaptureListCollectionViewCell
-        if let id = capturesList?.captures[indexPath.row].captureID {
+        let capture = self.capturesList?.captures[indexPath.row]
+        // Configure the cell
+        if let id = capture?.captureID {
             cell.titleLabel.text = "Capture: \(id)"
         }
-        cell.locationLabel.text = capturesList?.captures[indexPath.row].coordinates
-        // Configure the cell
+
+        let myFormatter = DateFormatter()
+        myFormatter.dateStyle = .medium
+
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm:ss"
+        formatter.timeZone = TimeZone(identifier: "UTC")
+
+        if let dateCreated = capture?.dateCreated {
+            cell.timeLabel.text = String(format: "%@ UTC", formatter.string(from: dateCreated))
+            cell.dateLabel.text = myFormatter.string(from: dateCreated)
+        }
+
+        cell.locationLabel.text = capture?.coordinates
         return cell
     }
 
@@ -157,7 +179,21 @@ extension CaptureListViewController: UICollectionViewDelegate, UICollectionViewD
 
         if let capture = capturesList?.captures[indexPath.row] {
             DispatchQueue.main.async {
-                self.navigationController?.pushViewController(CaptureDetailViewController(capture: capture), animated: true)
+                let captureDetail = CaptureDetailViewController(capture: capture)
+                captureDetail.deleteResponseCapture = { (value, boolean) in
+                    DispatchQueue.main.async {
+                        self.captureCollectionView.reloadData()
+                        self.captureCollectionView.collectionViewLayout.invalidateLayout()
+                    }
+
+                    self.capturesList?.captures.remove(at: indexPath.row)
+                    self.captureCollectionView.performBatchUpdates({
+                        self.captureCollectionView.deleteItems(at: [indexPath])
+                    })
+                }
+                captureDetail.navigationItem.title = "Capture Detail: \(capture.captureID)"
+
+                self.navigationController?.pushViewController(captureDetail, animated: true)
             }
         }
     }

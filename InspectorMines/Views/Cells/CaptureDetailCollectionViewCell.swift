@@ -52,7 +52,7 @@ class CaptureDetailCollectionViewCell: UICollectionViewCell {
         let largeConfig = UIImage.SymbolConfiguration(pointSize: 48, weight: .bold, scale: .large)
         let largeBoldDoc = UIImage(systemName: "x.circle.fill", withConfiguration: largeConfig)
         self.button.setImage(largeBoldDoc, for: .normal)
-        self.button.tintColor = .black
+        self.button.tintColor = .white
         self.button.layer.cornerRadius = 20
         self.button.translatesAutoresizingMaskIntoConstraints = false
         self.contentView.addSubview(self.button)
@@ -81,6 +81,7 @@ class CaptureDetailCollectionViewCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         imageView.image = nil
+        isMarked = false
 
 //        for subview in subviews {
 //            subview.removeConstraints(subview.constraints)

@@ -46,8 +46,8 @@
             filePath = "InspectorMines/Controllers/CaptureCameraViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "955"
-            endingLineNumber = "955"
+            startingLineNumber = "954"
+            endingLineNumber = "954"
             landmarkName = "removeSelectedPhoto(targetImage:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -55,17 +55,49 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "452D6D14-9858-408D-846C-89700FE045E7"
-            shouldBeEnabled = "Yes"
+            uuid = "C551BDB6-962B-48A0-86DC-5277046D7537"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "InspectorMines/Controllers/CaptureDetailViewController.swift"
+            filePath = "InspectorMines/Controllers/CaptureCameraViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "232"
-            endingLineNumber = "232"
-            landmarkName = "editCaptures(_:)"
+            startingLineNumber = "977"
+            endingLineNumber = "977"
+            landmarkName = "willTakeAditionalPhotos(withImage:)"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "C551BDB6-962B-48A0-86DC-5277046D7537 - 25bd40c62b860d46"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "InspectorMines.CaptureCameraViewController.willTakeAditionalPhotos(withImage: Swift.Optional&lt;Swift.Array&lt;InspectorMines.CreateImage&gt;&gt;) -&gt; ()"
+                  moduleName = "InspectorMines"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/seifkobrosly/Development/ApptitudeLabs/Clients/NRL/OTTAR-Project/iOS/InspectorMines/InspectorMines/Controllers/CaptureCameraViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "978"
+                  endingLineNumber = "978"
+                  offsetFromSymbolStart = "44">
+               </Location>
+               <Location
+                  uuid = "C551BDB6-962B-48A0-86DC-5277046D7537 - 25bd40c62b860d46"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "InspectorMines.CaptureCameraViewController.willTakeAditionalPhotos(withImage: Swift.Optional&lt;Swift.Array&lt;InspectorMines.CreateImage&gt;&gt;) -&gt; ()"
+                  moduleName = "InspectorMines"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/seifkobrosly/Development/ApptitudeLabs/Clients/NRL/OTTAR-Project/iOS/InspectorMines/InspectorMines/Controllers/CaptureCameraViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "978"
+                  endingLineNumber = "978"
+                  offsetFromSymbolStart = "72">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

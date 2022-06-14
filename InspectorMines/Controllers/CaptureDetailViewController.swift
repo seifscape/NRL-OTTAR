@@ -8,6 +8,8 @@
 
 import UIKit
 import Get
+import CoreAudio
+import SPAlert
 
 class CaptureDetailViewController: UIViewController {
 
@@ -19,12 +21,14 @@ class CaptureDetailViewController: UIViewController {
     var collectionView = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: UICollectionViewFlowLayout())
     var topRightBarButton = UIBarButtonItem()
     var floatingButton = UIButton()
+    var deleteFloatingButton = UIButton()
     private let spacing:CGFloat = 16.0
     private let topHeaderHeight:CGFloat = 150.0
     var listOfImagesToRemove:[Int] = []
+    var listOfIndexPaths:[IndexPath] = []
     var deleteResponseCapture : ((Capture?, Bool?) -> Void)?
 
-    private var capture: Capture? {
+    private var capture: Capture {
         didSet {
             DispatchQueue.main.async {
                 self.collectionView.reloadData()
@@ -32,10 +36,15 @@ class CaptureDetailViewController: UIViewController {
         }
     }
 
-    init(capture:Capture?) {
+    init(capture:Capture) {
+        self.capture = capture
         super.init(nibName: nil, bundle: nil)
         Task {
-            self.capture = await self.loadCapture(captureID:capture?.captureID ?? 0)
+            do {
+                self.capture = try await CaptureServices.getCapture(capture: capture)
+            } catch {
+                print("Request failed with error: \(error)")
+            }
         }
     }
 
@@ -73,9 +82,15 @@ class CaptureDetailViewController: UIViewController {
         self.setupCollectionView()
         self.collectionView.contentInsetAdjustmentBehavior = .never
         self.setupNavBar()
-        self.textView.text = "Attribution information placeholder"
+        self.textView.text = self.capture.annotation
         self.textView.delegate = self
+//        self.textView.returnKeyType = .done
         self.navigationController?.navigationBar.barStyle = .black
+
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
     }
 
 
@@ -107,18 +122,8 @@ class CaptureDetailViewController: UIViewController {
         self.navigationItem.rightBarButtonItem = topRightBarButton
         self.navigationController?.navigationBar.tintColor = .black
 
-    }
 
-    func loadCapture(captureID: Int) async -> Capture? {
 
-        do {
-            let capture = try await InspectorMinesNetworkAPI.sharedInstance.client.send(Paths.captures.captureID(captureID).get).value
-            return capture
-        }
-        catch {
-            print("Fetching capture failed with error \(error)")
-            return nil
-        }
     }
 
     func setupUI() {
@@ -169,9 +174,26 @@ class CaptureDetailViewController: UIViewController {
         self.floatingButton.layer.shadowRadius = 4.0
         self.floatingButton.layer.masksToBounds = true
         self.floatingButton.isHidden = true
-
         self.floatingButton.addBlurEffect(style: .dark, cornerRadius: 25, padding: 0)
         self.floatingButton.addTarget(self, action: #selector(addMorePhotos(_:)), for: .touchUpInside)
+
+
+        // Floating Button
+        let largeBoldTrash = UIImage(systemName: "trash.circle.fill", withConfiguration: largeConfig)
+        self.deleteFloatingButton.setImage(largeBoldTrash, for: .normal)
+        self.deleteFloatingButton.tintColor = .systemRed
+        self.deleteFloatingButton.layer.cornerRadius = 25
+        self.collectionContainer.addSubview(self.deleteFloatingButton)
+        self.deleteFloatingButton.translatesAutoresizingMaskIntoConstraints = false
+        self.deleteFloatingButton.layer.shadowColor = UIColor(red:0.09, green:0.16, blue:0.34, alpha:1.00).cgColor
+        self.deleteFloatingButton.layer.shadowOffset = CGSize(width: 0, height: 1.0)
+        self.deleteFloatingButton.layer.shadowOpacity = 0.2
+        self.deleteFloatingButton.layer.shadowRadius = 4.0
+        self.deleteFloatingButton.layer.masksToBounds = true
+        self.deleteFloatingButton.isHidden = true
+        self.deleteFloatingButton.addBlurEffect(style: .dark, cornerRadius: 25, padding: 0)
+        self.deleteFloatingButton.addTarget(self, action: #selector(deleteCapture(_:)), for: .touchUpInside)
+
 
     }
 
@@ -192,10 +214,19 @@ class CaptureDetailViewController: UIViewController {
         collectionContainer.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
         collectionContainer.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
 
+
         floatingButton.widthAnchor.constraint(equalToConstant: 50).isActive = true
         floatingButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
         floatingButton.trailingAnchor.constraint(equalTo: collectionContainer.trailingAnchor, constant: -20).isActive = true
         floatingButton.bottomAnchor.constraint(equalTo: collectionContainer.layoutMarginsGuide.bottomAnchor, constant: -10).isActive = true
+
+
+
+        deleteFloatingButton.widthAnchor.constraint(equalToConstant: 50).isActive = true
+        deleteFloatingButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        deleteFloatingButton.bottomAnchor.constraint(equalTo: floatingButton.topAnchor, constant: -20).isActive = true
+        deleteFloatingButton.trailingAnchor.constraint(equalTo: collectionContainer.trailingAnchor, constant: -20).isActive = true
+
 
     }
 
@@ -208,54 +239,97 @@ class CaptureDetailViewController: UIViewController {
 
     }
 
-    private func refreshAfterDelete() async throws {
-        let deleteTask = try await self.deleteImages(listOfImages:self.listOfImagesToRemove)
-        Task {
-            self.capture = await self.loadCapture(captureID:self.capture?.captureID ?? 0)
-            self.collectionView.reloadData()
-        }
-    }
 
     @objc
     private func editCaptures(_ sender: UIButton) {
-
-//        DispatchQueue.main.async {
-//            self.collectionView.reloadData()
-//        }
-
-        if isEditing {
-
-            if let indexPaths = self.collectionView.indexPathsForSelectedItems {
-                if let currentCapture = self.capture {
-                    for i in indexPaths {
-                        if let targetImageId = currentCapture.images?[i.row].imageID {
-                            self.listOfImagesToRemove.append(targetImageId)
-                        }
-                    }
-                }
-                Task {
-                    try await self.refreshAfterDelete()
-                }
-            }
-
-            isEditing = false
+        if self.isEditing {
+            //deletePhotos()
+            self.isEditing = false
             topHeaderView.isUserInteractionEnabled = false
             textView.isEditable = false
             topRightBarButton.image = UIImage(systemName: "pencil")
             self.navigationItem.leftBarButtonItem = nil
             self.floatingButton.isHidden = true
+            self.deleteFloatingButton.isHidden = true
             self.collectionView.allowsSelection = true
             self.collectionView.allowsMultipleSelection = false
+
+            if self.listOfImagesToRemove.count > 0  {
+            Task {  try await
+                CaptureServices.deleteImages(capture: self.capture,listOfImages:self.listOfImagesToRemove)
+                self.deletePhotos()
+                }
+
+//                let capture = Task { () ->  Capture? in
+//                    return try await CaptureServices.getCapture(capture:self.capture)
+//                }
+//                Task {
+//                    let result = try await capture.value
+//                    if let capture = result {
+//                        DispatchQueue.main.async {
+//                            print(capture.images?.count)
+//                            print(capture.annotation)
+//                            self.capture.images = capture.images
+//                            self.collectionView.reloadData()
+//                            self.collectionView.collectionViewLayout.invalidateLayout()
+//                        }
+//
+//                    }
+//                }
+            }
         }
         else {
-            isEditing = true
+            self.isEditing = true
             topHeaderView.isUserInteractionEnabled = true
             textView.isEditable = true
             textView.isSelectable = true
             topRightBarButton.image = UIImage(systemName: "checkmark")
             self.floatingButton.isHidden = false
+            self.deleteFloatingButton.isHidden = false
             self.collectionView.allowsSelection = false
             self.collectionView.allowsMultipleSelection = true
+        }
+    }
+
+
+//    private func refreshAfterDelete() async throws  {
+//        async let delete =  CaptureServices.deleteImages(capture: self.capture!, listOfImages:self.listOfImagesToRemove)
+//        async let capture =  CaptureServices.getCapture(capture: self.capture!)
+//        let (deleteData, captureData) = try await (delete, capture)
+//    }
+
+
+    private func deletePhotos() {
+        if listOfIndexPaths.count == self.capture.images?.count {
+            self.capture.images?.removeAll()
+        } else {
+            for x in self.listOfIndexPaths {
+                print("List Len \(self.listOfIndexPaths.count)")
+                print("Row: \(x.row)")
+                self.capture.images?.remove(at: x.row)
+            }
+        }
+        self.collectionView.performBatchUpdates({
+            self.collectionView.deleteItems(at: listOfIndexPaths)
+        })
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
+            self.collectionView.collectionViewLayout.invalidateLayout()
+            self.listOfIndexPaths.removeAll()
+        }
+    }
+
+    @objc
+    func deleteCapture(_ sender:UIButton) {
+        let alertView = SPAlertView(title: "Deleted", preset: .done)
+        alertView.duration = 1.5
+        alertView.present()
+
+        Task {
+            try await CaptureServices.deleteCapture(captureId: self.capture.captureID)
+            self.deleteResponseCapture?(capture, true)
+            alertView.dismiss()
+            self.navigationController?.popViewController(animated: true)
         }
     }
 
@@ -271,7 +345,7 @@ class CaptureDetailViewController: UIViewController {
             DispatchQueue.main.async {
                 if boolean != nil {
                     Task {
-                        self.capture = await self.loadCapture(captureID:value?.captureID ?? 0)
+                        self.capture = try await CaptureServices.getCapture(capture: value)
                         self.collectionView.reloadData()
                     }
                 }
@@ -287,41 +361,49 @@ class CaptureDetailViewController: UIViewController {
 extension CaptureDetailViewController: UICollectionViewDelegate, UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return capture?.images?.count ?? 0
+        return self.capture.images?.count ?? 0
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "captureDetailCell", for: indexPath) as! CaptureDetailCollectionViewCell
 
-        let imageData = Data(base64Encoded: capture?.images?[indexPath.row].encoded ?? "", options: .init(rawValue: 0))
+        let imageData = Data(base64Encoded: capture.images?[indexPath.row].encoded ?? "", options: .init(rawValue: 0))
         if let imgData = imageData {
             cell.imageView.image = UIImage(data: imgData)
         }
-
         cell.imageView.contentMode = .scaleToFill
 
-        if !self.isEditing {
-            cell.isMarked = false
-        }
-
-//        if self.isEditing {
-//            cell.button.isHidden = false
-//        }
-//        else { cell.button.isHidden = true }
-        // Configure the cell
         return cell
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-         guard let cell: CaptureDetailCollectionViewCell = collectionView.cellForItem(at: indexPath) as? CaptureDetailCollectionViewCell else { return }
-         if self.collectionView.allowsMultipleSelection {
+        guard let cell: CaptureDetailCollectionViewCell = collectionView.cellForItem(at: indexPath) as? CaptureDetailCollectionViewCell else { return }
+        if self.isEditing {
+            self.listOfImagesToRemove.append(self.capture.images?[indexPath.row].imageID ?? 0)
+            self.listOfIndexPaths.append(indexPath)
+            print("Added: \(indexPath.row)")
+             collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .bottom)
              cell.isMarked = true
          }
+        else {
+            if let image = self.capture.images?[indexPath.row] {
+                let imageViewController = ImageViewController(image: image)
+                self.navigationController?.present(imageViewController, animated: true)
+            }
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         guard let cell: CaptureDetailCollectionViewCell = collectionView.cellForItem(at: indexPath) as? CaptureDetailCollectionViewCell else { return }
-        if self.collectionView.allowsMultipleSelection {
+        if self.isEditing {
+            if let index = listOfIndexPaths.firstIndex(of:indexPath) {
+                listOfIndexPaths.remove(at: index)
+            }
+
+            if let index = listOfImagesToRemove.firstIndex(of:self.capture.images?[indexPath.row].imageID ?? 0) {
+                listOfImagesToRemove.remove(at: index)
+            }
+            collectionView.deselectItem(at: indexPath, animated: true)
             cell.isMarked = false
         }
     }
@@ -339,26 +421,6 @@ extension CaptureDetailViewController: UICollectionViewDelegate, UICollectionVie
 
             let width = floor((collectionView.bounds.width - totalSpacing)/numberOfItemsPerRow)
             return CGSize(width: width, height: width)
-    }
-
-
-    func updateCapture(updatedAnnotation: String) async throws -> Capture? {
-
-        let updateTask = Task {() ->  Capture? in
-            return try await
-            InspectorMinesNetworkAPI.sharedInstance.client.send(Paths.captures.captureID(capture?.captureID ?? -1).patch(CreateAndUpdateCapture(annotation: textView.text))).value
-        }
-        return try await updateTask.value
-    }
-
-    func deleteImages(listOfImages: [Int]) async throws -> DeleteImages? {
-        let delete = DeleteImages(imageIDs: listOfImages)
-
-        let deleteTask = Task {() ->  DeleteImages? in
-            return try await
-            InspectorMinesNetworkAPI.sharedInstance.client.send(Paths.captures.captureID(self.capture?.captureID ?? 0).removeImages.delete(delete)).value
-        }
-        return try await deleteTask.value
     }
 
 }
@@ -402,7 +464,13 @@ extension CaptureDetailViewController: UITextViewDelegate {
     func textViewDidEndEditing(_ textView: UITextView) {
         if !self.isEditing {
             Task {
-                try await self.updateCapture(updatedAnnotation: textView.text)
+                let captureTask = try await CaptureServices.updateCapture(capture: self.capture, updatedText: textView.text)
+                if let task = captureTask {
+                    if let detailsList = self.navigationController?.viewControllers.first as? CaptureListViewController {
+                        await detailsList.fetchCaptures()
+                    }
+                    capture.annotation = task.annotation
+                }
             }
         }
     }

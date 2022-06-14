@@ -10,6 +10,7 @@
 		280CCF422832981F00488F6C /* CapturePreviewOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280CCF412832981F00488F6C /* CapturePreviewOptionsView.swift */; };
 		280CCF442832B62400488F6C /* Ext+UITabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280CCF432832B62400488F6C /* Ext+UITabBarController.swift */; };
 		280E72FF27DE99B900B701DC /* CaptureDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280E72FE27DE99B900B701DC /* CaptureDetailViewController.swift */; };
+		281C315828579B9C0002B957 /* CaptureServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281C315728579B9C0002B957 /* CaptureServices.swift */; };
 		2835FB0728568DCF00551656 /* SPAlert in Frameworks */ = {isa = PBXBuildFile; productRef = 2835FB0628568DCF00551656 /* SPAlert */; };
 		2842B6C9284546F8001D79FE /* Entities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2842B6C7284546F8001D79FE /* Entities.swift */; };
 		2842B6CA284546F8001D79FE /* Paths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2842B6C8284546F8001D79FE /* Paths.swift */; };
@@ -30,6 +31,7 @@
 		286EBDD1268D41420002CBED /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286EBDD0268D41420002CBED /* Note.swift */; };
 		286EBDDF268D44610002CBED /* RegistrationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286EBDDE268D44610002CBED /* RegistrationViewController.swift */; };
 		286EBDE1268D45350002CBED /* CaptureViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286EBDE0268D45350002CBED /* CaptureViewController.swift */; };
+		288D393B2858FA3100C903D6 /* ImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288D393A2858FA3100C903D6 /* ImageViewController.swift */; };
 		289DDC6427542CE400A246C0 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 289DDC6327542CE400A246C0 /* CameraViewController.swift */; };
 		289DDC66275432FD00A246C0 /* CameraButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 289DDC65275432FD00A246C0 /* CameraButton.swift */; };
 		28B379F52841671500697A9F /* Ext+URLSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28B379F42841671500697A9F /* Ext+URLSession.swift */; };
@@ -68,6 +70,7 @@
 		280CCF412832981F00488F6C /* CapturePreviewOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapturePreviewOptionsView.swift; sourceTree = "<group>"; };
 		280CCF432832B62400488F6C /* Ext+UITabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ext+UITabBarController.swift"; sourceTree = "<group>"; };
 		280E72FE27DE99B900B701DC /* CaptureDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureDetailViewController.swift; sourceTree = "<group>"; };
+		281C315728579B9C0002B957 /* CaptureServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureServices.swift; sourceTree = "<group>"; };
 		2842B6C7284546F8001D79FE /* Entities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Entities.swift; sourceTree = "<group>"; };
 		2842B6C8284546F8001D79FE /* Paths.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Paths.swift; sourceTree = "<group>"; };
 		2842B6CB2845674F001D79FE /* InspectorMinesClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InspectorMinesClient.swift; sourceTree = "<group>"; };
@@ -95,6 +98,7 @@
 		286EBDDE268D44610002CBED /* RegistrationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationViewController.swift; sourceTree = "<group>"; };
 		286EBDE0268D45350002CBED /* CaptureViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureViewController.swift; sourceTree = "<group>"; };
 		288079F427EF97FA0069BC0B /* CaptureReviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureReviewViewController.swift; sourceTree = "<group>"; };
+		288D393A2858FA3100C903D6 /* ImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewController.swift; sourceTree = "<group>"; };
 		289DDC6327542CE400A246C0 /* CameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		289DDC65275432FD00A246C0 /* CameraButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraButton.swift; sourceTree = "<group>"; };
 		28B379F42841671500697A9F /* Ext+URLSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ext+URLSession.swift"; sourceTree = "<group>"; };
@@ -175,8 +179,6 @@
 				286EBDCF268D40170002CBED /* Managers */,
 				286EBDCE268D400F0002CBED /* Network */,
 				286EBDC7268D3E110002CBED /* Models */,
-				286EBDC6268D3AAB0002CBED /* ViewModels */,
-				286EBDC5268D3AA10002CBED /* Helpers */,
 				286EBDC4268D3A960002CBED /* Extensions */,
 				286EBDC3268D3A8E0002CBED /* Views */,
 				286EBDC2268D3A7B0002CBED /* Controllers */,
@@ -213,7 +215,7 @@
 		286EBDC2268D3A7B0002CBED /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				28A0604828304706001531DE /* CapturePreview */,
+				28668028282DB61C003CBA54 /* CapturePreviewViewController.swift */,
 				286EBDDE268D44610002CBED /* RegistrationViewController.swift */,
 				286EBDE0268D45350002CBED /* CaptureViewController.swift */,
 				289DDC6327542CE400A246C0 /* CameraViewController.swift */,
@@ -222,6 +224,7 @@
 				280E72FE27DE99B900B701DC /* CaptureDetailViewController.swift */,
 				288079F427EF97FA0069BC0B /* CaptureReviewViewController.swift */,
 				28BD0B2D282E01E8009292F1 /* CaptureCameraViewController.swift */,
+				288D393A2858FA3100C903D6 /* ImageViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -246,20 +249,6 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
-		286EBDC5268D3AA10002CBED /* Helpers */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Helpers;
-			sourceTree = "<group>";
-		};
-		286EBDC6268D3AAB0002CBED /* ViewModels */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = ViewModels;
-			sourceTree = "<group>";
-		};
 		286EBDC7268D3E110002CBED /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -279,6 +268,7 @@
 				28CBD97528442A6700C2A527 /* NetworkError.swift */,
 				2842B6CB2845674F001D79FE /* InspectorMinesClient.swift */,
 				28E0036D284586D400752283 /* Rest.swift */,
+				281C315728579B9C0002B957 /* CaptureServices.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -288,14 +278,6 @@
 			children = (
 			);
 			path = Managers;
-			sourceTree = "<group>";
-		};
-		28A0604828304706001531DE /* CapturePreview */ = {
-			isa = PBXGroup;
-			children = (
-				28668028282DB61C003CBA54 /* CapturePreviewViewController.swift */,
-			);
-			path = CapturePreview;
 			sourceTree = "<group>";
 		};
 		28BD0B2A282DFD5A009292F1 /* Delegates */ = {
@@ -480,8 +462,10 @@
 				28B379F52841671500697A9F /* Ext+URLSession.swift in Sources */,
 				28C73F6E27E805D400EF735D /* CaptureDetailCollectionViewCell.swift in Sources */,
 				286EBD90268D3A5D0002CBED /* AppDelegate.swift in Sources */,
+				288D393B2858FA3100C903D6 /* ImageViewController.swift in Sources */,
 				28625DC128035B1A003CAAA6 /* NewCaptureCollectionViewCell.swift in Sources */,
 				286EBD9A268D3A5D0002CBED /* InspectorMines.xcdatamodeld in Sources */,
+				281C315828579B9C0002B957 /* CaptureServices.swift in Sources */,
 				28CBD97428442A1F00C2A527 /* InspectorMinesClientDelegate.swift in Sources */,
 				286EBD92268D3A5D0002CBED /* SceneDelegate.swift in Sources */,
 				289DDC66275432FD00A246C0 /* CameraButton.swift in Sources */,
