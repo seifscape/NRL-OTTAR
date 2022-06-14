@@ -124,6 +124,13 @@ class CaptureListCollectionViewCell: UICollectionViewCell {
         bottomHorziontalStackView.addArrangedSubview(dateStackView)
 
 
+        topHorziontalStackView.layoutMargins = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
+        topHorziontalStackView.isLayoutMarginsRelativeArrangement = true
+
+        bottomHorziontalStackView.layoutMargins = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
+        bottomHorziontalStackView.isLayoutMarginsRelativeArrangement = true
+
+
         mainStackView.addArrangedSubview(topHorziontalStackView)
         mainStackView.addArrangedSubview(bottomHorziontalStackView)
         mainStackView.setCustomSpacing(5, after: topHorziontalStackView)
@@ -155,85 +162,3 @@ class CaptureListCollectionViewCell: UICollectionViewCell {
     }
 
 }
-
-//private func setupUI() {
-//    titleLabel.text = "First Capture"
-//    titleLabel.font = .boldSystemFont(ofSize: 16)
-//    titleLabel.textColor = .black
-//
-//    self.contentView.backgroundColor = .blue
-//
-//
-//    mainStackView.translatesAutoresizingMaskIntoConstraints = false
-//    mainStackView.axis = .vertical
-//    mainStackView.clipsToBounds = true
-//    mainStackView.distribution = .fill
-//
-//    mainStackView.backgroundColor = .systemBackground
-//    self.contentView.addSubview(mainStackView)
-//
-//    let configuration = UIImage.SymbolConfiguration(pointSize: 18, weight: .light, scale: .medium)
-//    let pinSymbol = UIImage(systemName: "mappin", withConfiguration: configuration)
-//    let clockSymbol = UIImage(systemName: "calendar.circle", withConfiguration: configuration)
-//    let captureSymbol = UIImage(systemName: "camera.metering.matrix", withConfiguration: configuration)
-//
-//
-//    let captureStackView = UIStackView()
-////        captureStackView.translatesAutoresizingMaskIntoConstraints = false
-//    captureStackView.axis = .horizontal
-//    captureStackView.clipsToBounds = true
-//    captureStackView.distribution = .fill
-//
-//    let captureImageView = UIImageView(image: captureSymbol)
-//    captureImageView.contentMode = .scaleAspectFit
-//    captureImageView.translatesAutoresizingMaskIntoConstraints = false
-//    captureImageView.widthAnchor.constraint(equalToConstant: 50).isActive = true
-//
-//    captureStackView.addArrangedSubview(captureImageView)
-//    captureStackView.addArrangedSubview(titleLabel)
-////        captureStackView.setCustomSpacing(2, after: captureImageView)
-//
-//
-//    let locationStackView = UIStackView()
-////        locationStackView.translatesAutoresizingMaskIntoConstraints = false
-//    locationStackView.axis = .horizontal
-//    locationStackView.clipsToBounds = true
-//    locationStackView.distribution = .fill
-//
-//    let pinImageView = UIImageView(image: pinSymbol)
-//    pinImageView.contentMode = .scaleAspectFit
-//    pinImageView.translatesAutoresizingMaskIntoConstraints = false
-//    pinImageView.widthAnchor.constraint(equalToConstant: 50).isActive = true
-//
-//
-//    locationStackView.addArrangedSubview(pinImageView)
-//    locationStackView.addArrangedSubview(locationLabel)
-////        locationStackView.setCustomSpacing(2, after: pinImageView)
-//
-//    let dateStackView = UIStackView()
-////        dateStackView.translatesAutoresizingMaskIntoConstraints = false
-//    dateStackView.axis = .horizontal
-//    dateStackView.clipsToBounds = true
-//
-//    let clockImageView = UIImageView(image: clockSymbol)
-//    clockImageView.contentMode = .scaleAspectFit
-//    clockImageView.translatesAutoresizingMaskIntoConstraints = false
-//    clockImageView.widthAnchor.constraint(equalToConstant: 50).isActive = true
-//
-//
-//    dateStackView.addArrangedSubview(clockImageView)
-//    dateStackView.addArrangedSubview(dateLabel)
-//    dateStackView.setCustomSpacing(5, after: clockImageView)
-//
-//
-//    mainStackView.addArrangedSubview(captureStackView)
-//    mainStackView.addArrangedSubview(locationStackView)
-//    mainStackView.addArrangedSubview(dateStackView)
-//    mainStackView.distribution = .equalSpacing
-//
-//    mainStackView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
-//    mainStackView.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true
-//    mainStackView.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
-//    mainStackView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
-//
-//}
