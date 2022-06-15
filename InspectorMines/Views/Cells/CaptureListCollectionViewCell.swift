@@ -72,7 +72,7 @@ class CaptureListCollectionViewCell: UICollectionViewCell {
 
         timeStackView.addArrangedSubview(clockImageView)
         timeStackView.addArrangedSubview(timeLabel)
-        timeStackView.setCustomSpacing(7, after: clockImageView)
+        timeStackView.setCustomSpacing(5, after: clockImageView)
 
 
         topHorziontalStackView.addArrangedSubview(titleLabel)
@@ -120,24 +120,22 @@ class CaptureListCollectionViewCell: UICollectionViewCell {
 
         dateStackView.addArrangedSubview(calenderImageView)
         dateStackView.addArrangedSubview(dateLabel)
-        dateStackView.setCustomSpacing(12, after: calenderImageView)
+        dateStackView.setCustomSpacing(8, after: calenderImageView)
 
         bottomHorziontalStackView.addArrangedSubview(locationStackView)
         bottomHorziontalStackView.addArrangedSubview(dateStackView)
 
+        timeStackView.layoutMargins = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 3)
+        timeStackView.isLayoutMarginsRelativeArrangement = true
 
-        topHorziontalStackView.layoutMargins = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 5)
-        topHorziontalStackView.isLayoutMarginsRelativeArrangement = true
-
-        bottomHorziontalStackView.layoutMargins = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
-        bottomHorziontalStackView.isLayoutMarginsRelativeArrangement = true
+        dateStackView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 5)
+        dateStackView.isLayoutMarginsRelativeArrangement = true
 
 
+        mainStackView.distribution = .equalSpacing
         mainStackView.addArrangedSubview(topHorziontalStackView)
         mainStackView.addArrangedSubview(bottomHorziontalStackView)
         mainStackView.setCustomSpacing(5, after: topHorziontalStackView)
-        mainStackView.distribution = .equalSpacing
-
         mainStackView.topAnchor.constraint(equalTo: self.topAnchor, constant: 10).isActive = true
         mainStackView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 5).isActive = true
         mainStackView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -5).isActive = true

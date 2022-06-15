@@ -82,7 +82,12 @@ class CaptureDetailViewController: UIViewController {
         self.setupCollectionView()
         self.collectionView.contentInsetAdjustmentBehavior = .never
         self.setupNavBar()
-        self.textView.text = self.capture.annotation
+        if self.capture.annotation.isEmpty {
+            textView.text  = "Placeholder"
+            textView.textColor = .lightGray
+        } else {
+            self.textView.text = self.capture.annotation
+        }
         self.textView.delegate = self
 //        self.textView.returnKeyType = .done
         self.navigationController?.navigationBar.barStyle = .black
@@ -259,23 +264,6 @@ class CaptureDetailViewController: UIViewController {
                 CaptureServices.deleteImages(capture: self.capture,listOfImages:self.listOfImagesToRemove)
                 self.deletePhotos()
                 }
-
-//                let capture = Task { () ->  Capture? in
-//                    return try await CaptureServices.getCapture(capture:self.capture)
-//                }
-//                Task {
-//                    let result = try await capture.value
-//                    if let capture = result {
-//                        DispatchQueue.main.async {
-//                            print(capture.images?.count)
-//                            print(capture.annotation)
-//                            self.capture.images = capture.images
-//                            self.collectionView.reloadData()
-//                            self.collectionView.collectionViewLayout.invalidateLayout()
-//                        }
-//
-//                    }
-//                }
             }
         }
         else {
@@ -290,14 +278,6 @@ class CaptureDetailViewController: UIViewController {
             self.collectionView.allowsMultipleSelection = true
         }
     }
-
-
-//    private func refreshAfterDelete() async throws  {
-//        async let delete =  CaptureServices.deleteImages(capture: self.capture!, listOfImages:self.listOfImagesToRemove)
-//        async let capture =  CaptureServices.getCapture(capture: self.capture!)
-//        let (deleteData, captureData) = try await (delete, capture)
-//    }
-
 
     private func deletePhotos() {
         if listOfIndexPaths.count == self.capture.images?.count {
@@ -341,6 +321,10 @@ class CaptureDetailViewController: UIViewController {
 
     @objc
     func addMorePhotos(_ sender:UIButton) {
+
+        if self.textView.text != "Placeholder" {
+            capture.annotation = textView.text
+        }
 
         let cameraVC = CaptureCameraViewController(capture: capture)
 
@@ -468,18 +452,31 @@ extension CaptureDetailViewController: UITextViewDelegate {
         }
     }
 
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        if textView.textColor == UIColor.lightGray {
+            textView.text = nil
+            textView.textColor = UIColor.black
+        }
+    }
+
     func textViewDidEndEditing(_ textView: UITextView) {
-        let alertView = SPAlertView(title: "Updated", preset: .done)
-        alertView.present()
-        if !self.isEditing {
-            Task {
-                let captureTask = try await CaptureServices.updateCapture(capture: self.capture, updatedText: textView.text)
-                if let task = captureTask {
-                    alertView.dismiss()
-                    await updateListController()
-                    capture.annotation = task.annotation
+        if textView.text.isEmpty {
+            textView.text = "Placeholder"
+            textView.textColor = UIColor.lightGray
+            textView.becomeFirstResponder()
+        } else if textView.text.trimmingCharacters(in: .whitespacesAndNewlines) != capture.annotation {
+            let alertView = SPAlertView(title: "Updated", preset: .done)
+            alertView.present()
+            if !self.isEditing {
+                Task {
+                    let captureTask = try await CaptureServices.updateCapture(capture: self.capture, updatedText: textView.text)
+                    if let task = captureTask {
+                        alertView.dismiss()
+                        await updateListController()
+                        capture.annotation = task.annotation
+                    }
                 }
             }
-        }
+        } else { textView.text = textView.text.trimmingCharacters(in: .whitespacesAndNewlines) }
     }
 }

@@ -94,7 +94,7 @@ class CapturePreviewViewController: UIViewController {
         cameraButton.addTarget(self, action: #selector(addMorePhotos(_:)), for: .touchUpInside)
         cancelButton.addTarget(self, action: #selector(removePhoto(_:)), for: .touchUpInside)
         checkmarkButton.addTarget(self, action: #selector(completeCapture(_:)), for: .touchUpInside)
-
+        self.navigationController?.navigationBar.barStyle = .black
 
 
     }

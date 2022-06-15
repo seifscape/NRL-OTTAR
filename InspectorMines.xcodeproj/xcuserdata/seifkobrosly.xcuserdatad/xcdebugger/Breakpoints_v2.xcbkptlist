@@ -62,8 +62,8 @@
             filePath = "InspectorMines/Controllers/CaptureCameraViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "977"
-            endingLineNumber = "977"
+            startingLineNumber = "963"
+            endingLineNumber = "963"
             landmarkName = "willTakeAditionalPhotos(withImage:)"
             landmarkType = "7">
             <Locations>

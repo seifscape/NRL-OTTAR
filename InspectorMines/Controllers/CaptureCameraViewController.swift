@@ -238,7 +238,7 @@ class CaptureCameraViewController: UIViewController {
         self.previewButton.addTarget(self, action: #selector(goToPreviewController(_:)), for: .touchUpInside)
     }
 
-    func setupCameraOptionsUI() {
+    private func setupCameraOptionsUI() {
         let stackViewContainer = UIView(frame: previewContainer.frame)
         let mainStackView  = UIStackView(frame: stackViewContainer.frame)
         mainStackView.sizeToFit()
@@ -951,26 +951,12 @@ extension AVCaptureDevice.DiscoverySession {
 extension CaptureCameraViewController: CapturePreviewControllerDelegate {
 
     func removeSelectedPhoto(targetImage targetIndex: Int) {
-        if self.images.count < targetIndex {
+        if self.images.count <= targetIndex {
             return
         }
         else {
             self.images.remove(at: targetIndex)
         }
-
-//        for (index, object) in self.photoList.enumerated() {
-//            if targetPhoto == self.photoList[index] {
-//                print("Item at \(index): \(object)")
-//            }
-//        }
-
-//        for element in 0..<self.photoList.count {
-//            print(element)
-//        }
-//        if self.photoList.last == targetPhoto {
-//            self.photoList.removeLast()
-//            print("Hit")
-//        }
     }
 
     func willTakeAditionalPhotos(withImage image: [CreateImage]?) {

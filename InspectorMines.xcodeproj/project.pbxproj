@@ -45,7 +45,6 @@
 		28D6031327BAF2EA0060D2D2 /* CaptureListCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D6031227BAF2EA0060D2D2 /* CaptureListCollectionViewCell.swift */; };
 		28E0036E284586D400752283 /* Rest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28E0036D284586D400752283 /* Rest.swift */; };
 		28E24DBF27CD298500CEAD28 /* TabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28E24DBE27CD298500CEAD28 /* TabViewController.swift */; };
-		28EA4B3928539A0300384763 /* BLTNBoard in Frameworks */ = {isa = PBXBuildFile; productRef = 28EA4B3828539A0300384763 /* BLTNBoard */; };
 		28F9AC67284FD24500133967 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 28F9AC66284FD24500133967 /* README.md */; };
 /* End PBXBuildFile section */
 
@@ -122,7 +121,6 @@
 			files = (
 				28CBD9722844224A00C2A527 /* Get in Frameworks */,
 				2835FB0728568DCF00551656 /* SPAlert in Frameworks */,
-				28EA4B3928539A0300384763 /* BLTNBoard in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -317,7 +315,6 @@
 			name = InspectorMines;
 			packageProductDependencies = (
 				28CBD9712844224A00C2A527 /* Get */,
-				28EA4B3828539A0300384763 /* BLTNBoard */,
 				2835FB0628568DCF00551656 /* SPAlert */,
 			);
 			productName = InspectorMines;
@@ -394,7 +391,6 @@
 			mainGroup = 286EBD83268D3A5D0002CBED;
 			packageReferences = (
 				28CBD9702844224A00C2A527 /* XCRemoteSwiftPackageReference "Get" */,
-				28EA4B3728539A0300384763 /* XCRemoteSwiftPackageReference "BulletinBoard" */,
 				2835FB0528568DCF00551656 /* XCRemoteSwiftPackageReference "SPAlert" */,
 			);
 			productRefGroup = 286EBD8D268D3A5D0002CBED /* Products */;
@@ -816,14 +812,6 @@
 				minimumVersion = 0.8.0;
 			};
 		};
-		28EA4B3728539A0300384763 /* XCRemoteSwiftPackageReference "BulletinBoard" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/alexaubry/BulletinBoard.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.0.0;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -836,11 +824,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 28CBD9702844224A00C2A527 /* XCRemoteSwiftPackageReference "Get" */;
 			productName = Get;
-		};
-		28EA4B3828539A0300384763 /* BLTNBoard */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 28EA4B3728539A0300384763 /* XCRemoteSwiftPackageReference "BulletinBoard" */;
-			productName = BLTNBoard;
 		};
 /* End XCSwiftPackageProductDependency section */
 
