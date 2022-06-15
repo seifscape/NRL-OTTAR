@@ -333,6 +333,12 @@ class CaptureDetailViewController: UIViewController {
         }
     }
 
+    func updateListController() async {
+        if let detailsList = self.navigationController?.viewControllers.first as? CaptureListViewController {
+            await detailsList.fetchCaptures()
+        }
+    }
+
     @objc
     func addMorePhotos(_ sender:UIButton) {
 
@@ -347,6 +353,7 @@ class CaptureDetailViewController: UIViewController {
                     Task {
                         self.capture = try await CaptureServices.getCapture(capture: value)
                         self.collectionView.reloadData()
+                        await self.updateListController()
                     }
                 }
             }
@@ -462,13 +469,14 @@ extension CaptureDetailViewController: UITextViewDelegate {
     }
 
     func textViewDidEndEditing(_ textView: UITextView) {
+        let alertView = SPAlertView(title: "Updated", preset: .done)
+        alertView.present()
         if !self.isEditing {
             Task {
                 let captureTask = try await CaptureServices.updateCapture(capture: self.capture, updatedText: textView.text)
                 if let task = captureTask {
-                    if let detailsList = self.navigationController?.viewControllers.first as? CaptureListViewController {
-                        await detailsList.fetchCaptures()
-                    }
+                    alertView.dismiss()
+                    await updateListController()
                     capture.annotation = task.annotation
                 }
             }

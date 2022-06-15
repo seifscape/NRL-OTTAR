@@ -16,6 +16,8 @@ class CaptureListCollectionViewCell: UICollectionViewCell {
     let timeLabel = UILabel()
     let mainStackView = UIStackView()
 
+    var clockImageView = UIImageView()
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.backgroundColor = .white
@@ -62,7 +64,7 @@ class CaptureListCollectionViewCell: UICollectionViewCell {
         timeStackView.distribution = .fill
 
         let clockSymbol = UIImage(systemName: "clock.fill", withConfiguration: configuration)
-        let clockImageView = UIImageView(image: clockSymbol)
+        clockImageView = UIImageView(image: clockSymbol)
         clockImageView.translatesAutoresizingMaskIntoConstraints = false
         clockImageView.widthAnchor.constraint(equalToConstant: 30).isActive = true
         clockImageView.contentMode = .scaleAspectFit
@@ -124,7 +126,7 @@ class CaptureListCollectionViewCell: UICollectionViewCell {
         bottomHorziontalStackView.addArrangedSubview(dateStackView)
 
 
-        topHorziontalStackView.layoutMargins = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
+        topHorziontalStackView.layoutMargins = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 5)
         topHorziontalStackView.isLayoutMarginsRelativeArrangement = true
 
         bottomHorziontalStackView.layoutMargins = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
@@ -159,6 +161,14 @@ class CaptureListCollectionViewCell: UICollectionViewCell {
         self.layer.shadowOpacity = 1.0
         self.layer.masksToBounds = false
         self.layer.shadowPath = UIBezierPath(roundedRect: self.bounds, cornerRadius: self.contentView.layer.cornerRadius).cgPath
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        self.titleLabel.text = nil
+        self.locationLabel.text = nil
+        self.dateLabel.text = nil
+        self.timeLabel.text = nil
     }
 
 }

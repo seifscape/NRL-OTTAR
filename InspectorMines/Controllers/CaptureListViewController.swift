@@ -153,6 +153,7 @@ extension CaptureListViewController: UICollectionViewDelegate, UICollectionViewD
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! CaptureListCollectionViewCell
+
         let capture = self.capturesList?.captures[indexPath.row]
         // Configure the cell
         if let id = capture?.captureID {
@@ -161,15 +162,24 @@ extension CaptureListViewController: UICollectionViewDelegate, UICollectionViewD
 
         let myFormatter = DateFormatter()
         myFormatter.dateStyle = .medium
+        myFormatter.timeZone = TimeZone(identifier: "UTC")
 
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm:ss"
         formatter.timeZone = TimeZone(identifier: "UTC")
 
-        if let dateCreated = capture?.dateCreated {
-            cell.timeLabel.text = String(format: "%@ UTC", formatter.string(from: dateCreated))
-            cell.dateLabel.text = myFormatter.string(from: dateCreated)
+        if let dateUpdated = capture?.dateUpdated {
+            cell.timeLabel.text = String(format: "%@ UTC", formatter.string(from: dateUpdated))
+            cell.dateLabel.text = myFormatter.string(from: dateUpdated)
+            cell.clockImageView.tintColor = .systemRed
+        } else {
+            if let dateCreated = capture?.dateCreated {
+                cell.timeLabel.text = String(format: "%@ UTC", formatter.string(from: dateCreated))
+                cell.dateLabel.text = myFormatter.string(from: dateCreated)
+            }
         }
+
+
 
         cell.locationLabel.text = capture?.coordinates
         return cell
