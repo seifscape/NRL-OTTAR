@@ -39,7 +39,7 @@ class CaptureListCollectionViewCell: UICollectionViewCell {
 
     private func setupUI() {
 
-        let configuration = UIImage.SymbolConfiguration(pointSize: 18, weight: .light, scale: .medium)
+        let configuration = UIImage.SymbolConfiguration(pointSize: 25, weight: .light, scale: .medium)
         titleLabel.text = "First Capture"
         titleLabel.font = .boldSystemFont(ofSize: 16)
         titleLabel.textColor = .black
@@ -72,7 +72,7 @@ class CaptureListCollectionViewCell: UICollectionViewCell {
 
         timeStackView.addArrangedSubview(clockImageView)
         timeStackView.addArrangedSubview(timeLabel)
-        timeStackView.setCustomSpacing(5, after: clockImageView)
+        timeStackView.setCustomSpacing(8, after: clockImageView)
 
 
         topHorziontalStackView.addArrangedSubview(titleLabel)
@@ -111,7 +111,7 @@ class CaptureListCollectionViewCell: UICollectionViewCell {
         dateStackView.distribution = .fill
 
 
-        let calendarSymbol = UIImage(systemName: "calendar", withConfiguration: configuration)
+        let calendarSymbol = UIImage(systemName: "calendar.circle", withConfiguration: configuration)
         let calenderImageView = UIImageView(image: calendarSymbol)
         calenderImageView.translatesAutoresizingMaskIntoConstraints = false
         calenderImageView.widthAnchor.constraint(equalToConstant: 30).isActive = true
@@ -120,22 +120,22 @@ class CaptureListCollectionViewCell: UICollectionViewCell {
 
         dateStackView.addArrangedSubview(calenderImageView)
         dateStackView.addArrangedSubview(dateLabel)
-        dateStackView.setCustomSpacing(8, after: calenderImageView)
+        dateStackView.setCustomSpacing(12, after: calenderImageView)
 
         bottomHorziontalStackView.addArrangedSubview(locationStackView)
         bottomHorziontalStackView.addArrangedSubview(dateStackView)
 
-        timeStackView.layoutMargins = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 3)
+        timeStackView.layoutMargins = UIEdgeInsets(top: 0, left: 6, bottom: 0, right: 4)
         timeStackView.isLayoutMarginsRelativeArrangement = true
 
-        dateStackView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 5)
+        dateStackView.layoutMargins = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 8)
         dateStackView.isLayoutMarginsRelativeArrangement = true
 
 
         mainStackView.distribution = .equalSpacing
         mainStackView.addArrangedSubview(topHorziontalStackView)
         mainStackView.addArrangedSubview(bottomHorziontalStackView)
-        mainStackView.setCustomSpacing(5, after: topHorziontalStackView)
+        // mainStackView.setCustomSpacing(5, after: topHorziontalStackView)
         mainStackView.topAnchor.constraint(equalTo: self.topAnchor, constant: 10).isActive = true
         mainStackView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 5).isActive = true
         mainStackView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -5).isActive = true

@@ -41,8 +41,15 @@ class CaptureDetailViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
         Task {
             do {
+                let alertView = SPAlertView(title: "Loading", preset: .spinner)
+                alertView.present()
                 self.capture = try await CaptureServices.getCapture(capture: capture)
+                alertView.dismiss()
             } catch {
+                let alertView = SPAlertView(title: "Error", preset: .error)
+                alertView.present()
+                alertView.duration = 1.5
+                alertView.dismiss()
                 print("Request failed with error: \(error)")
             }
         }
