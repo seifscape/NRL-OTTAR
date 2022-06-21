@@ -16,6 +16,8 @@ class CaptureListViewController: UIViewController {
     var safeArea: UILayoutGuide!
     var capturesList:Captures?
     var capturePreviewController = CapturePreviewViewController(images: nil, capture: nil)
+    var invalidURL = false
+    var preferences = APIPreferencesLoader.load()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,25 +40,94 @@ class CaptureListViewController: UIViewController {
         captureCollectionView.register(CaptureListCollectionViewCell.self, forCellWithReuseIdentifier: "cell")
         captureCollectionView.delegate = self
         captureCollectionView.dataSource = self
+        captureCollectionView.clipsToBounds = true
         self.view.backgroundColor = UIColor(red:0.09, green:0.16, blue:0.34, alpha:1.00)
         self.captureCollectionView.backgroundColor = UIColor(red:0.09, green:0.16, blue:0.34, alpha:1.00)
         self.view.addSubview(captureCollectionView)
         setupUI()
         setupCollectionView()
-        DispatchQueue.main.async {
-            Task {
-                await self.fetchCaptures()
-            }
+        Task {
+            await self.fetchCaptures()
         }
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        self.viewDidLayoutSubviews()
+        self.captureCollectionView.collectionViewLayout.invalidateLayout()
+        print("Server: \(preferences.baseURL)")
+        if preferences.baseURL.isEmpty {
+            self.presentInput()
+        }
+    }
+
+    override func viewWillLayoutSubviews() {
+       super.viewWillLayoutSubviews()
+       self.captureCollectionView.collectionViewLayout.invalidateLayout()
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        guard let flowLayout = self.captureCollectionView.collectionViewLayout as? UICollectionViewFlowLayout else {
+            return
+        }
+        flowLayout.invalidateLayout()
+        flowLayout.itemSize = CGSize(width:size.width - 30, height: 105)
+    }
+
+    override func becomeFirstResponder() -> Bool {
+        return true
+    }
+
+    override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
+        if motion == .motionShake {
+            self.presentInput()
+        }
+    }
+
+    func presentInput() {
+        // http://140.82.3.140
+        let alertController = UIAlertController(title: "Server Address",
+                                                message: nil,
+                                                preferredStyle: .alert)
+
+        alertController.addTextField { (textField) in
+            textField.placeholder = "Server IP"
+        }
+
+        let continueAction = UIAlertAction(title: "Continue",
+                                           style: .default) { [weak alertController] _ in
+                                            guard let textFields = alertController?.textFields else { return }
+                                            if let ipText = textFields[0].text {
+                                                self.preferences.baseURL = (String(format: "http://%@", ipText))
+                                                APIPreferencesLoader.write(preferences: self.preferences)
+                                                print("IP: \(APIPreferencesLoader.load().baseURL)")
+                                                InspectorMinesNetworkAPI.sharedInstance.updateClient()
+                                                Task {
+                                                    await self.fetchCaptures()
+                                                }
+                                            }
+        }
+
+        alertController.addAction(continueAction)
+
+        self.present(alertController,
+                     animated: true)
+
     }
 
     func fetchCaptures() async {
         Task {
-            self.capturesList =  try await CaptureServices.getCaptures()
-            DispatchQueue.main.async {
-                self.captureCollectionView.reloadData()
-                self.captureCollectionView.collectionViewLayout.invalidateLayout()
+            do {
+                self.capturesList =  try await CaptureServices.getCaptures()
+                DispatchQueue.main.async {
+                    self.captureCollectionView.reloadData()
+                    self.captureCollectionView.collectionViewLayout.invalidateLayout()
+                }
+            } catch {
+                print("Unknown error: \(error)")
             }
+
         }
     }
 

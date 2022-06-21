@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		280CCF422832981F00488F6C /* CapturePreviewOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280CCF412832981F00488F6C /* CapturePreviewOptionsView.swift */; };
 		280CCF442832B62400488F6C /* Ext+UITabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280CCF432832B62400488F6C /* Ext+UITabBarController.swift */; };
+		280D3F76285CFFD7001E4253 /* APIPreferencesLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280D3F75285CFFD7001E4253 /* APIPreferencesLoader.swift */; };
+		280D3F78285D02E9001E4253 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 280D3F77285D02E9001E4253 /* Settings.bundle */; };
+		280D3F7A285D02FB001E4253 /* ApiPreferences.plist in Resources */ = {isa = PBXBuildFile; fileRef = 280D3F79285D02FB001E4253 /* ApiPreferences.plist */; };
 		280E72FF27DE99B900B701DC /* CaptureDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280E72FE27DE99B900B701DC /* CaptureDetailViewController.swift */; };
 		281C315828579B9C0002B957 /* CaptureServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281C315728579B9C0002B957 /* CaptureServices.swift */; };
 		2835FB0728568DCF00551656 /* SPAlert in Frameworks */ = {isa = PBXBuildFile; productRef = 2835FB0628568DCF00551656 /* SPAlert */; };
@@ -16,6 +19,7 @@
 		2842B6CA284546F8001D79FE /* Paths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2842B6C8284546F8001D79FE /* Paths.swift */; };
 		2842B6CC2845674F001D79FE /* InspectorMinesClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2842B6CB2845674F001D79FE /* InspectorMinesClient.swift */; };
 		2845A4FD275989BE002C8691 /* CaptureListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2845A4FC275989BE002C8691 /* CaptureListViewController.swift */; };
+		286051DD285C1EDB0011109B /* Ext+UIWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286051DC285C1EDB0011109B /* Ext+UIWindow.swift */; };
 		28625DC128035B1A003CAAA6 /* NewCaptureCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28625DC028035B1A003CAAA6 /* NewCaptureCollectionViewCell.swift */; };
 		28668029282DB61C003CBA54 /* CapturePreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28668028282DB61C003CBA54 /* CapturePreviewViewController.swift */; };
 		286EBD90268D3A5D0002CBED /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286EBD8F268D3A5D0002CBED /* AppDelegate.swift */; };
@@ -68,12 +72,16 @@
 /* Begin PBXFileReference section */
 		280CCF412832981F00488F6C /* CapturePreviewOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapturePreviewOptionsView.swift; sourceTree = "<group>"; };
 		280CCF432832B62400488F6C /* Ext+UITabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ext+UITabBarController.swift"; sourceTree = "<group>"; };
+		280D3F75285CFFD7001E4253 /* APIPreferencesLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIPreferencesLoader.swift; sourceTree = "<group>"; };
+		280D3F77285D02E9001E4253 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
+		280D3F79285D02FB001E4253 /* ApiPreferences.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = ApiPreferences.plist; sourceTree = "<group>"; };
 		280E72FE27DE99B900B701DC /* CaptureDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureDetailViewController.swift; sourceTree = "<group>"; };
 		281C315728579B9C0002B957 /* CaptureServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureServices.swift; sourceTree = "<group>"; };
 		2842B6C7284546F8001D79FE /* Entities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Entities.swift; sourceTree = "<group>"; };
 		2842B6C8284546F8001D79FE /* Paths.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Paths.swift; sourceTree = "<group>"; };
 		2842B6CB2845674F001D79FE /* InspectorMinesClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InspectorMinesClient.swift; sourceTree = "<group>"; };
 		2845A4FC275989BE002C8691 /* CaptureListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureListViewController.swift; sourceTree = "<group>"; };
+		286051DC285C1EDB0011109B /* Ext+UIWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ext+UIWindow.swift"; sourceTree = "<group>"; };
 		28625DC028035B1A003CAAA6 /* NewCaptureCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCaptureCollectionViewCell.swift; sourceTree = "<group>"; };
 		28668028282DB61C003CBA54 /* CapturePreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapturePreviewViewController.swift; sourceTree = "<group>"; };
 		286EBD8C268D3A5D0002CBED /* InspectorMines.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InspectorMines.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -184,10 +192,13 @@
 				286EBD8F268D3A5D0002CBED /* AppDelegate.swift */,
 				286EBD91268D3A5D0002CBED /* SceneDelegate.swift */,
 				286EBD93268D3A5D0002CBED /* ViewController.swift */,
+				280D3F75285CFFD7001E4253 /* APIPreferencesLoader.swift */,
 				286EBD9B268D3A5F0002CBED /* Assets.xcassets */,
 				286EBD9D268D3A5F0002CBED /* LaunchScreen.storyboard */,
 				286EBDA0268D3A5F0002CBED /* Info.plist */,
+				280D3F79285D02FB001E4253 /* ApiPreferences.plist */,
 				286EBD98268D3A5D0002CBED /* InspectorMines.xcdatamodeld */,
+				280D3F77285D02E9001E4253 /* Settings.bundle */,
 			);
 			path = InspectorMines;
 			sourceTree = "<group>";
@@ -243,6 +254,7 @@
 			children = (
 				280CCF432832B62400488F6C /* Ext+UITabBarController.swift */,
 				28B379F42841671500697A9F /* Ext+URLSession.swift */,
+				286051DC285C1EDB0011109B /* Ext+UIWindow.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -409,9 +421,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				280D3F78285D02E9001E4253 /* Settings.bundle in Resources */,
 				28F9AC67284FD24500133967 /* README.md in Resources */,
 				286EBD9F268D3A5F0002CBED /* LaunchScreen.storyboard in Resources */,
 				286EBD9C268D3A5F0002CBED /* Assets.xcassets in Resources */,
+				280D3F7A285D02FB001E4253 /* ApiPreferences.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -446,6 +460,7 @@
 				28E24DBF27CD298500CEAD28 /* TabViewController.swift in Sources */,
 				286EBD94268D3A5D0002CBED /* ViewController.swift in Sources */,
 				28E0036E284586D400752283 /* Rest.swift in Sources */,
+				280D3F76285CFFD7001E4253 /* APIPreferencesLoader.swift in Sources */,
 				28BD0B2E282E01E8009292F1 /* CaptureCameraViewController.swift in Sources */,
 				286EBDDF268D44610002CBED /* RegistrationViewController.swift in Sources */,
 				280E72FF27DE99B900B701DC /* CaptureDetailViewController.swift in Sources */,
@@ -454,6 +469,7 @@
 				28D6031327BAF2EA0060D2D2 /* CaptureListCollectionViewCell.swift in Sources */,
 				286EBDC9268D3E7C0002CBED /* Profile.swift in Sources */,
 				28BD0B2C282DFD71009292F1 /* PhotoCaptureDelegate.swift in Sources */,
+				286051DD285C1EDB0011109B /* Ext+UIWindow.swift in Sources */,
 				2842B6CC2845674F001D79FE /* InspectorMinesClient.swift in Sources */,
 				28B379F52841671500697A9F /* Ext+URLSession.swift in Sources */,
 				28C73F6E27E805D400EF735D /* CaptureDetailCollectionViewCell.swift in Sources */,

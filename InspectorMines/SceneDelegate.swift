@@ -34,6 +34,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneDidBecomeActive(_ scene: UIScene) {
         // Called when the scene has moved from an inactive state to an active state.
         // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
+
+//        SettingsBundleHelper.setBaseURL()
+//        if let window = UIApplication.shared.currentWindow?.rootViewController as? UINavigationController {
+//           // do whatever you want with window
+//            if let controller = window.topViewController as? CaptureListViewController {
+//                controller.invalidURL = true
+//            }
+//        }
+
     }
 
     func sceneWillResignActive(_ scene: UIScene) {
@@ -58,3 +67,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 }
 
+extension UIApplication {
+    var currentWindow: UIWindow? {
+        connectedScenes
+        .filter({$0.activationState == .foregroundActive})
+        .map({$0 as? UIWindowScene})
+        .compactMap({$0})
+        .first?.windows
+        .filter({$0.isKeyWindow}).first
+    }
+}
+
+
+extension UINavigationController {
+    var rootViewController : UIViewController? {
+        return viewControllers.first
+    }
+}

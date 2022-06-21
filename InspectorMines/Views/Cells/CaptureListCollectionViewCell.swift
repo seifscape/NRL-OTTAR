@@ -167,6 +167,7 @@ class CaptureListCollectionViewCell: UICollectionViewCell {
         self.locationLabel.text = nil
         self.dateLabel.text = nil
         self.timeLabel.text = nil
+        self.layoutIfNeeded()
     }
 
 }

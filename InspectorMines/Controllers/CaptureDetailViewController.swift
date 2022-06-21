@@ -90,7 +90,7 @@ class CaptureDetailViewController: UIViewController {
         self.collectionView.contentInsetAdjustmentBehavior = .never
         self.setupNavBar()
         if self.capture.annotation.isEmpty {
-            textView.text  = "Placeholder"
+            textView.text  = "Enter an annotation here"
             textView.textColor = .lightGray
         } else {
             self.textView.text = self.capture.annotation
@@ -468,7 +468,7 @@ extension CaptureDetailViewController: UITextViewDelegate {
 
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView.text.isEmpty {
-            textView.text = "Placeholder"
+            textView.text = "Enter an annotation here"
             textView.textColor = UIColor.lightGray
             textView.becomeFirstResponder()
         } else if textView.text.trimmingCharacters(in: .whitespacesAndNewlines) != capture.annotation {

@@ -13,21 +13,25 @@ class InspectorMinesNetworkAPI {
 
     static let sharedInstance = InspectorMinesNetworkAPI()
     private init() {} //This prevents others from using the default '()' initializer for this class.
-    //server http://144.202.14.244
 
-    var client = APIClient(baseURL: URL(string: "http://144.202.14.244")) { configuration in
-        configuration.delegate = InspectorMinesClientDelegate(apiKey: "nrl_ottar_2022")
+
+    var client = APIClient(baseURL: URL(string: APIPreferencesLoader.load().baseURL)) { configuration in
+        configuration.delegate = InspectorMinesClientDelegate(apiKey: APIPreferencesLoader.load().apiKey)
 
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
-//        encoder.keyEncodingStrategy = .convertToSnakeCase
 
         let decoder = JSONDecoder()
-//        decoder.keyDecodingStrategy = .convertFromSnakeCase
         decoder.dateDecodingStrategy = .iso8601
 
         configuration.encoder = encoder
         configuration.decoder = decoder
+    }
+
+    func updateClient() {
+        client = APIClient(baseURL: URL(string: APIPreferencesLoader.load().baseURL)) { configuration in
+            configuration.delegate = InspectorMinesClientDelegate(apiKey: APIPreferencesLoader.load().apiKey)
+        }
     }
 }
 
