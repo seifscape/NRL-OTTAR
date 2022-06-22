@@ -1,0 +1,860 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 52;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		280CCF422832981F00488F6C /* CapturePreviewOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280CCF412832981F00488F6C /* CapturePreviewOptionsView.swift */; };
+		280CCF442832B62400488F6C /* Ext+UITabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280CCF432832B62400488F6C /* Ext+UITabBarController.swift */; };
+		280D3F76285CFFD7001E4253 /* APIPreferencesLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280D3F75285CFFD7001E4253 /* APIPreferencesLoader.swift */; };
+		280D3F78285D02E9001E4253 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 280D3F77285D02E9001E4253 /* Settings.bundle */; };
+		280D3F7A285D02FB001E4253 /* ApiPreferences.plist in Resources */ = {isa = PBXBuildFile; fileRef = 280D3F79285D02FB001E4253 /* ApiPreferences.plist */; };
+		280E72FF27DE99B900B701DC /* CaptureDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280E72FE27DE99B900B701DC /* CaptureDetailViewController.swift */; };
+		281C315828579B9C0002B957 /* CaptureServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281C315728579B9C0002B957 /* CaptureServices.swift */; };
+		2842B6C9284546F8001D79FE /* Entities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2842B6C7284546F8001D79FE /* Entities.swift */; };
+		2842B6CA284546F8001D79FE /* Paths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2842B6C8284546F8001D79FE /* Paths.swift */; };
+		2842B6CC2845674F001D79FE /* OTTARClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2842B6CB2845674F001D79FE /* OTTARClient.swift */; };
+		2845A4FD275989BE002C8691 /* CaptureListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2845A4FC275989BE002C8691 /* CaptureListViewController.swift */; };
+		286051DD285C1EDB0011109B /* Ext+UIWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286051DC285C1EDB0011109B /* Ext+UIWindow.swift */; };
+		28625DC128035B1A003CAAA6 /* NewCaptureCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28625DC028035B1A003CAAA6 /* NewCaptureCollectionViewCell.swift */; };
+		28668029282DB61C003CBA54 /* CapturePreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28668028282DB61C003CBA54 /* CapturePreviewViewController.swift */; };
+		286EBD90268D3A5D0002CBED /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286EBD8F268D3A5D0002CBED /* AppDelegate.swift */; };
+		286EBD92268D3A5D0002CBED /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286EBD91268D3A5D0002CBED /* SceneDelegate.swift */; };
+		286EBD94268D3A5D0002CBED /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286EBD93268D3A5D0002CBED /* ViewController.swift */; };
+		286EBD9A268D3A5D0002CBED /* OTTAR.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 286EBD98268D3A5D0002CBED /* OTTAR.xcdatamodeld */; };
+		286EBD9C268D3A5F0002CBED /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 286EBD9B268D3A5F0002CBED /* Assets.xcassets */; };
+		286EBD9F268D3A5F0002CBED /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 286EBD9D268D3A5F0002CBED /* LaunchScreen.storyboard */; };
+		286EBDAA268D3A5F0002CBED /* OTTARTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286EBDA9268D3A5F0002CBED /* OTTARTests.swift */; };
+		286EBDB5268D3A5F0002CBED /* OTTARUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286EBDB4268D3A5F0002CBED /* OTTARUITests.swift */; };
+		286EBDC9268D3E7C0002CBED /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286EBDC8268D3E7C0002CBED /* Profile.swift */; };
+		286EBDCD268D3EFF0002CBED /* Photo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286EBDCC268D3EFF0002CBED /* Photo.swift */; };
+		286EBDD1268D41420002CBED /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286EBDD0268D41420002CBED /* Note.swift */; };
+		286EBDDF268D44610002CBED /* RegistrationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286EBDDE268D44610002CBED /* RegistrationViewController.swift */; };
+		286EBDE1268D45350002CBED /* CaptureViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286EBDE0268D45350002CBED /* CaptureViewController.swift */; };
+		288D393B2858FA3100C903D6 /* ImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288D393A2858FA3100C903D6 /* ImageViewController.swift */; };
+		289DDC6427542CE400A246C0 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 289DDC6327542CE400A246C0 /* CameraViewController.swift */; };
+		289DDC66275432FD00A246C0 /* CameraButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 289DDC65275432FD00A246C0 /* CameraButton.swift */; };
+		28B379F52841671500697A9F /* Ext+URLSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28B379F42841671500697A9F /* Ext+URLSession.swift */; };
+		28BA68CB2862904A0064126C /* Get in Frameworks */ = {isa = PBXBuildFile; productRef = 28BA68CA2862904A0064126C /* Get */; };
+		28BA68CE286290570064126C /* SPAlert in Frameworks */ = {isa = PBXBuildFile; productRef = 28BA68CD286290570064126C /* SPAlert */; };
+		28BD0B2C282DFD71009292F1 /* PhotoCaptureDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28BD0B2B282DFD71009292F1 /* PhotoCaptureDelegate.swift */; };
+		28BD0B2E282E01E8009292F1 /* CaptureCameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28BD0B2D282E01E8009292F1 /* CaptureCameraViewController.swift */; };
+		28BD0B30282E032A009292F1 /* PreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28BD0B2F282E032A009292F1 /* PreviewView.swift */; };
+		28C73F6E27E805D400EF735D /* CaptureDetailCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28C73F6D27E805D400EF735D /* CaptureDetailCollectionViewCell.swift */; };
+		28CBD97428442A1F00C2A527 /* OTTARClientDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28CBD97328442A1F00C2A527 /* OTTARClientDelegate.swift */; };
+		28CBD97628442A6700C2A527 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28CBD97528442A6700C2A527 /* NetworkError.swift */; };
+		28D6031327BAF2EA0060D2D2 /* CaptureListCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D6031227BAF2EA0060D2D2 /* CaptureListCollectionViewCell.swift */; };
+		28E0036E284586D400752283 /* Rest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28E0036D284586D400752283 /* Rest.swift */; };
+		28E24DBF27CD298500CEAD28 /* TabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28E24DBE27CD298500CEAD28 /* TabViewController.swift */; };
+		28F9AC67284FD24500133967 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 28F9AC66284FD24500133967 /* README.md */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		286EBDA6268D3A5F0002CBED /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 286EBD84268D3A5D0002CBED /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 286EBD8B268D3A5D0002CBED;
+			remoteInfo = OTTAR;
+		};
+		286EBDB1268D3A5F0002CBED /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 286EBD84268D3A5D0002CBED /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 286EBD8B268D3A5D0002CBED;
+			remoteInfo = OTTAR;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		280CCF412832981F00488F6C /* CapturePreviewOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapturePreviewOptionsView.swift; sourceTree = "<group>"; };
+		280CCF432832B62400488F6C /* Ext+UITabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ext+UITabBarController.swift"; sourceTree = "<group>"; };
+		280D3F75285CFFD7001E4253 /* APIPreferencesLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIPreferencesLoader.swift; sourceTree = "<group>"; };
+		280D3F77285D02E9001E4253 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
+		280D3F79285D02FB001E4253 /* ApiPreferences.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = ApiPreferences.plist; sourceTree = "<group>"; };
+		280E72FE27DE99B900B701DC /* CaptureDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureDetailViewController.swift; sourceTree = "<group>"; };
+		281C315728579B9C0002B957 /* CaptureServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureServices.swift; sourceTree = "<group>"; };
+		2842B6C7284546F8001D79FE /* Entities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Entities.swift; sourceTree = "<group>"; };
+		2842B6C8284546F8001D79FE /* Paths.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Paths.swift; sourceTree = "<group>"; };
+		2842B6CB2845674F001D79FE /* OTTARClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTTARClient.swift; sourceTree = "<group>"; };
+		2845A4FC275989BE002C8691 /* CaptureListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureListViewController.swift; sourceTree = "<group>"; };
+		286051DC285C1EDB0011109B /* Ext+UIWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ext+UIWindow.swift"; sourceTree = "<group>"; };
+		28625DC028035B1A003CAAA6 /* NewCaptureCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCaptureCollectionViewCell.swift; sourceTree = "<group>"; };
+		28668028282DB61C003CBA54 /* CapturePreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapturePreviewViewController.swift; sourceTree = "<group>"; };
+		286EBD8C268D3A5D0002CBED /* OTTAR.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OTTAR.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		286EBD8F268D3A5D0002CBED /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		286EBD91268D3A5D0002CBED /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		286EBD93268D3A5D0002CBED /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		286EBD99268D3A5D0002CBED /* OTTAR.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = OTTAR.xcdatamodel; sourceTree = "<group>"; };
+		286EBD9B268D3A5F0002CBED /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		286EBD9E268D3A5F0002CBED /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		286EBDA0268D3A5F0002CBED /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		286EBDA5268D3A5F0002CBED /* OTTARTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OTTARTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		286EBDA9268D3A5F0002CBED /* OTTARTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTTARTests.swift; sourceTree = "<group>"; };
+		286EBDAB268D3A5F0002CBED /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		286EBDB0268D3A5F0002CBED /* OTTARUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OTTARUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		286EBDB4268D3A5F0002CBED /* OTTARUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTTARUITests.swift; sourceTree = "<group>"; };
+		286EBDB6268D3A5F0002CBED /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		286EBDC8268D3E7C0002CBED /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
+		286EBDCA268D3ECF0002CBED /* Capture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Capture.swift; sourceTree = "<group>"; };
+		286EBDCC268D3EFF0002CBED /* Photo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Photo.swift; sourceTree = "<group>"; };
+		286EBDD0268D41420002CBED /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
+		286EBDDE268D44610002CBED /* RegistrationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationViewController.swift; sourceTree = "<group>"; };
+		286EBDE0268D45350002CBED /* CaptureViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureViewController.swift; sourceTree = "<group>"; };
+		288079F427EF97FA0069BC0B /* CaptureReviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureReviewViewController.swift; sourceTree = "<group>"; };
+		288D393A2858FA3100C903D6 /* ImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewController.swift; sourceTree = "<group>"; };
+		289DDC6327542CE400A246C0 /* CameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
+		289DDC65275432FD00A246C0 /* CameraButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraButton.swift; sourceTree = "<group>"; };
+		28B379F42841671500697A9F /* Ext+URLSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ext+URLSession.swift"; sourceTree = "<group>"; };
+		28BD0B2B282DFD71009292F1 /* PhotoCaptureDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureDelegate.swift; sourceTree = "<group>"; };
+		28BD0B2D282E01E8009292F1 /* CaptureCameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureCameraViewController.swift; sourceTree = "<group>"; };
+		28BD0B2F282E032A009292F1 /* PreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewView.swift; sourceTree = "<group>"; };
+		28C73F6D27E805D400EF735D /* CaptureDetailCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureDetailCollectionViewCell.swift; sourceTree = "<group>"; };
+		28CBD96E28441DE200C2A527 /* APIClient.swift.bak */ = {isa = PBXFileReference; lastKnownFileType = text; path = APIClient.swift.bak; sourceTree = "<group>"; };
+		28CBD97328442A1F00C2A527 /* OTTARClientDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTTARClientDelegate.swift; sourceTree = "<group>"; };
+		28CBD97528442A6700C2A527 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
+		28D6031227BAF2EA0060D2D2 /* CaptureListCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureListCollectionViewCell.swift; sourceTree = "<group>"; };
+		28E0036D284586D400752283 /* Rest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rest.swift; sourceTree = "<group>"; };
+		28E24DBE27CD298500CEAD28 /* TabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabViewController.swift; sourceTree = "<group>"; };
+		28F9AC66284FD24500133967 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		286EBD89268D3A5D0002CBED /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				28BA68CE286290570064126C /* SPAlert in Frameworks */,
+				28BA68CB2862904A0064126C /* Get in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		286EBDA2268D3A5F0002CBED /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		286EBDAD268D3A5F0002CBED /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2842B6C6284546D8001D79FE /* CreateAPI */ = {
+			isa = PBXGroup;
+			children = (
+				2842B6C7284546F8001D79FE /* Entities.swift */,
+				2842B6C8284546F8001D79FE /* Paths.swift */,
+			);
+			path = CreateAPI;
+			sourceTree = "<group>";
+		};
+		286EBD83268D3A5D0002CBED = {
+			isa = PBXGroup;
+			children = (
+				28F9AC66284FD24500133967 /* README.md */,
+				286EBD8E268D3A5D0002CBED /* OTTAR */,
+				286EBDA8268D3A5F0002CBED /* OTTARTests */,
+				286EBDB3268D3A5F0002CBED /* OTTARUITests */,
+				286EBD8D268D3A5D0002CBED /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		286EBD8D268D3A5D0002CBED /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				286EBD8C268D3A5D0002CBED /* OTTAR.app */,
+				286EBDA5268D3A5F0002CBED /* OTTARTests.xctest */,
+				286EBDB0268D3A5F0002CBED /* OTTARUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		286EBD8E268D3A5D0002CBED /* OTTAR */ = {
+			isa = PBXGroup;
+			children = (
+				286EBDCF268D40170002CBED /* Managers */,
+				286EBDCE268D400F0002CBED /* Network */,
+				286EBDC7268D3E110002CBED /* Models */,
+				286EBDC4268D3A960002CBED /* Extensions */,
+				286EBDC3268D3A8E0002CBED /* Views */,
+				286EBDC2268D3A7B0002CBED /* Controllers */,
+				28BD0B2A282DFD5A009292F1 /* Delegates */,
+				286EBD8F268D3A5D0002CBED /* AppDelegate.swift */,
+				286EBD91268D3A5D0002CBED /* SceneDelegate.swift */,
+				286EBD93268D3A5D0002CBED /* ViewController.swift */,
+				280D3F75285CFFD7001E4253 /* APIPreferencesLoader.swift */,
+				286EBD9B268D3A5F0002CBED /* Assets.xcassets */,
+				286EBD9D268D3A5F0002CBED /* LaunchScreen.storyboard */,
+				286EBDA0268D3A5F0002CBED /* Info.plist */,
+				280D3F79285D02FB001E4253 /* ApiPreferences.plist */,
+				286EBD98268D3A5D0002CBED /* OTTAR.xcdatamodeld */,
+				280D3F77285D02E9001E4253 /* Settings.bundle */,
+			);
+			path = OTTAR;
+			sourceTree = "<group>";
+		};
+		286EBDA8268D3A5F0002CBED /* OTTARTests */ = {
+			isa = PBXGroup;
+			children = (
+				286EBDA9268D3A5F0002CBED /* OTTARTests.swift */,
+				286EBDAB268D3A5F0002CBED /* Info.plist */,
+			);
+			path = OTTARTests;
+			sourceTree = "<group>";
+		};
+		286EBDB3268D3A5F0002CBED /* OTTARUITests */ = {
+			isa = PBXGroup;
+			children = (
+				286EBDB4268D3A5F0002CBED /* OTTARUITests.swift */,
+				286EBDB6268D3A5F0002CBED /* Info.plist */,
+			);
+			path = OTTARUITests;
+			sourceTree = "<group>";
+		};
+		286EBDC2268D3A7B0002CBED /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				28668028282DB61C003CBA54 /* CapturePreviewViewController.swift */,
+				286EBDDE268D44610002CBED /* RegistrationViewController.swift */,
+				286EBDE0268D45350002CBED /* CaptureViewController.swift */,
+				289DDC6327542CE400A246C0 /* CameraViewController.swift */,
+				2845A4FC275989BE002C8691 /* CaptureListViewController.swift */,
+				28E24DBE27CD298500CEAD28 /* TabViewController.swift */,
+				280E72FE27DE99B900B701DC /* CaptureDetailViewController.swift */,
+				288079F427EF97FA0069BC0B /* CaptureReviewViewController.swift */,
+				28BD0B2D282E01E8009292F1 /* CaptureCameraViewController.swift */,
+				288D393A2858FA3100C903D6 /* ImageViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		286EBDC3268D3A8E0002CBED /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				28D6031127BAF2C50060D2D2 /* Cells */,
+				289DDC65275432FD00A246C0 /* CameraButton.swift */,
+				28BD0B2F282E032A009292F1 /* PreviewView.swift */,
+				280CCF412832981F00488F6C /* CapturePreviewOptionsView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		286EBDC4268D3A960002CBED /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				280CCF432832B62400488F6C /* Ext+UITabBarController.swift */,
+				28B379F42841671500697A9F /* Ext+URLSession.swift */,
+				286051DC285C1EDB0011109B /* Ext+UIWindow.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		286EBDC7268D3E110002CBED /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				286EBDC8268D3E7C0002CBED /* Profile.swift */,
+				286EBDCA268D3ECF0002CBED /* Capture.swift */,
+				286EBDCC268D3EFF0002CBED /* Photo.swift */,
+				286EBDD0268D41420002CBED /* Note.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		286EBDCE268D400F0002CBED /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				2842B6C6284546D8001D79FE /* CreateAPI */,
+				28CBD96E28441DE200C2A527 /* APIClient.swift.bak */,
+				28CBD97528442A6700C2A527 /* NetworkError.swift */,
+				2842B6CB2845674F001D79FE /* OTTARClient.swift */,
+				28E0036D284586D400752283 /* Rest.swift */,
+				281C315728579B9C0002B957 /* CaptureServices.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		286EBDCF268D40170002CBED /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Managers;
+			sourceTree = "<group>";
+		};
+		28BD0B2A282DFD5A009292F1 /* Delegates */ = {
+			isa = PBXGroup;
+			children = (
+				28CBD97328442A1F00C2A527 /* OTTARClientDelegate.swift */,
+				28BD0B2B282DFD71009292F1 /* PhotoCaptureDelegate.swift */,
+			);
+			path = Delegates;
+			sourceTree = "<group>";
+		};
+		28D6031127BAF2C50060D2D2 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				28D6031227BAF2EA0060D2D2 /* CaptureListCollectionViewCell.swift */,
+				28C73F6D27E805D400EF735D /* CaptureDetailCollectionViewCell.swift */,
+				28625DC028035B1A003CAAA6 /* NewCaptureCollectionViewCell.swift */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		286EBD8B268D3A5D0002CBED /* OTTAR */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 286EBDB9268D3A5F0002CBED /* Build configuration list for PBXNativeTarget "OTTAR" */;
+			buildPhases = (
+				286EBD88268D3A5D0002CBED /* Sources */,
+				286EBD89268D3A5D0002CBED /* Frameworks */,
+				286EBD8A268D3A5D0002CBED /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = OTTAR;
+			packageProductDependencies = (
+				28BA68CA2862904A0064126C /* Get */,
+				28BA68CD286290570064126C /* SPAlert */,
+			);
+			productName = OTTAR;
+			productReference = 286EBD8C268D3A5D0002CBED /* OTTAR.app */;
+			productType = "com.apple.product-type.application";
+		};
+		286EBDA4268D3A5F0002CBED /* OTTARTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 286EBDBC268D3A5F0002CBED /* Build configuration list for PBXNativeTarget "OTTARTests" */;
+			buildPhases = (
+				286EBDA1268D3A5F0002CBED /* Sources */,
+				286EBDA2268D3A5F0002CBED /* Frameworks */,
+				286EBDA3268D3A5F0002CBED /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				286EBDA7268D3A5F0002CBED /* PBXTargetDependency */,
+			);
+			name = OTTARTests;
+			productName = OTTARTests;
+			productReference = 286EBDA5268D3A5F0002CBED /* OTTARTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		286EBDAF268D3A5F0002CBED /* OTTARUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 286EBDBF268D3A5F0002CBED /* Build configuration list for PBXNativeTarget "OTTARUITests" */;
+			buildPhases = (
+				286EBDAC268D3A5F0002CBED /* Sources */,
+				286EBDAD268D3A5F0002CBED /* Frameworks */,
+				286EBDAE268D3A5F0002CBED /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				286EBDB2268D3A5F0002CBED /* PBXTargetDependency */,
+			);
+			name = OTTARUITests;
+			productName = OTTARUITests;
+			productReference = 286EBDB0268D3A5F0002CBED /* OTTARUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		286EBD84268D3A5D0002CBED /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1250;
+				LastUpgradeCheck = 1250;
+				ORGANIZATIONNAME = "Apptitude Labs LLC";
+				TargetAttributes = {
+					286EBD8B268D3A5D0002CBED = {
+						CreatedOnToolsVersion = 12.5.1;
+					};
+					286EBDA4268D3A5F0002CBED = {
+						CreatedOnToolsVersion = 12.5.1;
+						TestTargetID = 286EBD8B268D3A5D0002CBED;
+					};
+					286EBDAF268D3A5F0002CBED = {
+						CreatedOnToolsVersion = 12.5.1;
+						TestTargetID = 286EBD8B268D3A5D0002CBED;
+					};
+				};
+			};
+			buildConfigurationList = 286EBD87268D3A5D0002CBED /* Build configuration list for PBXProject "OTTAR" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 286EBD83268D3A5D0002CBED;
+			packageReferences = (
+				28BA68C92862904A0064126C /* XCRemoteSwiftPackageReference "Get" */,
+				28BA68CC286290570064126C /* XCRemoteSwiftPackageReference "SPAlert" */,
+			);
+			productRefGroup = 286EBD8D268D3A5D0002CBED /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				286EBD8B268D3A5D0002CBED /* OTTAR */,
+				286EBDA4268D3A5F0002CBED /* OTTARTests */,
+				286EBDAF268D3A5F0002CBED /* OTTARUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		286EBD8A268D3A5D0002CBED /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				280D3F78285D02E9001E4253 /* Settings.bundle in Resources */,
+				28F9AC67284FD24500133967 /* README.md in Resources */,
+				286EBD9F268D3A5F0002CBED /* LaunchScreen.storyboard in Resources */,
+				286EBD9C268D3A5F0002CBED /* Assets.xcassets in Resources */,
+				280D3F7A285D02FB001E4253 /* ApiPreferences.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		286EBDA3268D3A5F0002CBED /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		286EBDAE268D3A5F0002CBED /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		286EBD88268D3A5D0002CBED /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				289DDC6427542CE400A246C0 /* CameraViewController.swift in Sources */,
+				28CBD97628442A6700C2A527 /* NetworkError.swift in Sources */,
+				28BD0B30282E032A009292F1 /* PreviewView.swift in Sources */,
+				286EBDCD268D3EFF0002CBED /* Photo.swift in Sources */,
+				28668029282DB61C003CBA54 /* CapturePreviewViewController.swift in Sources */,
+				280CCF442832B62400488F6C /* Ext+UITabBarController.swift in Sources */,
+				2842B6CA284546F8001D79FE /* Paths.swift in Sources */,
+				28E24DBF27CD298500CEAD28 /* TabViewController.swift in Sources */,
+				286EBD94268D3A5D0002CBED /* ViewController.swift in Sources */,
+				28E0036E284586D400752283 /* Rest.swift in Sources */,
+				280D3F76285CFFD7001E4253 /* APIPreferencesLoader.swift in Sources */,
+				28BD0B2E282E01E8009292F1 /* CaptureCameraViewController.swift in Sources */,
+				286EBDDF268D44610002CBED /* RegistrationViewController.swift in Sources */,
+				280E72FF27DE99B900B701DC /* CaptureDetailViewController.swift in Sources */,
+				286EBDD1268D41420002CBED /* Note.swift in Sources */,
+				2845A4FD275989BE002C8691 /* CaptureListViewController.swift in Sources */,
+				28D6031327BAF2EA0060D2D2 /* CaptureListCollectionViewCell.swift in Sources */,
+				286EBDC9268D3E7C0002CBED /* Profile.swift in Sources */,
+				28BD0B2C282DFD71009292F1 /* PhotoCaptureDelegate.swift in Sources */,
+				286051DD285C1EDB0011109B /* Ext+UIWindow.swift in Sources */,
+				2842B6CC2845674F001D79FE /* OTTARClient.swift in Sources */,
+				28B379F52841671500697A9F /* Ext+URLSession.swift in Sources */,
+				28C73F6E27E805D400EF735D /* CaptureDetailCollectionViewCell.swift in Sources */,
+				286EBD90268D3A5D0002CBED /* AppDelegate.swift in Sources */,
+				288D393B2858FA3100C903D6 /* ImageViewController.swift in Sources */,
+				28625DC128035B1A003CAAA6 /* NewCaptureCollectionViewCell.swift in Sources */,
+				286EBD9A268D3A5D0002CBED /* OTTAR.xcdatamodeld in Sources */,
+				281C315828579B9C0002B957 /* CaptureServices.swift in Sources */,
+				28CBD97428442A1F00C2A527 /* OTTARClientDelegate.swift in Sources */,
+				286EBD92268D3A5D0002CBED /* SceneDelegate.swift in Sources */,
+				289DDC66275432FD00A246C0 /* CameraButton.swift in Sources */,
+				286EBDE1268D45350002CBED /* CaptureViewController.swift in Sources */,
+				2842B6C9284546F8001D79FE /* Entities.swift in Sources */,
+				280CCF422832981F00488F6C /* CapturePreviewOptionsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		286EBDA1268D3A5F0002CBED /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				286EBDAA268D3A5F0002CBED /* OTTARTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		286EBDAC268D3A5F0002CBED /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				286EBDB5268D3A5F0002CBED /* OTTARUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		286EBDA7268D3A5F0002CBED /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 286EBD8B268D3A5D0002CBED /* OTTAR */;
+			targetProxy = 286EBDA6268D3A5F0002CBED /* PBXContainerItemProxy */;
+		};
+		286EBDB2268D3A5F0002CBED /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 286EBD8B268D3A5D0002CBED /* OTTAR */;
+			targetProxy = 286EBDB1268D3A5F0002CBED /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		286EBD9D268D3A5F0002CBED /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				286EBD9E268D3A5F0002CBED /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		286EBDB7268D3A5F0002CBED /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		286EBDB8268D3A5F0002CBED /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		286EBDBA268D3A5F0002CBED /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 55KEXMK3QR;
+				INFOPLIST_FILE = OTTAR/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.apptitude-labs.OTTAR";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		286EBDBB268D3A5F0002CBED /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 55KEXMK3QR;
+				INFOPLIST_FILE = OTTAR/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.apptitude-labs.OTTAR";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		286EBDBD268D3A5F0002CBED /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 55KEXMK3QR;
+				INFOPLIST_FILE = OTTARTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.apptitude-labs.OTTARTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/OTTAR.app/OTTAR";
+			};
+			name = Debug;
+		};
+		286EBDBE268D3A5F0002CBED /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 55KEXMK3QR;
+				INFOPLIST_FILE = OTTARTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.apptitude-labs.OTTARTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/OTTAR.app/OTTAR";
+			};
+			name = Release;
+		};
+		286EBDC0268D3A5F0002CBED /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 55KEXMK3QR;
+				INFOPLIST_FILE = OTTARUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.apptitude-labs.OTTARUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = OTTAR;
+			};
+			name = Debug;
+		};
+		286EBDC1268D3A5F0002CBED /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 55KEXMK3QR;
+				INFOPLIST_FILE = OTTARUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.apptitude-labs.OTTARUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = OTTAR;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		286EBD87268D3A5D0002CBED /* Build configuration list for PBXProject "OTTAR" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				286EBDB7268D3A5F0002CBED /* Debug */,
+				286EBDB8268D3A5F0002CBED /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		286EBDB9268D3A5F0002CBED /* Build configuration list for PBXNativeTarget "OTTAR" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				286EBDBA268D3A5F0002CBED /* Debug */,
+				286EBDBB268D3A5F0002CBED /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		286EBDBC268D3A5F0002CBED /* Build configuration list for PBXNativeTarget "OTTARTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				286EBDBD268D3A5F0002CBED /* Debug */,
+				286EBDBE268D3A5F0002CBED /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		286EBDBF268D3A5F0002CBED /* Build configuration list for PBXNativeTarget "OTTARUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				286EBDC0268D3A5F0002CBED /* Debug */,
+				286EBDC1268D3A5F0002CBED /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		28BA68C92862904A0064126C /* XCRemoteSwiftPackageReference "Get" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kean/Get";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.8.0;
+			};
+		};
+		28BA68CC286290570064126C /* XCRemoteSwiftPackageReference "SPAlert" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ivanvorobei/SPAlert";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		28BA68CA2862904A0064126C /* Get */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 28BA68C92862904A0064126C /* XCRemoteSwiftPackageReference "Get" */;
+			productName = Get;
+		};
+		28BA68CD286290570064126C /* SPAlert */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 28BA68CC286290570064126C /* XCRemoteSwiftPackageReference "SPAlert" */;
+			productName = SPAlert;
+		};
+/* End XCSwiftPackageProductDependency section */
+
+/* Begin XCVersionGroup section */
+		286EBD98268D3A5D0002CBED /* OTTAR.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				286EBD99268D3A5D0002CBED /* OTTAR.xcdatamodel */,
+			);
+			currentVersion = 286EBD99268D3A5D0002CBED /* OTTAR.xcdatamodel */;
+			path = OTTAR.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = 286EBD84268D3A5D0002CBED /* Project object */;
+}

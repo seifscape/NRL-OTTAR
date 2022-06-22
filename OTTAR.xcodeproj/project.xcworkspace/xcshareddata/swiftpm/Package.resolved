@@ -1,0 +1,23 @@
+{
+  "pins" : [
+    {
+      "identity" : "get",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/kean/Get",
+      "state" : {
+        "revision" : "b1137bf8315479cddc79fcb04d9db7bc8117e16f",
+        "version" : "0.8.0"
+      }
+    },
+    {
+      "identity" : "spalert",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ivanvorobei/SPAlert",
+      "state" : {
+        "branch" : "main",
+        "revision" : "979a716b640b9e277b28f15f99ed35733694c844"
+      }
+    }
+  ],
+  "version" : 2
+}
