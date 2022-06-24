@@ -28,7 +28,7 @@ actor OTTARClientDelegate: APIClientDelegate {
   }
 
   func shouldClientRetry(_ client: APIClient, withError error: Error) async throws -> Bool {
-    guard case .unacceptableStatusCode(401) = error as? APIError else {
+      guard case .unacceptableStatusCode(400...499) = error as? APIError else {
       return false
     }
 

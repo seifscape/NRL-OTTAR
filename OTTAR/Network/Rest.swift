@@ -8,6 +8,7 @@
 
 import Foundation
 import Get
+import PulseCore
 
 class OTTARNetworkAPI {
 
@@ -16,7 +17,8 @@ class OTTARNetworkAPI {
 
 
     var client = APIClient(baseURL: URL(string: APIPreferencesLoader.load().baseURL)) { configuration in
-        configuration.delegate = OTTARClientDelegate(apiKey: APIPreferencesLoader.load().apiKey)
+        configuration.delegate = OTTARClientDelegate(apiKey:APIPreferencesLoader.load().apiKey)
+        configuration.sessionDelegate = PulseCore.URLSessionProxyDelegate()
 
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
@@ -31,6 +33,7 @@ class OTTARNetworkAPI {
     func updateClient() {
         client = APIClient(baseURL: URL(string: APIPreferencesLoader.load().baseURL)) { configuration in
             configuration.delegate = OTTARClientDelegate(apiKey: APIPreferencesLoader.load().apiKey)
+            configuration.sessionDelegate = PulseCore.URLSessionProxyDelegate()
         }
     }
 }

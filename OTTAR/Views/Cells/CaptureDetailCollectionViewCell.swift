@@ -13,14 +13,32 @@ class CaptureDetailCollectionViewCell: UICollectionViewCell {
     let card      = UIView(frame: .zero)
     let imageView = UIImageView(frame: .zero)
     let button    = UIButton()
+    var checkmarkView: SSCheckMark!
+    var image:Image?
+
+
+//    override var isSelected: Bool {
+//        didSet {
+//            if isSelected {
+//                self.checkmarkView.checked = isSelected
+//            } else {
+//                // do opposite color
+//                self.checkmarkView.checked = isSelected
+//            }
+//            self.checkmarkView.isHidden = !isSelected
+//         }
+//    }
 
     var isMarked: Bool = false {
         didSet {
             if isMarked {
-                self.button.isHidden = false
-
+                self.checkmarkView.checked = true
+                self.checkmarkView.isHidden = false
+                //self.button.isHidden = false
             } else {
-                self.button.isHidden = true
+                self.checkmarkView.checked = false
+                self.checkmarkView.isHidden = true
+                //self.button.isHidden = true
             }
         }
     }
@@ -29,11 +47,25 @@ class CaptureDetailCollectionViewCell: UICollectionViewCell {
         super.init(frame: frame)
         self.setupUI()
         self.setupConstrainsts()
-        self.button.isHidden = true
+        //self.checkmarkView.checked = self.isMarked
+        self.checkmarkView.isHidden = true
+        //self.button.isHidden = true
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
+    }
+
+
+    func configure(for image:Image) {
+        self.image = image
+
+        let imageData = Data(base64Encoded: image.encoded, options: .init(rawValue: 0))
+
+        if let imgData = imageData {
+            self.imageView.image = UIImage(data: imgData)
+        }
+        self.imageView.contentMode = .scaleToFill
     }
 
     private func setupUI() {
@@ -49,15 +81,20 @@ class CaptureDetailCollectionViewCell: UICollectionViewCell {
         self.imageView.translatesAutoresizingMaskIntoConstraints = false
 
 
-        let largeConfig = UIImage.SymbolConfiguration(pointSize: 48, weight: .bold, scale: .large)
-        let largeBoldDoc = UIImage(systemName: "x.circle.fill", withConfiguration: largeConfig)
-        self.button.setImage(largeBoldDoc, for: .normal)
-        self.button.tintColor = .white
-        self.button.layer.cornerRadius = 20
-        self.button.translatesAutoresizingMaskIntoConstraints = false
-        self.contentView.addSubview(self.button)
-        self.contentView.bringSubviewToFront(self.button)
-        self.button.isHidden = true
+        //        let largeConfig = UIImage.SymbolConfiguration(pointSize: 48, weight: .bold, scale: .large)
+        //        let largeBoldDoc = UIImage(systemName: "x.circle.fill", withConfiguration: largeConfig)
+        //        self.button.setImage(largeBoldDoc, for: .normal)
+        //        self.button.tintColor = .white
+        //        self.button.layer.cornerRadius = 20
+        //        self.button.translatesAutoresizingMaskIntoConstraints = false
+        //        self.contentView.addSubview(self.button)
+        //        self.contentView.bringSubviewToFront(self.button)
+        //        self.button.isHidden = true
+
+        checkmarkView = SSCheckMark(frame: .zero)
+        checkmarkView.translatesAutoresizingMaskIntoConstraints = false
+        checkmarkView.backgroundColor = .clear
+        self.card.addSubview(checkmarkView)
     }
 
     private func setupConstrainsts() {
@@ -72,23 +109,29 @@ class CaptureDetailCollectionViewCell: UICollectionViewCell {
         self.imageView.bottomAnchor.constraint(equalTo: self.card.bottomAnchor).isActive = true
         self.imageView.rightAnchor.constraint(equalTo: self.card.rightAnchor).isActive = true
 
-        self.button.widthAnchor.constraint(equalToConstant: 40).isActive = true
-        self.button.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        self.button.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: -12).isActive = true
-        self.button.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: -10).isActive = true
+        checkmarkView.widthAnchor.constraint(equalToConstant: 35).isActive = true
+        checkmarkView.heightAnchor.constraint(equalToConstant: 35).isActive = true
+        checkmarkView.bottomAnchor.constraint(equalTo: self.card.layoutMarginsGuide.bottomAnchor, constant: -10).isActive = true
+        checkmarkView.trailingAnchor.constraint(equalTo: self.card.trailingAnchor, constant: -20).isActive = true
+
+        //        self.button.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        //        self.button.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        //        self.button.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: -12).isActive = true
+        //        self.button.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: -10).isActive = true
     }
 
     override func prepareForReuse() {
         super.prepareForReuse()
         imageView.image = nil
-        isMarked = false
+        checkmarkView.isHidden = true
+    
 
-//        for subview in subviews {
-//            subview.removeConstraints(subview.constraints)
-//            subview.removeFromSuperview()
-//        }
-//
-//        self.removeFromSuperview() // BURN EVERYTHING
+        //        for subview in subviews {
+        //            subview.removeConstraints(subview.constraints)
+        //            subview.removeFromSuperview()
+        //        }
+        //
+        //        self.removeFromSuperview() // BURN EVERYTHING
     }
 
     func transformToLarge() {

@@ -5,7 +5,9 @@
 
 import Foundation
 
-public struct Image: Codable {
+public struct Image: Codable, Identifiable, Hashable {
+    public let id = UUID()
+
     public var imageID: Int
     public var encoded: String
     public var dateCreated: Date?
@@ -20,6 +22,15 @@ public struct Image: Codable {
         case imageID = "image_id"
         case encoded
         case dateCreated = "date_created"
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        // 2
+        hasher.combine(id)
+    }
+
+    public static func == (lhs: Image, rhs: Image) -> Bool {
+      lhs.id == rhs.id
     }
 }
 

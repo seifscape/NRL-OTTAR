@@ -43,7 +43,9 @@ class CaptureCameraViewController: UIViewController {
         fatalError("init(coder:) is not supported")
     }
 
-
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .portrait
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()

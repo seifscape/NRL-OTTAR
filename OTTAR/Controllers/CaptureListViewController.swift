@@ -16,7 +16,6 @@ class CaptureListViewController: UIViewController {
     var safeArea: UILayoutGuide!
     var capturesList:Captures?
     var capturePreviewController = CapturePreviewViewController(images: nil, capture: nil)
-    var invalidURL = false
     var preferences = APIPreferencesLoader.load()
 
     override func viewDidLoad() {
@@ -26,12 +25,7 @@ class CaptureListViewController: UIViewController {
         // https://www.hackingwithswift.com/example-code/uikit/how-to-stop-your-view-going-under-the-navigation-bar-using-edgesforextendedlayout
         // https://stackoverflow.com/questions/24402000/uinavigationbar-text-color-in-swift
         // https://stackoverflow.com/questions/39438606/change-navigation-bar-title-font-swift
-//        self.navigationController?.navigationBar.isTranslucent = true
-//        extendedLayoutIncludesOpaqueBars = true
-//        self.navigationController?.navigationBar.backgroundColor  = .white
-//        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor.black,
-//                                                                        NSAttributedString.Key.font: UIFont(name: "HelveticaNeue", size: 20)!
-//]
+
         self.navigationController?.navigationBar.backgroundColor  = .white
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width:self.view.frame.width - 30, height: 105)
@@ -62,8 +56,8 @@ class CaptureListViewController: UIViewController {
     }
 
     override func viewWillLayoutSubviews() {
-       super.viewWillLayoutSubviews()
-       self.captureCollectionView.collectionViewLayout.invalidateLayout()
+        super.viewWillLayoutSubviews()
+        self.captureCollectionView.collectionViewLayout.invalidateLayout()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -97,23 +91,24 @@ class CaptureListViewController: UIViewController {
 
         let continueAction = UIAlertAction(title: "Continue",
                                            style: .default) { [weak alertController] _ in
-                                            guard let textFields = alertController?.textFields else { return }
-                                            if let ipText = textFields[0].text {
-                                                self.preferences.baseURL = (String(format: "http://%@", ipText))
-                                                APIPreferencesLoader.write(preferences: self.preferences)
-                                                print("IP: \(APIPreferencesLoader.load().baseURL)")
-                                                OTTARNetworkAPI.sharedInstance.updateClient()
-                                                Task {
-                                                    await self.fetchCaptures()
-                                                }
-                                            }
+            guard let textFields = alertController?.textFields else { return }
+            if let ipText = textFields[0].text {
+                self.preferences.baseURL = (String(format: "http://%@", ipText))
+                APIPreferencesLoader.write(preferences: self.preferences)
+                print("IP: \(APIPreferencesLoader.load().baseURL)")
+                OTTARNetworkAPI.sharedInstance.updateClient()
+                Task {
+                    await self.fetchCaptures()
+                }
+            }
         }
 
+        let cancelAction = UIAlertAction(title: "Cancel",
+                                         style: .cancel)
+
+        alertController.addAction(cancelAction)
         alertController.addAction(continueAction)
-
-        self.present(alertController,
-                     animated: true)
-
+        self.present(alertController, animated: true)
     }
 
     func fetchCaptures() async {
@@ -150,31 +145,8 @@ class CaptureListViewController: UIViewController {
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
 
-//        if #available(iOS 15, *) {
-//                    let textAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
-//                    let appearance = UINavigationBarAppearance()
-//                    appearance.configureWithOpaqueBackground()
-//                    appearance.titleTextAttributes = textAttributes
-//                    appearance.backgroundColor = UIColor(red:0.09, green:0.16, blue:0.34, alpha:1.00)
-//                    appearance.shadowColor = .clear  //removing navigationbar 1 px bottom border.
-//                    UINavigationBar.appearance().standardAppearance = appearance
-//                    UINavigationBar.appearance().scrollEdgeAppearance = appearance
-//                }
     }
 
-
-//    func getCaptures() async {
-//        do {
-//            capturesList = try await
-//            OTTARNetworkAPI.sharedInstance.client.send(Paths.captures.get).value
-//            DispatchQueue.main.async {
-//                self.captureCollectionView.reloadData()
-//            }
-//        }
-//        catch {
-//            print("Fetching images failed with error \(error)")
-//        }
-//    }
 
     @objc func myRightSideBarButtonItemTapped(_ sender:UIBarButtonItem!)
     {
@@ -250,9 +222,8 @@ extension CaptureListViewController: UICollectionViewDelegate, UICollectionViewD
             }
         }
 
-
-
         cell.locationLabel.text = capture?.coordinates
+        cell.layoutSubviews()
         return cell
     }
 
@@ -277,6 +248,7 @@ extension CaptureListViewController: UICollectionViewDelegate, UICollectionViewD
                 self.navigationController?.pushViewController(captureDetail, animated: true)
             }
         }
+        collectionView.deselectItem(at: indexPath, animated: true)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
@@ -287,8 +259,8 @@ extension CaptureListViewController: UICollectionViewDelegate, UICollectionViewD
 // https://stackoverflow.com/a/63818404
 extension String {
     func getAttributedString<T>(_ key: NSAttributedString.Key, value: T) -> NSAttributedString {
-       let applyAttribute = [ key: T.self ]
-       let attrString = NSAttributedString(string: self, attributes: applyAttribute)
-       return attrString
+        let applyAttribute = [ key: T.self ]
+        let attrString = NSAttributedString(string: self, attributes: applyAttribute)
+        return attrString
     }
 }
