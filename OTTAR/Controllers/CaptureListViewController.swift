@@ -8,24 +8,76 @@
 
 import UIKit
 import Get
+import SPAlert
 
 class CaptureListViewController: UIViewController {
 
+    enum Section: CaseIterable {
+        case main
+    }
+
+    typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Capture>
+    lazy var dataSource: UICollectionViewDiffableDataSource<Section, Capture> = {
+        let dataSource = UICollectionViewDiffableDataSource <Section, Capture>(collectionView: captureCollectionView) {
+            [weak self] (collectionView: UICollectionView, indexPath: IndexPath, capture: Capture) -> UICollectionViewCell? in
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? CaptureListCollectionViewCell
+
+            let capture = self?.capturesList?.captures[indexPath.row]
+            // Configure the cell
+            if let id = capture?.captureID {
+                cell?.titleLabel.text = "Capture: \(id)"
+            }
+
+            let myFormatter = DateFormatter()
+            myFormatter.dateStyle = .medium
+            myFormatter.timeZone = TimeZone(identifier: "UTC")
+
+            let formatter = DateFormatter()
+            formatter.dateFormat = "HH:mm:ss"
+            formatter.timeZone = TimeZone(identifier: "UTC")
+
+            if let dateUpdated = capture?.dateUpdated {
+                cell?.timeLabel.text = String(format: "%@ UTC", formatter.string(from: dateUpdated))
+                cell?.dateLabel.text = myFormatter.string(from: dateUpdated)
+                cell?.clockImageView.tintColor = .systemRed
+            } else {
+                if let dateCreated = capture?.dateCreated {
+                    cell?.timeLabel.text = String(format: "%@ UTC", formatter.string(from: dateCreated))
+                    cell?.dateLabel.text = myFormatter.string(from: dateCreated)
+                }
+            }
+
+            cell?.locationLabel.text = capture?.coordinates
+            cell?.layoutSubviews()
+            return cell
+        }
+        return dataSource
+    }()
 
     var captureCollectionView = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: UICollectionViewFlowLayout())
     var safeArea: UILayoutGuide!
-    var capturesList:Captures?
     var capturePreviewController = CapturePreviewViewController(images: nil, capture: nil)
     var preferences = APIPreferencesLoader.load()
+    var topLeftBarButton = UIBarButtonItem()
+    var captureToDelete: [Capture] = []
+    private var capturesList: Captures? {
+        didSet {
+            DispatchQueue.main.async {
+                var snapshot = Snapshot()
+                snapshot.appendSections([.main])
+                if let captures = self.capturesList?.captures {
+                    snapshot.appendItems(captures, toSection: .main)
+                    self.dataSource.apply(snapshot, animatingDifferences: true)
+                }
+            }
+        }
+    }
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "Captures"
         edgesForExtendedLayout = []
-        // https://www.hackingwithswift.com/example-code/uikit/how-to-stop-your-view-going-under-the-navigation-bar-using-edgesforextendedlayout
-        // https://stackoverflow.com/questions/24402000/uinavigationbar-text-color-in-swift
-        // https://stackoverflow.com/questions/39438606/change-navigation-bar-title-font-swift
-
         self.navigationController?.navigationBar.backgroundColor  = .white
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width:self.view.frame.width - 30, height: 105)
@@ -33,7 +85,7 @@ class CaptureListViewController: UIViewController {
         captureCollectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
         captureCollectionView.register(CaptureListCollectionViewCell.self, forCellWithReuseIdentifier: "cell")
         captureCollectionView.delegate = self
-        captureCollectionView.dataSource = self
+        // captureCollectionView.dataSource = self
         captureCollectionView.clipsToBounds = true
         self.view.backgroundColor = UIColor(red:0.09, green:0.16, blue:0.34, alpha:1.00)
         self.captureCollectionView.backgroundColor = UIColor(red:0.09, green:0.16, blue:0.34, alpha:1.00)
@@ -116,7 +168,7 @@ class CaptureListViewController: UIViewController {
             do {
                 self.capturesList =  try await CaptureServices.getCaptures()
                 DispatchQueue.main.async {
-                    self.captureCollectionView.reloadData()
+                    //                    self.captureCollectionView.reloadData()
                     self.captureCollectionView.collectionViewLayout.invalidateLayout()
                 }
             } catch {
@@ -145,8 +197,24 @@ class CaptureListViewController: UIViewController {
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
 
+        topLeftBarButton = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(editCaptures(_:)))
+        topLeftBarButton.tintColor = .black
+        self.navigationItem.leftBarButtonItem = topLeftBarButton
+        self.navigationController?.navigationBar.tintColor = .black
+
     }
 
+    @objc
+    private func editCaptures(_ sender: UIButton) {
+        if self.isEditing {
+            self.isEditing = false
+            topLeftBarButton.title = "Edit"
+        }
+        else {
+            self.isEditing = true
+            topLeftBarButton.title = "Done"
+        }
+    }
 
     @objc func myRightSideBarButtonItemTapped(_ sender:UIBarButtonItem!)
     {
@@ -169,7 +237,9 @@ class CaptureListViewController: UIViewController {
                     Task {
                         self.capturesList =  try await CaptureServices.getCaptures()
                         DispatchQueue.main.async {
-                            self.captureCollectionView.reloadData()
+                            var snapshot = self.dataSource.snapshot()
+                            snapshot.reloadSections([Section.main])
+                            self.dataSource.apply(snapshot)
                         }
                     }
                 }
@@ -189,65 +259,50 @@ class CaptureListViewController: UIViewController {
     }
 }
 
-extension CaptureListViewController: UICollectionViewDelegate, UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return capturesList?.captures.count ?? 0
-    }
-
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! CaptureListCollectionViewCell
-
-        let capture = self.capturesList?.captures[indexPath.row]
-        // Configure the cell
-        if let id = capture?.captureID {
-            cell.titleLabel.text = "Capture: \(id)"
-        }
-
-        let myFormatter = DateFormatter()
-        myFormatter.dateStyle = .medium
-        myFormatter.timeZone = TimeZone(identifier: "UTC")
-
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm:ss"
-        formatter.timeZone = TimeZone(identifier: "UTC")
-
-        if let dateUpdated = capture?.dateUpdated {
-            cell.timeLabel.text = String(format: "%@ UTC", formatter.string(from: dateUpdated))
-            cell.dateLabel.text = myFormatter.string(from: dateUpdated)
-            cell.clockImageView.tintColor = .systemRed
-        } else {
-            if let dateCreated = capture?.dateCreated {
-                cell.timeLabel.text = String(format: "%@ UTC", formatter.string(from: dateCreated))
-                cell.dateLabel.text = myFormatter.string(from: dateCreated)
-            }
-        }
-
-        cell.locationLabel.text = capture?.coordinates
-        cell.layoutSubviews()
-        return cell
-    }
+extension CaptureListViewController: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if self.isEditing {
+            if let capture = dataSource.itemIdentifier(for: indexPath) {
+                let alertController = UIAlertController(title: "Delete Capture: \(capture.captureID)",
+                                                        message: nil,
+                                                        preferredStyle: .alert)
 
-        if let capture = capturesList?.captures[indexPath.row] {
-            DispatchQueue.main.async {
-                let captureDetail = CaptureDetailViewController(capture: capture)
-                captureDetail.deleteResponseCapture = { (value, boolean) in
-                    DispatchQueue.main.async {
-                        self.captureCollectionView.reloadData()
-                        self.captureCollectionView.collectionViewLayout.invalidateLayout()
-                    }
-
-                    self.capturesList?.captures.remove(at: indexPath.row)
-                    self.captureCollectionView.performBatchUpdates({
-                        self.captureCollectionView.deleteItems(at: [indexPath])
-                    })
+                let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+                let deleteAction = UIAlertAction(title: "Delete",
+                                                 style: .destructive) { _ in
+                    self.captureToDelete.append(capture)
+                    self.deleteCapture(capture.captureID)
                 }
-                captureDetail.navigationItem.title = "Capture Detail: \(capture.captureID)"
 
-                self.navigationController?.pushViewController(captureDetail, animated: true)
+                alertController.addAction(cancelAction)
+                alertController.addAction(deleteAction)
+                self.present(alertController, animated: true)
+                print("Capture ID: \(capture.captureID)")
             }
         }
+        else {
+            if let capture = capturesList?.captures[indexPath.row] {
+                DispatchQueue.main.async {
+                    let captureDetail = CaptureDetailViewController(capture: capture)
+                    captureDetail.deleteResponseCapture = { (value, boolean) in
+                        DispatchQueue.main.async {
+                            self.captureCollectionView.reloadData()
+                            self.captureCollectionView.collectionViewLayout.invalidateLayout()
+                        }
+
+                        self.capturesList?.captures.remove(at: indexPath.row)
+                        self.captureCollectionView.performBatchUpdates({
+                            self.captureCollectionView.deleteItems(at: [indexPath])
+                        })
+                    }
+                    captureDetail.navigationItem.title = "Capture Detail: \(capture.captureID)"
+
+                    self.navigationController?.pushViewController(captureDetail, animated: true)
+                }
+            }
+        }
+
         collectionView.deselectItem(at: indexPath, animated: true)
     }
 
@@ -262,5 +317,28 @@ extension String {
         let applyAttribute = [ key: T.self ]
         let attrString = NSAttributedString(string: self, attributes: applyAttribute)
         return attrString
+    }
+}
+
+
+extension CaptureListViewController {
+    @objc
+    func deleteCapture(_ captureId: Int) {
+        Task {
+            try await CaptureServices.deleteCapture(captureId: captureId)
+            let alertView = SPAlertView(title: "Deleted", preset: .done)
+            alertView.duration = 0.75
+            alertView.present()
+            alertView.dismiss()
+
+            var snapshot = dataSource.snapshot()
+            snapshot.deleteItems(self.captureToDelete)
+            snapshot.reloadSections([Section.main])
+            self.dataSource.apply(snapshot, animatingDifferences: true) {
+                for i in self.captureToDelete {
+                    self.capturesList?.captures.removeAll(where: {$0.id == i.id})
+                }
+            }
+        }
     }
 }

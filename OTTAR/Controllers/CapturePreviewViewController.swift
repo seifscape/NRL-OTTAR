@@ -19,7 +19,8 @@ protocol CapturePreviewControllerDelegate: AnyObject {
 
 class CapturePreviewViewController: UIViewController {
 
-    var responseCapture : ((Capture, Bool?) -> Void)?
+    var responseCapture: ((Capture, Bool?) -> Void)?
+    var addImagesToCapture: (([CreateImage], Bool?) -> Void)?
     var bottomViewContainer = UIView()
     var previewContainer = UIView()
     var safeArea: UILayoutGuide!
@@ -137,7 +138,7 @@ class CapturePreviewViewController: UIViewController {
         cancelButton.translatesAutoresizingMaskIntoConstraints = false
 
         let configuration = UIImage.SymbolConfiguration(pointSize: 30, weight: .regular, scale: .medium)
-        let addSymbol = UIImage(systemName: "camera.badge.ellipsis", withConfiguration: configuration)
+        let addSymbol = UIImage(systemName: "video.badge.plus", withConfiguration: configuration)
         let checkmarkSymbol = UIImage(systemName: "checkmark.circle", withConfiguration: configuration)
         let trashSymbol = UIImage(systemName: "trash.circle", withConfiguration: configuration)
 
@@ -232,7 +233,10 @@ class CapturePreviewViewController: UIViewController {
                         if let images = images {
                             let value = try await CaptureServices.addImages(capture: capture, images: images)
                             if value != nil {
-                                self.responseCapture?(capture, true)
+                                if let imgs = value?.images {
+                                    self.addImagesToCapture?(imgs, true)
+                                }
+//                                self.responseCapture?(capture, true)
                                 sender.isEnabled = true
                                 alertView.dismiss()
                                 self.dismissMe()

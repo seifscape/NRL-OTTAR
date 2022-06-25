@@ -46,7 +46,6 @@ class CaptureDetailViewController: UIViewController {
 //    var listOfIndexPaths:[IndexPath] = []
     var listOfImagesToDelete = [Image]()
     var deleteResponseCapture : ((Capture?, Bool?) -> Void)?
-
     private var capture: Capture {
         didSet {
             DispatchQueue.main.async {
@@ -254,7 +253,7 @@ class CaptureDetailViewController: UIViewController {
         self.deleteFloatingButton.layer.masksToBounds = true
         self.deleteFloatingButton.isHidden = true
         self.deleteFloatingButton.addBlurEffect(style: .dark, cornerRadius: 25, padding: 0)
-        self.deleteFloatingButton.addTarget(self, action: #selector(deleteCapture(_:)), for: .touchUpInside)
+        self.deleteFloatingButton.addTarget(self, action: #selector(deleteCaptureImages(_:)), for: .touchUpInside)
 
 
     }
@@ -318,17 +317,6 @@ class CaptureDetailViewController: UIViewController {
             var snapshot = dataSource.snapshot()
             snapshot.reloadSections([Section.main])
             dataSource.apply(snapshot)
-
-            if listOfImagesToDelete.count > 0 {
-                var listOfIds:[Int] = []
-                for i in listOfImagesToDelete {
-                    listOfIds.append(i.imageID)
-                }
-                Task {  try await
-                    CaptureServices.deleteImages(capture: self.capture,listOfImages:listOfIds)
-                    self.deletePhotos()
-                    }
-            }
         }
         else {
             self.isEditing = true
@@ -347,33 +335,28 @@ class CaptureDetailViewController: UIViewController {
 
         var snapshot = dataSource.snapshot()
         snapshot.deleteItems(self.listOfImagesToDelete)
-        DispatchQueue.main.async {
-            self.dataSource.apply(snapshot, animatingDifferences: true) {
-                guard self.capture.images != nil else { return }
-                for i in self.listOfImagesToDelete {
-                    for n in self.capture.images! {
-                        if i.id == n.id {
-                            self.capture.images?.remove(element: n)
-                        }
-                    }
-                }
-                self.listOfImagesToDelete.removeAll()
+        self.dataSource.apply(snapshot, animatingDifferences: true) {
+            for i in self.listOfImagesToDelete {
+                self.capture.images?.removeAll(where: {$0.id == i.id})
             }
         }
-        print(self.capture.images?.count)
     }
 
     @objc
-    func deleteCapture(_ sender:UIButton) {
+    func deleteCaptureImages(_ sender:UIButton) {
         let alertView = SPAlertView(title: "Deleted", preset: .done)
         alertView.duration = 1.5
         alertView.present()
 
-        Task {
-            try await CaptureServices.deleteCapture(captureId: self.capture.captureID)
-            self.deleteResponseCapture?(capture, true)
-            alertView.dismiss()
-            self.navigationController?.popViewController(animated: true)
+        if listOfImagesToDelete.count > 0 {
+            var listOfIds:[Int] = []
+            for i in listOfImagesToDelete {
+                listOfIds.append(i.imageID)
+            }
+            Task {
+                try await CaptureServices.deleteImages(capture: self.capture,listOfImages:listOfIds)
+                self.deletePhotos()
+                }
         }
     }
 
@@ -386,7 +369,7 @@ class CaptureDetailViewController: UIViewController {
     @objc
     func addMorePhotos(_ sender:UIButton) {
 
-        if self.textView.text != "Placeholder" {
+        if self.textView.text != "Enter an annotation here" {
             capture.annotation = textView.text
         }
 
@@ -395,16 +378,29 @@ class CaptureDetailViewController: UIViewController {
         // use back the old iOS 12 modal full screen style
         cameraVC.modalPresentationStyle = .fullScreen
 
-        cameraVC.capturePreview.responseCapture = { [unowned self] (value, boolean) in
+        cameraVC.capturePreview.addImagesToCapture = { [unowned self] (value, boolean) in
             DispatchQueue.main.async {
                 if boolean != nil {
+                    var snapshot = self.dataSource.snapshot()
+                    var imageArray:[Image] = []
+                    for i in value {
+                        let image = Image(imageID: -1, encoded: i.encoded, dateCreated: i.dateCreated)
+                        self.capture.images?.append(image)
+                        imageArray.append(image)
+                    }
+                    snapshot.appendItems(imageArray)
+                    snapshot.reloadSections([.main])
+                    self.dataSource.apply(snapshot, animatingDifferences: true,completion: {
+                        return
+                    })
+                    imageArray.removeAll()
                     Task {
-                        var snapshot = self.dataSource.snapshot()
-                        snapshot.deleteItems(self.capture.images!)
-                        self.capture = try await CaptureServices.getCapture(capture: value)
-                        snapshot.appendItems(self.capture.images!)
-                        snapshot.reloadSections([.main])
-                        await self.dataSource.apply(snapshot, animatingDifferences: false)
+//                        var snapshot = self.dataSource.snapshot()
+//                        snapshot.deleteItems(self.capture.images!)
+//                        self.capture = try await CaptureServices.getCapture(capture: value)
+//                        snapshot.appendItems(self.capture.images!)
+//                        snapshot.reloadSections([.main])
+//                        await self.dataSource.apply(snapshot, animatingDifferences: false)
 
 //                        self.applySnapshot(animatingDifferences: true)
 //                        var snapshot = self.dataSource.snapshot()

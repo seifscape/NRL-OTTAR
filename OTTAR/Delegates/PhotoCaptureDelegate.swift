@@ -159,7 +159,7 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
             return
         }
 
-        guard let photoData = photoData else {
+        guard let _ = photoData else {
             print("No photo data resource")
             didFinish()
             return
