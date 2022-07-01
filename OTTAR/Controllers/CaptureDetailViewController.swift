@@ -31,6 +31,7 @@ class CaptureDetailViewController: UIViewController {
         return dataSource
     }()
 
+    var listOfIds:[Int] = []
     var topHeaderView  = UIView()
     var textViewContainer = UIView()
     var textView = UITextView()
@@ -42,8 +43,6 @@ class CaptureDetailViewController: UIViewController {
     var deleteFloatingButton = UIButton()
     private let spacing:CGFloat = 16.0
     private let topHeaderHeight:CGFloat = 150.0
-    var listOfImagesToRemove:[Int] = []
-//    var listOfIndexPaths:[IndexPath] = []
     var listOfImagesToDelete = [Image]()
     var deleteResponseCapture : ((Capture?, Bool?) -> Void)?
     private var capture: Capture {
@@ -316,9 +315,18 @@ class CaptureDetailViewController: UIViewController {
             self.collectionView.allowsMultipleSelection = false
             var snapshot = dataSource.snapshot()
             snapshot.reloadSections([Section.main])
-            dataSource.apply(snapshot)
-        }
-        else {
+            dataSource.apply(snapshot, animatingDifferences: false)
+            Task {
+                if self.listOfIds.count > 0 {
+                    print(self.listOfIds)
+                    try await CaptureServices.deleteImages(capture: self.capture,listOfImages:listOfIds)
+                    let alertView = SPAlertView(title: "Deleted", preset: .done)
+                    alertView.duration = 0.88
+                    alertView.present()
+                    self.listOfIds.removeAll()
+                }
+            }
+        } else {
             self.isEditing = true
             topHeaderView.isUserInteractionEnabled = true
             textView.isEditable = true
@@ -331,12 +339,13 @@ class CaptureDetailViewController: UIViewController {
         }
     }
 
+    // Send to server if and only when hitDone/ isEdit == false
     private func deletePhotos() {
-
         var snapshot = dataSource.snapshot()
         snapshot.deleteItems(self.listOfImagesToDelete)
         self.dataSource.apply(snapshot, animatingDifferences: true) {
             for i in self.listOfImagesToDelete {
+//                self.capture.deleteImage(image: i)
                 self.capture.images?.removeAll(where: {$0.id == i.id})
             }
         }
@@ -344,19 +353,11 @@ class CaptureDetailViewController: UIViewController {
 
     @objc
     func deleteCaptureImages(_ sender:UIButton) {
-        let alertView = SPAlertView(title: "Deleted", preset: .done)
-        alertView.duration = 1.5
-        alertView.present()
-
         if listOfImagesToDelete.count > 0 {
-            var listOfIds:[Int] = []
             for i in listOfImagesToDelete {
                 listOfIds.append(i.imageID)
             }
-            Task {
-                try await CaptureServices.deleteImages(capture: self.capture,listOfImages:listOfIds)
-                self.deletePhotos()
-                }
+            self.deletePhotos()
         }
     }
 
@@ -381,42 +382,24 @@ class CaptureDetailViewController: UIViewController {
         cameraVC.capturePreview.addImagesToCapture = { [unowned self] (value, boolean) in
             DispatchQueue.main.async {
                 if boolean != nil {
-                    var snapshot = self.dataSource.snapshot()
-                    var imageArray:[Image] = []
-                    for i in value {
-                        let image = Image(imageID: -1, encoded: i.encoded, dateCreated: i.dateCreated)
+
+                    for image in value.images {
                         self.capture.images?.append(image)
-                        imageArray.append(image)
                     }
-                    snapshot.appendItems(imageArray)
+                    var snapshot = self.dataSource.snapshot()
+                    snapshot.appendItems(value.images)
+//                    var imageArray:[Image] = []
+//                    for i in value {
+//                        let image = Image(imageID: -1, encoded: i.encoded, dateCreated: i.dateCreated)
+//                        self.capture.images?.append(image)
+//                        imageArray.append(image)
+//                    }
+//                    snapshot.appendItems(imageArray)
                     snapshot.reloadSections([.main])
                     self.dataSource.apply(snapshot, animatingDifferences: true,completion: {
+//                        imageArray.removeAll()
                         return
                     })
-                    imageArray.removeAll()
-                    Task {
-//                        var snapshot = self.dataSource.snapshot()
-//                        snapshot.deleteItems(self.capture.images!)
-//                        self.capture = try await CaptureServices.getCapture(capture: value)
-//                        snapshot.appendItems(self.capture.images!)
-//                        snapshot.reloadSections([.main])
-//                        await self.dataSource.apply(snapshot, animatingDifferences: false)
-
-//                        self.applySnapshot(animatingDifferences: true)
-//                        var snapshot = self.dataSource.snapshot()
-//                        snapshot.deleteItems(self.capture.images!)
-//                        snapshot.appendItems(value.images!)
-//                        await self.dataSource.apply(snapshot, animatingDifferences: true)
-//                        if let currentLength = self.capture.images?.count {
-//                            if let newImages = value.images {
-//                                let newArray = newImages.dropFirst(currentLength)
-//                                let finalArray = Array(newArray)
-//                                snapshot.appendItems(finalArray)
-//                                await self.dataSource.apply(snapshot, animatingDifferences: true)
-//                                await self.updateListController()
-//                            }
-//                        }
-                    }
                 }
             }
         }
@@ -429,26 +412,8 @@ class CaptureDetailViewController: UIViewController {
 
 extension CaptureDetailViewController: UICollectionViewDelegate {
 
-//    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-//        return self.capture.images?.count ?? 0
-//    }
-//
-//    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-//        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "captureDetailCell", for: indexPath) as? CaptureDetailCollectionViewCell
-//        if let image = capture.images?[indexPath.row] {
-//            cell?.configure(for: image)
-//        }
-//
-//        if self.isEditing {
-//            cell?.checkmarkView.isHidden = false
-//        }
-//
-//        return cell ?? UICollectionViewCell()
-//    }
-
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let cell: CaptureDetailCollectionViewCell = collectionView.cellForItem(at: indexPath) as? CaptureDetailCollectionViewCell else { return }
-        print("Hit")
         if self.isEditing {
             if !cell.checkmarkView.checked {
                 DispatchQueue.main.async {
@@ -470,16 +435,14 @@ extension CaptureDetailViewController: UICollectionViewDelegate {
                         if i.id == image.id {
                             cell.checkmarkView.checked = false
                             self.listOfImagesToDelete.remove(element: i)
-                            print("Removed: \(indexPath.row)")
                         }
                     }
-                    print("Selected image ID: \(image.imageID)")
                  }
             }
          }
         else {
             if let image = dataSource.itemIdentifier(for: indexPath) {
-                let imageViewController = ImageViewController(image: image)
+                let imageViewController = CaptureImageViewController(image: image)
                 self.navigationController?.present(imageViewController, animated: true)
             }
         }
@@ -553,12 +516,12 @@ extension CaptureDetailViewController: UITextViewDelegate {
             textView.textColor = UIColor.lightGray
             textView.becomeFirstResponder()
         } else if textView.text.trimmingCharacters(in: .whitespacesAndNewlines) != capture.annotation {
-            let alertView = SPAlertView(title: "Updated", preset: .done)
-            alertView.present()
             if !self.isEditing {
                 Task {
                     let captureTask = try await CaptureServices.updateCapture(capture: self.capture, updatedText: textView.text)
                     if let task = captureTask {
+                        let alertView = SPAlertView(title: "Updated", preset: .done)
+                        alertView.present()
                         alertView.dismiss()
                         await updateListController()
                         capture.annotation = task.annotation

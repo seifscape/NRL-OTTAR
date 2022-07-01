@@ -92,16 +92,18 @@ class CaptureListViewController: UIViewController {
         self.view.addSubview(captureCollectionView)
         setupUI()
         setupCollectionView()
-        Task {
-            await self.fetchCaptures()
-        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.viewDidLayoutSubviews()
         self.captureCollectionView.collectionViewLayout.invalidateLayout()
+        Task {
+            await self.fetchCaptures()
+        }
+        #if DEBUG
         print("Server: \(preferences.baseURL)")
+        #endif
         if preferences.baseURL.isEmpty {
             self.presentInput()
         }
@@ -147,7 +149,10 @@ class CaptureListViewController: UIViewController {
             if let ipText = textFields[0].text {
                 self.preferences.baseURL = (String(format: "http://%@", ipText))
                 APIPreferencesLoader.write(preferences: self.preferences)
+                #if DEBUG
                 print("IP: \(APIPreferencesLoader.load().baseURL)")
+                #endif
+                SettingsBundleHelper.setBaseURL()
                 OTTARNetworkAPI.sharedInstance.updateClient()
                 Task {
                     await self.fetchCaptures()
@@ -168,7 +173,6 @@ class CaptureListViewController: UIViewController {
             do {
                 self.capturesList =  try await CaptureServices.getCaptures()
                 DispatchQueue.main.async {
-                    //                    self.captureCollectionView.reloadData()
                     self.captureCollectionView.collectionViewLayout.invalidateLayout()
                 }
             } catch {
@@ -216,6 +220,14 @@ class CaptureListViewController: UIViewController {
         }
     }
 
+    func reloadCollectionView() {
+        DispatchQueue.main.async {
+            var snapshot = self.dataSource.snapshot()
+            snapshot.reloadSections([Section.main])
+            self.dataSource.apply(snapshot)
+        }
+    }
+
     @objc func myRightSideBarButtonItemTapped(_ sender:UIBarButtonItem!)
     {
         let cameraVC = CaptureCameraViewController.init()
@@ -232,16 +244,12 @@ class CaptureListViewController: UIViewController {
             DispatchQueue.main.async {
                 let detailController = CaptureDetailViewController(capture: value)
                 detailController.title = "Capture Detail: \(value.captureID)"
-                self.navigationController?.pushViewController(detailController, animated: true)
                 DispatchQueue.main.async {
-                    Task {
-                        self.capturesList =  try await CaptureServices.getCaptures()
-                        DispatchQueue.main.async {
-                            var snapshot = self.dataSource.snapshot()
-                            snapshot.reloadSections([Section.main])
-                            self.dataSource.apply(snapshot)
-                        }
-                    }
+                    self.navigationController?.pushViewController(detailController, animated: true)
+                }
+                Task {
+                    self.capturesList =  try await CaptureServices.getCaptures()
+                    self.reloadCollectionView()
                 }
             }
         }
@@ -336,7 +344,7 @@ extension CaptureListViewController {
             snapshot.reloadSections([Section.main])
             self.dataSource.apply(snapshot, animatingDifferences: true) {
                 for i in self.captureToDelete {
-                    self.capturesList?.captures.removeAll(where: {$0.id == i.id})
+                    self.capturesList?.captures.removeAll(where: {$0.captureID == i.captureID})
                 }
             }
         }

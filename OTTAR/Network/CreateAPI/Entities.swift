@@ -5,73 +5,83 @@
 
 import Foundation
 
-public class Image: Codable, Identifiable, Hashable {
-    public let id = UUID()
+public struct DeleteImages: Codable {
+    public var imageIDs: [Int]
 
-    public var imageID: Int
-    public var encoded: String
-    public var dateCreated: Date?
-
-    public init(imageID: Int, encoded: String, dateCreated: Date? = nil) {
-        self.imageID = imageID
-        self.encoded = encoded
-        self.dateCreated = dateCreated
+    public init(imageIDs: [Int]) {
+        self.imageIDs = imageIDs
     }
 
     private enum CodingKeys: String, CodingKey {
-        case imageID = "image_id"
-        case encoded
+        case imageIDs = "image_ids"
+    }
+}
+
+public struct Capture: Codable, Identifiable, Hashable {
+    public let id = UUID()
+    public var coordinates: String?
+    public var dateUpdated: Date?
+    public var captureID: Int
+    public var images: [Image]?
+    public var dateCreated: Date?
+    public var annotation: String
+
+    public init(coordinates: String? = nil, dateUpdated: Date? = nil, captureID: Int, images: [Image]? = nil, dateCreated: Date? = nil, annotation: String) {
+        self.coordinates = coordinates
+        self.dateUpdated = dateUpdated
+        self.captureID = captureID
+        self.images = images
+        self.dateCreated = dateCreated
+        self.annotation = annotation
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case coordinates
+        case dateUpdated = "date_updated"
+        case captureID = "capture_id"
+        case images
         case dateCreated = "date_created"
+        case annotation
     }
 
     public func hash(into hasher: inout Hasher) {
         // 2
-        hasher.combine(id)
+        hasher.combine(captureID)
     }
 
-    public static func == (lhs: Image, rhs: Image) -> Bool {
-      lhs.id == rhs.id
+    public static func == (lhs: Capture, rhs: Capture) -> Bool {
+        lhs.captureID == rhs.captureID
+    }
+
+
+    public mutating func deleteImage(image: Image){
+        self.images?.removeAll(where: {$0.imageID == image.imageID})
     }
 }
 
-public struct CreateImages: Codable {
-    public var images: [CreateImage]?
+public struct Images: Codable {
+    public var images: [Image]
 
-    public init(images: [CreateImage]? = nil) {
+    public init(images: [Image]) {
         self.images = images
     }
 }
 
-public struct CreateImage: Codable {
-    public var dateCreated: Date?
-    public var encoded: String
+public struct Captures: Codable {
+    public var captures: [Capture]
 
-    public init(dateCreated: Date? = nil, encoded: String) {
-        self.dateCreated = dateCreated
-        self.encoded = encoded
-    }
-
-    private enum CodingKeys: String, CodingKey {
-        case dateCreated = "date_created"
-        case encoded
-    }
-}
-
-public struct HTTPValidationError: Codable {
-    public var detail: [ValidationError]?
-
-    public init(detail: [ValidationError]? = nil) {
-        self.detail = detail
+    public init(captures: [Capture]) {
+        self.captures = captures
     }
 }
 
 public struct ValidationError: Codable {
-    /// Error Type
-    public var type: String
     /// Location
     public var loc: [LocItem]
     /// Message
     public var msg: String
+    /// Error Type
+    public var type: String
 
     public struct LocItem: Codable {
         public var string: String?
@@ -95,97 +105,100 @@ public struct ValidationError: Codable {
         }
     }
 
-    public init(type: String, loc: [LocItem], msg: String) {
-        self.type = type
+    public init(loc: [LocItem], msg: String, type: String) {
         self.loc = loc
         self.msg = msg
+        self.type = type
     }
 }
 
-public struct CreateAndUpdateCapture: Codable {
-    public var dateUpdated: Date?
-    public var images: [CreateImage]?
-    public var coordinates: String?
+public struct CreateImage: Codable {
+    public var encoded: String
+    public var captureID: Int?
     public var dateCreated: Date?
-    public var annotation: String
 
-    public init(dateUpdated: Date? = nil, images: [CreateImage]? = nil, coordinates: String? = nil, dateCreated: Date? = nil, annotation: String) {
-        self.dateUpdated = dateUpdated
-        self.images = images
-        self.coordinates = coordinates
-        self.dateCreated = dateCreated
-        self.annotation = annotation
-    }
-
-    private enum CodingKeys: String, CodingKey {
-        case dateUpdated = "date_updated"
-        case images
-        case coordinates
-        case dateCreated = "date_created"
-        case annotation
-    }
-}
-
-public struct DeleteImages: Codable {
-    public var imageIDs: [Int]
-
-    public init(imageIDs: [Int]) {
-        self.imageIDs = imageIDs
-    }
-
-    private enum CodingKeys: String, CodingKey {
-        case imageIDs = "image_ids"
-    }
-}
-
-public struct Captures: Codable {
-    public var captures: [Capture]
-
-    public init(captures: [Capture]) {
-        self.captures = captures
-    }
-}
-
-public class Capture: Codable, Identifiable, Hashable {
-
-    public let id = UUID()
-    public var annotation: String
-    public var dateCreated: Date?
-    public var captureID: Int
-    public var images: [Image]?
-    public var coordinates: String?
-    public var dateUpdated: Date?
-
-    public init(annotation: String, dateCreated: Date? = nil, captureID: Int, images: [Image]? = nil, coordinates: String? = nil, dateUpdated: Date? = nil) {
-        self.annotation = annotation
-        self.dateCreated = dateCreated
+    public init(encoded: String, captureID: Int? = nil, dateCreated: Date? = nil) {
+        self.encoded = encoded
         self.captureID = captureID
-        self.images = images
-        self.coordinates = coordinates
-        self.dateUpdated = dateUpdated
+        self.dateCreated = dateCreated
     }
 
     private enum CodingKeys: String, CodingKey {
-        case annotation
-        case dateCreated = "date_created"
+        case encoded
         case captureID = "capture_id"
-        case images
-        case coordinates
-        case dateUpdated = "date_updated"
+        case dateCreated = "date_created"
+    }
+}
+
+public struct CreateImages: Codable {
+    public var images: [CreateImage]?
+
+    public init(images: [CreateImage]? = nil) {
+        self.images = images
+    }
+}
+
+public struct Image: Codable, Identifiable, Hashable {
+    public let id = UUID()
+    public var dateCreated: Date?
+    public var imageID: Int
+    public var encoded: String
+    public var captureID: Int?
+
+    public init(dateCreated: Date? = nil, imageID: Int, encoded: String, captureID: Int? = nil) {
+        self.dateCreated = dateCreated
+        self.imageID = imageID
+        self.encoded = encoded
+        self.captureID = captureID
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case dateCreated = "date_created"
+        case imageID = "image_id"
+        case encoded
+        case captureID = "capture_id"
     }
 
     public func hash(into hasher: inout Hasher) {
         // 2
-        hasher.combine(id)
+        hasher.combine(imageID)
     }
 
-    public static func == (lhs: Capture, rhs: Capture) -> Bool {
-        lhs.id == rhs.id
+    public static func == (lhs: Image, rhs: Image) -> Bool {
+      lhs.imageID == rhs.imageID
     }
 
+}
 
-    public func deleteImage(image: Image){
-        self.images?.removeAll(where: {$0.id == image.id})
+public struct CreateAndUpdateCapture: Codable {
+    public var annotation: String
+    public var dateUpdated: Date?
+    public var coordinates: String?
+    public var images: [CreateImage]?
+    public var dateCreated: Date?
+
+    public init(annotation: String, dateUpdated: Date? = nil, coordinates: String? = nil, images: [CreateImage]? = nil, dateCreated: Date? = nil) {
+        self.annotation = annotation
+        self.dateUpdated = dateUpdated
+        self.coordinates = coordinates
+        self.images = images
+        self.dateCreated = dateCreated
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case annotation
+        case dateUpdated = "date_updated"
+        case coordinates
+        case images
+        case dateCreated = "date_created"
+    }
+}
+
+public struct HTTPValidationError: Codable {
+    public var detail: [ValidationError]?
+
+    public init(detail: [ValidationError]? = nil) {
+        self.detail = detail
     }
 }
 
@@ -260,42 +273,5 @@ struct StringCodingKey: CodingKey, ExpressibleByStringLiteral {
 
     init(stringLiteral value: String) {
         self.string = value
-    }
-}
-
-class Observable<Value> {
-    private var value: Value
-    private var observations = [UUID : (Value) -> Void]()
-
-    init(value: Value) {
-        self.value = value
-    }
-
-    func update(with value: Value) {
-        self.value = value
-
-        for observation in observations.values {
-            observation(value)
-        }
-    }
-
-    func addObserver<O: AnyObject>(_ observer: O,
-                                   using closure: @escaping (O, Value) -> Void) {
-        let id = UUID()
-
-        observations[id] = { [weak self, weak observer] value in
-            // If the observer has been deallocated, we can safely remove
-            // the observation.
-            guard let observer = observer else {
-                self?.observations[id] = nil
-                return
-            }
-
-            closure(observer, value)
-        }
-
-        // Directly call the observation closure with the
-        // current value.
-        closure(observer, value)
     }
 }

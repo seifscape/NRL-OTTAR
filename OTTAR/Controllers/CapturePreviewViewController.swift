@@ -18,13 +18,13 @@ protocol CapturePreviewControllerDelegate: AnyObject {
 }
 
 class CapturePreviewViewController: UIViewController {
-
+    
+    weak var cameraPreviewDelegate: CapturePreviewControllerDelegate?
     var responseCapture: ((Capture, Bool?) -> Void)?
-    var addImagesToCapture: (([CreateImage], Bool?) -> Void)?
+    var addImagesToCapture: ((Images, Bool?) -> Void)?
     var bottomViewContainer = UIView()
     var previewContainer = UIView()
     var safeArea: UILayoutGuide!
-    weak var cameraPreviewDelegate: CapturePreviewControllerDelegate?
     var indexOfCellBeforeDragging: Int = 0
     var initialAnimation:Bool = false
     var centerCell:CaptureDetailCollectionViewCell?
@@ -78,13 +78,11 @@ class CapturePreviewViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.setNavigationBarHidden(false, animated: true)
-//        navigationItem.backButtonTitle = ""
         self.navigationItem.backBarButtonItem?.tintColor = .white
         self.navigationController?.navigationBar.tintColor = .white
         self.navigationItem.setHidesBackButton(true, animated:true);
         self.setupUI()
         self.setupConstraints()
-        //self.displayBottomOptions()
         self.viewDidLayoutSubviews()
 
         collectionView.register(CaptureDetailCollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
@@ -112,11 +110,6 @@ class CapturePreviewViewController: UIViewController {
         self.initialAnimation = false
         self.selectedIndex = nil
     }
-
-//    override func viewDidLayoutSubviews() {
-//        super.viewDidLayoutSubviews()
-//        collectionView.collectionViewLayout.invalidateLayout()
-//    }
 
     func setupUI() {
         view.backgroundColor = UIColor(red:0.09, green:0.16, blue:0.34, alpha:1.00)
@@ -192,11 +185,7 @@ class CapturePreviewViewController: UIViewController {
 
 
     @objc func addMorePhotos(_ sender: UIButton) {
-
         cameraPreviewDelegate?.willTakeAditionalPhotos(withImage:self.images)
-//        if let image = imagePreview.image {
-//            delegate?.willTakeAditionalPhotos(withImage: image)
-//        }
         DispatchQueue.main.async {
             self.navigationController?.popViewController(animated: true)
         }
@@ -209,12 +198,7 @@ class CapturePreviewViewController: UIViewController {
         }
         if let index = self.selectedIndex?.row {
             cameraPreviewDelegate?.removeSelectedPhoto(targetImage: index)
-            // self.photoList.remove(at: index)
         }
-//        else if self.images?.count ?? 0 >= 1 {
-//            // We will default to 0 since the user did not scroll
-//            cameraPreviewDelegate?.removeSelectedPhoto(targetImage: 0)
-//        }
         DispatchQueue.main.async {
             self.navigationController?.popViewController(animated: true)
             return
@@ -222,7 +206,7 @@ class CapturePreviewViewController: UIViewController {
     }
 
     @objc func completeCapture(_ sender: UIButton) {
-        let alertView = SPAlertView(title: "Uploading", preset: .spinner)
+        var alertView = SPAlertView(title: "Uploading", preset: .spinner)
         alertView.present()
         sender.isEnabled = false
 
@@ -232,18 +216,20 @@ class CapturePreviewViewController: UIViewController {
                     if let capture = capture {
                         if let images = images {
                             let value = try await CaptureServices.addImages(capture: capture, images: images)
-                            if value != nil {
-                                if let imgs = value?.images {
-                                    self.addImagesToCapture?(imgs, true)
-                                }
-//                                self.responseCapture?(capture, true)
+                            if let images = value {
+                                self.addImagesToCapture?(images, true)
                                 sender.isEnabled = true
                                 alertView.dismiss()
                                 self.dismissMe()
                             }
                         }
                     }
-                } catch { print("Unknown error: \(error)") }
+                } catch {
+                    alertView = SPAlertView(title: "Error", preset: .error)
+                    alertView.duration = 0.66
+                    alertView.present()
+                    print("Unknown error: \(error)")
+                }
             }
         } else {
             Task {
@@ -263,7 +249,6 @@ class CapturePreviewViewController: UIViewController {
 
     func dismissMe() {
         DispatchQueue.main.async {
-            // https://stackoverflow.com/a/53496233
             guard self.navigationController?.topViewController == self else { return }
             self.dismiss(animated: true)
         }
@@ -294,10 +279,7 @@ extension CapturePreviewViewController: UICollectionViewDelegate, UICollectionVi
     }
 }
 
-// https://gist.github.com/danielCarlosCE/7a5f80dc6087773ba147be4dc72da826
-// https://stackoverflow.com/a/66289855
-// https://stackoverflow.com/questions/35045155/how-to-create-a-centered-uicollectionview-like-in-spotifys-player/49844718#49844718
-// https://medium.com/@sh.soheytizadeh/zoom-uicollectionview-centered-cell-swift-5-e63cad9bcd49
+
 extension CapturePreviewViewController: UICollectionViewDelegateFlowLayout {
 
 
@@ -328,8 +310,6 @@ extension CapturePreviewViewController: UICollectionViewDelegateFlowLayout {
             self.centerCell = (self.collectionView.cellForItem(at: indexPath) as! CaptureDetailCollectionViewCell)
             self.selectedIndex = indexPath
             self.centerCell?.transformToLarge()
-            let generator = UIImpactFeedbackGenerator(style: .light)
-            generator.impactOccurred()
         }
 
         if let cell = self.centerCell {

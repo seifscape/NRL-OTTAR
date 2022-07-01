@@ -18,8 +18,8 @@ struct CaptureServices {
         return try await captureTask.value
     }
 
-    static func addImages(capture: Capture, images: [CreateImage]) async throws -> CreateImages? {
-        let updateTask =  Task { () -> CreateImages? in
+    static func addImages(capture: Capture, images: [CreateImage]) async throws -> Images? {
+        let updateTask =  Task { () -> Images? in
             return try await OTTARNetworkAPI.sharedInstance.client.send(Paths.captures.captureID(capture.captureID).addImages.post(CreateImages(images: images))).value
         }
         return try await updateTask.value
@@ -50,7 +50,7 @@ struct CaptureServices {
 
     static func createCapture(coordinateString: String, images: [CreateImage]) async throws -> Capture? {
         let captureTask = Task { () -> Capture? in
-            let capture = CreateAndUpdateCapture(dateUpdated: nil, images: images, coordinates: coordinateString, dateCreated: Date.now, annotation: "")
+            let capture = CreateAndUpdateCapture(annotation: "", dateUpdated: nil, coordinates: coordinateString, images: images, dateCreated: Date.now)
             return try await OTTARNetworkAPI.sharedInstance.client.send(Paths.capture.post(capture)).value
         }
         return try await captureTask.value

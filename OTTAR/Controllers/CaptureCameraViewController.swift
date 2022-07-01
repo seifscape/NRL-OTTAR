@@ -35,7 +35,7 @@ class CaptureCameraViewController: UIViewController {
 
     init(capture: Capture?) {
         self.capture = capture
-        capturePreview = CapturePreviewViewController(images: images, capture: capture)
+        self.capturePreview = CapturePreviewViewController(images: images, capture: capture)
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -268,16 +268,6 @@ class CaptureCameraViewController: UIViewController {
         torchButton.setImage(torchSymbolOn, for: .normal)
         torchButton.setImage(torchSymbolOff, for: .selected)
 
-
-        if  UIScreen.main.traitCollection.userInterfaceStyle == .dark {
-            // User Interface is Dark
-            torchButton.tintColor = .white
-            closeButton.tintColor = .white
-        } else {
-            // User Interface is Light
-            torchButton.tintColor = .black
-            closeButton.tintColor = .black
-        }
 
         mainStackView.addArrangedSubview(closeButton)
         mainStackView.addArrangedSubview(torchButton)
@@ -728,7 +718,8 @@ class CaptureCameraViewController: UIViewController {
                 DispatchQueue.main.async {
                     if let capturedImage = photoCaptureProcessor.photoData {
                         if let image = UIImage(data: capturedImage) {
-                            self.images.append(CreateImage(dateCreated: Date.now, encoded: self.convertImageToBase64String(img: image)))
+
+                            self.images.append(CreateImage(encoded: self.convertImageToBase64String(img: image), captureID: nil, dateCreated: Date.now))
                         }
                     }
                     self.previewButton.sendActions(for: .touchUpInside)

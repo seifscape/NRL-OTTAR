@@ -19,7 +19,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
         let window = UIWindow(windowScene: windowScene)
-        window.rootViewController =  UINavigationController.init(rootViewController: CaptureListViewController())   // UINavigationController(rootViewController: TabViewController())
+        window.rootViewController =  UINavigationController.init(rootViewController: CaptureListViewController())
         self.window = window
         window.makeKeyAndVisible()
     }
@@ -34,15 +34,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneDidBecomeActive(_ scene: UIScene) {
         // Called when the scene has moved from an inactive state to an active state.
         // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
-
-//        SettingsBundleHelper.setBaseURL()
-//        if let window = UIApplication.shared.currentWindow?.rootViewController as? UINavigationController {
-//           // do whatever you want with window
-//            if let controller = window.topViewController as? CaptureListViewController {
-//                controller.invalidURL = true
-//            }
-//        }
-
     }
 
     func sceneWillResignActive(_ scene: UIScene) {

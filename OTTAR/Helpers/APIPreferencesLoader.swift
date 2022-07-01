@@ -63,8 +63,6 @@ final class SettingsBundleHelper {
     }
 
     class func setBaseURL() {
-        let baseURLString = UserDefaults.standard.string(forKey: SettingsBundleKeys.BaseURL)
-        let preferences = APIPreferences(apiKey: "nrl_ottar_2022", baseURL: baseURLString ?? "")
-        APIPreferencesLoader.write(preferences: preferences)
+        UserDefaults.standard.set(APIPreferencesLoader.load().baseURL, forKey: SettingsBundleKeys.BaseURL)
     }
 }

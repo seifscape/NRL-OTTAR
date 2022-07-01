@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ImageViewController: UIViewController {
+class CaptureImageViewController: UIViewController {
 
     let image:Image
     let imageView = UIImageView(frame: .zero)
