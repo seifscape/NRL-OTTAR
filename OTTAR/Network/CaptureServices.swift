@@ -48,7 +48,7 @@ struct CaptureServices {
         return try await updateTask.value
     }
 
-    static func createCapture(coordinateString: String, images: [CreateImage]) async throws -> Capture? {
+    static func createCapture(coordinateString: String, images: [CreateImage]? = nil) async throws -> Capture? {
         let captureTask = Task { () -> Capture? in
             let capture = CreateAndUpdateCapture(annotation: "", dateUpdated: nil, coordinates: coordinateString, images: images, dateCreated: Date.now)
             return try await OTTARNetworkAPI.sharedInstance.client.send(Paths.capture.post(capture)).value

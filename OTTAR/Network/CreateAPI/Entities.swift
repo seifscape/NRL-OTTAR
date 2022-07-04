@@ -112,7 +112,8 @@ public struct ValidationError: Codable {
     }
 }
 
-public struct CreateImage: Codable {
+public struct CreateImage: Codable, Identifiable, Hashable {
+    public let id = UUID()
     public var encoded: String
     public var captureID: Int?
     public var dateCreated: Date?
@@ -127,6 +128,15 @@ public struct CreateImage: Codable {
         case encoded
         case captureID = "capture_id"
         case dateCreated = "date_created"
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        // 2
+        hasher.combine(id)
+    }
+
+    public static func == (lhs: CreateImage, rhs: CreateImage) -> Bool {
+      lhs.id == rhs.id
     }
 }
 
@@ -161,11 +171,11 @@ public struct Image: Codable, Identifiable, Hashable {
 
     public func hash(into hasher: inout Hasher) {
         // 2
-        hasher.combine(imageID)
+        hasher.combine(id)
     }
 
     public static func == (lhs: Image, rhs: Image) -> Bool {
-      lhs.imageID == rhs.imageID
+      lhs.id == rhs.id
     }
 
 }

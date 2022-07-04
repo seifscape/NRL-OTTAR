@@ -7,16 +7,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "FC0559D9-C5D3-4320-8125-86F7A1ECA3E5"
-            shouldBeEnabled = "No"
+            uuid = "BDAED56D-592D-4F1A-A0DD-0F9927A5803A"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "OTTAR/Controllers/CaptureDetailViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "321"
-            endingLineNumber = "321"
-            landmarkName = "editCaptures(_:)"
+            startingLineNumber = "486"
+            endingLineNumber = "486"
+            landmarkName = "collectionView(_:didSelectItemAt:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

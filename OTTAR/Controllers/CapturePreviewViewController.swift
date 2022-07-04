@@ -22,6 +22,7 @@ class CapturePreviewViewController: UIViewController {
     weak var cameraPreviewDelegate: CapturePreviewControllerDelegate?
     var responseCapture: ((Capture, Bool?) -> Void)?
     var addImagesToCapture: ((Images, Bool?) -> Void)?
+    var appendImagesToCapture: (([CreateImage], Bool?) -> Void)?
     var bottomViewContainer = UIView()
     var previewContainer = UIView()
     var safeArea: UILayoutGuide!
@@ -46,7 +47,7 @@ class CapturePreviewViewController: UIViewController {
         viewLayout.scrollDirection = .horizontal
 
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: viewLayout)
-        collectionView.backgroundColor = UIColor(red:0.09, green:0.16, blue:0.34, alpha:1.00)
+        collectionView.backgroundColor = OTTARColors.nrlBlue
         collectionView.contentInsetAdjustmentBehavior = .always
         collectionView.decelerationRate = .normal
         collectionView.showsVerticalScrollIndicator = false
@@ -92,7 +93,7 @@ class CapturePreviewViewController: UIViewController {
 
         cameraButton.addTarget(self, action: #selector(addMorePhotos(_:)), for: .touchUpInside)
         cancelButton.addTarget(self, action: #selector(removePhoto(_:)), for: .touchUpInside)
-        checkmarkButton.addTarget(self, action: #selector(completeCapture(_:)), for: .touchUpInside)
+        checkmarkButton.addTarget(self, action: #selector(completeImages(_:)), for: .touchUpInside)
         self.navigationController?.navigationBar.barStyle = .black
 
 
@@ -112,7 +113,7 @@ class CapturePreviewViewController: UIViewController {
     }
 
     func setupUI() {
-        view.backgroundColor = UIColor(red:0.09, green:0.16, blue:0.34, alpha:1.00)
+        view.backgroundColor = OTTARColors.nrlBlue
         previewContainer = UIView(frame: .zero)
         previewContainer.backgroundColor = .gray
         previewContainer.translatesAutoresizingMaskIntoConstraints = false
@@ -202,6 +203,15 @@ class CapturePreviewViewController: UIViewController {
         DispatchQueue.main.async {
             self.navigationController?.popViewController(animated: true)
             return
+        }
+    }
+
+    @objc private func completeImages(_ sender: UIButton) {
+        sender.isEnabled = false
+        if let images = self.images {
+            self.appendImagesToCapture?(images, true)
+            sender.isEnabled = true
+            self.dismissMe()
         }
     }
 

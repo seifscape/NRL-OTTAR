@@ -9,6 +9,7 @@
 import UIKit
 import Get
 import SPAlert
+import CoreLocation
 
 class CaptureListViewController: UIViewController {
 
@@ -54,6 +55,7 @@ class CaptureListViewController: UIViewController {
         return dataSource
     }()
 
+    var currentLocation = CLLocation()
     var captureCollectionView = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: UICollectionViewFlowLayout())
     var safeArea: UILayoutGuide!
     var capturePreviewController = CapturePreviewViewController(images: nil, capture: nil)
@@ -87,8 +89,8 @@ class CaptureListViewController: UIViewController {
         captureCollectionView.delegate = self
         // captureCollectionView.dataSource = self
         captureCollectionView.clipsToBounds = true
-        self.view.backgroundColor = UIColor(red:0.09, green:0.16, blue:0.34, alpha:1.00)
-        self.captureCollectionView.backgroundColor = UIColor(red:0.09, green:0.16, blue:0.34, alpha:1.00)
+        self.view.backgroundColor = OTTARColors.nrlBlue
+        self.captureCollectionView.backgroundColor = OTTARColors.nrlBlue
         self.view.addSubview(captureCollectionView)
         setupUI()
         setupCollectionView()
@@ -184,7 +186,7 @@ class CaptureListViewController: UIViewController {
 
     func setupUI () {
         safeArea = self.view.layoutMarginsGuide
-        let newCaptureButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(self.myRightSideBarButtonItemTapped(_:)))
+        let newCaptureButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(self.createCapture(_:)))
         newCaptureButton.tintColor = .black
 
         self.navigationItem.rightBarButtonItem = newCaptureButton
@@ -228,7 +230,28 @@ class CaptureListViewController: UIViewController {
         }
     }
 
-    @objc func myRightSideBarButtonItemTapped(_ sender:UIBarButtonItem!)
+    @objc func createCapture(_ sender: UIBarButtonItem) {
+        let task = Task { () -> Capture? in
+            let coordinatesString = "\(String(format: "%.3f", self.currentLocation.coordinate.latitude)),\(String(format: "%.5f", self.currentLocation.coordinate.longitude))"
+            let capture = try await CaptureServices.createCapture(coordinateString: coordinatesString, images: nil)
+            return capture
+        }
+        Task {
+            do {
+                if let capture = try await task.value {
+                    let detailController = CaptureDetailViewController(capture: capture)
+                    detailController.title = "Capture Detail: \(capture.captureID)"
+                    self.navigationController?.pushViewController(detailController, animated: true)
+                }
+            }
+            catch {
+                print("Request failed with error: \(error)")
+            }
+        }
+
+    }
+
+    @objc func createNewCapture(_ sender:UIBarButtonItem!)
     {
         let cameraVC = CaptureCameraViewController.init()
 
@@ -244,9 +267,7 @@ class CaptureListViewController: UIViewController {
             DispatchQueue.main.async {
                 let detailController = CaptureDetailViewController(capture: value)
                 detailController.title = "Capture Detail: \(value.captureID)"
-                DispatchQueue.main.async {
-                    self.navigationController?.pushViewController(detailController, animated: true)
-                }
+                self.navigationController?.pushViewController(detailController, animated: true)
                 Task {
                     self.capturesList =  try await CaptureServices.getCaptures()
                     self.reloadCollectionView()

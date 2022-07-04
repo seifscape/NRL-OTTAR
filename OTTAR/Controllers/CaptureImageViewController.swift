@@ -10,11 +10,13 @@ import UIKit
 
 class CaptureImageViewController: UIViewController {
 
-    let image:Image
+    let image:Image?
+    let createImage: CreateImage?
     let imageView = UIImageView(frame: .zero)
 
-    init(image: Image) {
+    init(image: Image?, createImage: CreateImage?) {
         self.image = image
+        self.createImage = createImage
         super.init(nibName: nil, bundle: nil)
 
     }
@@ -28,10 +30,19 @@ class CaptureImageViewController: UIViewController {
         self.setupUI()
         self.setupConstraints()
         self.imageView.sizeToFit()
-        let imageData = Data(base64Encoded: self.image.encoded, options: .init(rawValue: 0))
-        if let imgData = imageData {
-            self.imageView.image = UIImage(data: imgData)
-            self.imageView.layoutIfNeeded()
+        if let image = self.image {
+            let imageData = Data(base64Encoded: image.encoded, options: .init(rawValue: 0))
+            if let imgData = imageData {
+                self.imageView.image = UIImage(data: imgData)
+                self.imageView.layoutIfNeeded()
+            }
+        }
+        if let createImage = self.createImage {
+            let imageData = Data(base64Encoded: createImage.encoded, options: .init(rawValue: 0))
+            if let imgData = imageData {
+                self.imageView.image = UIImage(data: imgData)
+                self.imageView.layoutIfNeeded()
+            }
         }
     }
 

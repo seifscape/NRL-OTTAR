@@ -227,7 +227,7 @@ class CaptureCameraViewController: UIViewController {
         self.previewButton.layer.cornerRadius = 25
         self.previewContainer.addSubview(self.previewButton)
         self.previewButton.translatesAutoresizingMaskIntoConstraints = false
-        self.previewButton.layer.shadowColor = UIColor(red:0.09, green:0.16, blue:0.34, alpha:1.00).cgColor
+        self.previewButton.layer.shadowColor = OTTARColors.nrlBlue.cgColor
         self.previewButton.layer.shadowOffset = CGSize(width: 0, height: 1.0)
         self.previewButton.layer.shadowOpacity = 0.2
         self.previewButton.layer.shadowRadius = 4.0
@@ -968,3 +968,5 @@ extension CaptureCameraViewController:CLLocationManagerDelegate {
         // Handle failure to get a user’s location
     }
 }
+
+
