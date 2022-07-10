@@ -8,27 +8,9 @@
 
 import UIKit
 
-class CaptureDetailCreateImageCollectionViewCell: UICollectionViewCell {
-    let card      = UIView(frame: .zero)
-    let imageView = UIImageView(frame: .zero)
-    let button    = UIButton()
-    var checkmarkView: SSCheckMark!
-    var image:CreateImage?
+class CaptureDetailCreateImageCollectionViewCell: CaptureDetailCollectionViewCell {
+    var createImage:CreateImage?
 
-
-    var isMarked: Bool = false {
-        didSet {
-            if isMarked {
-                self.checkmarkView.checked = true
-                self.checkmarkView.isHidden = false
-                //self.button.isHidden = false
-            } else {
-                self.checkmarkView.checked = false
-                self.checkmarkView.isHidden = true
-                //self.button.isHidden = true
-            }
-        }
-    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -43,12 +25,14 @@ class CaptureDetailCreateImageCollectionViewCell: UICollectionViewCell {
 
 
     func configure(for image:CreateImage) {
-        self.image = image
+        self.createImage = image
 
         let imageData = Data(base64Encoded: image.encoded, options: .init(rawValue: 0))
 
+        let targetSize = CGSize(width: self.contentView.frame.width, height: self.contentView.frame.height)
+
         if let imgData = imageData {
-            self.imageView.image = UIImage(data: imgData)
+            self.imageView.image = UIImage(data: imgData)?.scalePreservingAspectRatio(targetSize: targetSize)
         }
         self.imageView.contentMode = .scaleAspectFill
     }
@@ -67,6 +51,7 @@ class CaptureDetailCreateImageCollectionViewCell: UICollectionViewCell {
         checkmarkView = SSCheckMark(frame: .zero)
         checkmarkView.translatesAutoresizingMaskIntoConstraints = false
         checkmarkView.backgroundColor = .clear
+//        checkmarkView.clipsToBounds = true
         self.card.addSubview(checkmarkView)
     }
 

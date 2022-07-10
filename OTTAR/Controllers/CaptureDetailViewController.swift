@@ -9,42 +9,52 @@
 import UIKit
 import Get
 import SPAlert
+import CoreGraphics
+import Accelerate
 
-class CaptureDetailViewController: UIViewController {
+enum Item: Hashable {
+    case images(Image)
+    case createImages(CreateImage)
+}
 
-    enum Section: CaseIterable {
-      case images
-      case createImages
+enum Section: CaseIterable {
+    case images
+    case newImages
 
-        var cellIdentifier: String {
-            switch self {
-            case .images:
-                return "captureDetailCell"
-            case .createImages:
-                return "captureDetailCreateImageCell"
-            }
+    var cellIdentifier: String {
+        switch self {
+        case .images:
+            return "captureDetailCell"
+        case .newImages:
+            return "captureDetailCreateImageCell"
         }
-
     }
+}
 
+class CaptureDetailViewController: UIViewController, UIGestureRecognizerDelegate {
 
     typealias Snapshot = NSDiffableDataSourceSnapshot<Section, AnyHashable>
     lazy var dataSource = UICollectionViewDiffableDataSource<Section, AnyHashable> (collectionView: collectionView) { [unowned self] (collectionView, indexPath, item) in
 
-            if let image = item as? Image, let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Section.images.cellIdentifier, for: indexPath) as? CaptureDetailCollectionViewCell {
-                if let image = self.capture.images?[indexPath.row] {
-                    cell.configure(for: image)
-                }
-                return cell
+        switch item {
+        case let item as Image:
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "captureDetailCell", for: indexPath) as? CaptureDetailCollectionViewCell else { fatalError() }
+            // configure the cell
+            if let image = self.capture.images?[indexPath.row] {
+                cell.configure(for: image)
             }
+            return cell
+        case let item as CreateImage:
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "captureDetailCreateImageCell", for: indexPath) as? CaptureDetailCreateImageCollectionViewCell else { fatalError() }
+            // configure the cell
+            cell.configure(for: self.imagesToUpload[indexPath.row])
+            return cell
 
-            if let image = item as? CreateImage, let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Section.createImages.cellIdentifier, for: indexPath) as? CaptureDetailCreateImageCollectionViewCell {
-                cell.configure(for: self.imagesToUpload[indexPath.row])
-                return cell
-            }
 
-            fatalError()
+        default:
+            return nil
         }
+    }
 
     // Views
     var topHeaderView  = UIView()
@@ -67,13 +77,11 @@ class CaptureDetailViewController: UIViewController {
     private var imagesToUpload:[CreateImage] = []
     private var capture: Capture {
         didSet {
-            DispatchQueue.main.async {
-                var snapshot = Snapshot()
-                snapshot.appendSections([.images])
-                if let images = self.capture.images {
-                    snapshot.appendItems(images, toSection: .images)
-                    self.dataSource.apply(snapshot, animatingDifferences: true)
-                }
+            var snapshot = Snapshot()
+            snapshot.appendSections([.images])
+            if let images = self.capture.images {
+                snapshot.appendItems(images, toSection: .images)
+                self.dataSource.apply(snapshot, animatingDifferences: true)
             }
         }
     }
@@ -113,6 +121,8 @@ class CaptureDetailViewController: UIViewController {
         layout.sectionInset = UIEdgeInsets(top: spacing, left: spacing, bottom: spacing, right: spacing)
         layout.minimumLineSpacing = spacing
         layout.minimumInteritemSpacing = spacing
+
+        layout.headerReferenceSize = CGSize(width: 50, height: 50)
         collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
 
         editModeButton = UIBarButtonItem(title:"Edit", style: .plain, target: self, action: #selector(editCaptures(_:)))
@@ -122,6 +132,8 @@ class CaptureDetailViewController: UIViewController {
 
         collectionView.register(CaptureDetailCollectionViewCell.self, forCellWithReuseIdentifier: "captureDetailCell")
         collectionView.register(CaptureDetailCreateImageCollectionViewCell.self, forCellWithReuseIdentifier: "captureDetailCreateImageCell")
+                collectionView.register(SectionHeaderReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: SectionHeaderReusableView.reuseIdentifier)
+
 
         collectionView.delegate = self
         self.setupInterface()
@@ -136,32 +148,79 @@ class CaptureDetailViewController: UIViewController {
             self.textView.text = self.capture.annotation
         }
         self.textView.delegate = self
-        self.textView.keyboardDismissMode = .interactive
+        self.textView.keyboardDismissMode = .none
         self.navigationController?.navigationBar.barStyle = .black
+
+        self.textView.addDoneButton(title: "Done", target: self, selector: #selector(dismissKeyboard(_:)))
+//        let dismissKeyboardGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard(_:)))
+//        dismissKeyboardGesture.delegate = self
+//        dismissKeyboardGesture.cancelsTouchesInView = false
+//        self.collectionView.addGestureRecognizer(dismissKeyboardGesture)
+//        self.view.addGestureRecognizer(dismissKeyboardGesture)
+
+        let tap = UITapGestureRecognizer(target: view, action: #selector(UIView.endEditing))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+
+
+        dataSource.supplementaryViewProvider = { [unowned self] collectionView, kind, indexPath in
+            return self.supplementary(collectionView: collectionView, kind: kind, indexPath: indexPath)
+        }
+
     }
 
 
 
-//    func applySnapshot(animatingDifferences: Bool = true) {
-//      // 2
-//      var snapshot = Snapshot()
-//      // 3
-//      snapshot.appendSections([.main])
-//
-//      // 4
-//      snapshot.appendItems(self.capture.images ?? [Image](), toSection: .main)
-//
-//      // 5
-//      dataSource.apply(snapshot, animatingDifferences: animatingDifferences)
+        func supplementary(collectionView: UICollectionView, kind: String, indexPath: IndexPath) -> UICollectionReusableView?
+        {
+            guard kind == UICollectionView.elementKindSectionHeader else {
+              return nil
+            }
+            // 3
+            let view = collectionView.dequeueReusableSupplementaryView(
+              ofKind: kind,
+              withReuseIdentifier: SectionHeaderReusableView.reuseIdentifier,
+              for: indexPath) as? SectionHeaderReusableView
+            // 4
+    //        let section = self.dataSource.snapshot()
+    //          .sectionIdentifiers[indexPath.section]
+
+            if indexPath.section == 0 {
+                view?.titleLabel.text = "Images"  //section.cellIdentifier
+            } else { view?.titleLabel.text = "New Images" }
+            return view
+
+        }
+
+//    func gestureRecognizer(
+//        _ gestureRecognizer: UIGestureRecognizer,
+//        shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
+//    ) -> Bool {
+//        return false
 //    }
+
+    @objc func dismissKeyboard(_ gesture: UITapGestureRecognizer) {
+        self.capture.annotation = self.textView.text
+        self.textView.endEditing(true)
+        do {
+//            self.textView.isEditable = true
+            if self.capture.annotation.isEmpty {
+                textView.text  = "Enter an annotation here"
+                textView.textColor = .lightGray
+            } else {
+                self.textView.text = self.capture.annotation
+            }
+
+        }
+    }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
     }
 
     override func viewWillLayoutSubviews() {
-       super.viewWillLayoutSubviews()
-       self.collectionView.collectionViewLayout.invalidateLayout()
+        super.viewWillLayoutSubviews()
+        self.collectionView.collectionViewLayout.invalidateLayout()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -326,7 +385,6 @@ class CaptureDetailViewController: UIViewController {
     @objc
     private func editCaptures(_ sender: UIButton) {
         if self.isEditing {
-            //deletePhotos()
             self.isEditing = false
             topHeaderView.isUserInteractionEnabled = false
             textView.isEditable = false
@@ -334,12 +392,9 @@ class CaptureDetailViewController: UIViewController {
             self.navigationItem.leftBarButtonItem = nil
             self.floatingButton.isHidden = true
             self.deleteFloatingButton.isHidden = true
-            self.collectionView.allowsSelection = true
             self.collectionView.allowsMultipleSelection = false
-
             self.deletePhotosFromServer()
             self.uploadPhotosToServer()
-
 
         } else {
             self.isEditing = true
@@ -349,7 +404,6 @@ class CaptureDetailViewController: UIViewController {
             editModeButton.title = "Done"
             self.floatingButton.isHidden = false
             self.deleteFloatingButton.isHidden = false
-            self.collectionView.allowsSelection = false
             self.collectionView.allowsMultipleSelection = true
         }
     }
@@ -390,7 +444,6 @@ class CaptureDetailViewController: UIViewController {
                     }
                     var snapshot = dataSource.snapshot()
                     snapshot.appendItems(responseImages.images)
-                    snapshot.deleteSections([.createImages])
                     dataSource.apply(snapshot, animatingDifferences: false) {
                         self.imagesToUpload.removeAll()
                     }
@@ -413,9 +466,9 @@ class CaptureDetailViewController: UIViewController {
             }
             var snapshot = dataSource.snapshot()
             for i in self.listOfImagesToDelete {
-                // self.capture.deleteImage(image: i)
                 self.capture.images?.removeAll(where: {$0.imageID == i.imageID})
             }
+
             snapshot.deleteItems(self.listOfImagesToDelete)
             self.dataSource.apply(snapshot, animatingDifferences: true)
             self.listOfImagesToDelete.removeAll()
@@ -453,117 +506,117 @@ class CaptureDetailViewController: UIViewController {
         cameraVC.modalPresentationStyle = .fullScreen
 
         cameraVC.capturePreview.appendImagesToCapture = { [unowned self] (images, boolean) in
-            self.imagesToUpload = images
-            var snapshot = self.dataSource.snapshot()
-            snapshot.appendSections([.createImages])
-            snapshot.appendItems(images)
-            DispatchQueue.main.async {
-                self.dataSource.apply(snapshot, animatingDifferences: true, completion: nil)
-                //self.dataSource.applySnapshotUsingReloadData(snapshot)
+            for image in images {
+                self.imagesToUpload.append(image)
             }
-
+            var snapshot = self.dataSource.snapshot()
+            snapshot.appendSections([.newImages])
+            snapshot.appendItems(self.imagesToUpload)
+            DispatchQueue.main.async {
+                self.dataSource.applySnapshot(snapshot, animated: true)
+            }
         }
         let navigationController = UINavigationController(rootViewController: cameraVC)
         navigationController.modalPresentationStyle = .overCurrentContext
         self.present(navigationController, animated: true)
-
     }
 
 }
 
-
 extension CaptureDetailViewController: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if let imageCell: CaptureDetailCollectionViewCell = collectionView.cellForItem(at: indexPath) as? CaptureDetailCollectionViewCell {
-        if self.isEditing {
-            if !imageCell.checkmarkView.checked {
-                DispatchQueue.main.async {
-                    imageCell.isMarked = true
-                    imageCell.checkmarkView.checked = true
-                }
-                if let item = dataSource.itemIdentifier(for: indexPath) as? Image {
-                    self.listOfImagesToDelete.append(item)
-                }
-            } else {
-                DispatchQueue.main.async {
-                    imageCell.isMarked = false
-                    imageCell.checkmarkView.checked = false
-                }
-                if let item = dataSource.itemIdentifier(for: indexPath) as? Image {
-                    for i in self.listOfImagesToDelete {
-                        if i.captureID == item.captureID {
-                            self.listOfImagesToDelete.remove(element: i)
-                        }
-                    }
-                }
-            }
-         }
-        else {
-            if let item = dataSource.itemIdentifier(for: indexPath) as? Image {
-                let imageViewController = CaptureImageViewController(image: item, createImage: nil)
-                self.navigationController?.present(imageViewController, animated: true)
-                print("ImageID: \(item.imageID)")
-                print("Added: \(indexPath.row)")
-                }
-            }
-        } else {
-            if let createImageCell: CaptureDetailCreateImageCollectionViewCell = collectionView.cellForItem(at: indexPath) as? CaptureDetailCreateImageCollectionViewCell {
-            if self.isEditing {
-                if !createImageCell.checkmarkView.checked {
-                    DispatchQueue.main.async {
-                        createImageCell.isMarked = true
-                        createImageCell.checkmarkView.checked = true
-                    }
-                    if let item = dataSource.itemIdentifier(for: indexPath) as? CreateImage {
-                        for i in imagesToUpload {
-                            if i.id == item.id {
-                                self.removeLocalImages.append(i)
-                            }
-                        }
-                    }
-                } else {
-                    DispatchQueue.main.async {
-                        createImageCell.isMarked = false
-                        createImageCell.checkmarkView.checked = false
-                    }
-                    if let item = dataSource.itemIdentifier(for: indexPath) as? CreateImage {
-                        for i in imagesToUpload {
-                            if i.id == item.id {
-                                self.removeLocalImages.remove(element: i)
-                            }
-                        }
-                    }
-                }
-             }
-            else {
-                if let item = dataSource.itemIdentifier(for: indexPath) as? CreateImage {
-                    let imageViewController = CaptureImageViewController(image: nil, createImage: item)
+        guard self.isEditing else {
+            if let sectionItem = dataSource.itemIdentifier(for: indexPath) {
+                switch sectionItem {
+                case let sectionItem as Image:
+                    let imageViewController = CaptureImageViewController(image: sectionItem, createImage: nil)
                     self.navigationController?.present(imageViewController, animated: true)
-                    print("ImageID: \(item.id)")
-                    print("Added: \(indexPath.row)")
-                    }
+                case let sectionItem as CreateImage:
+                    let imageViewController = CaptureImageViewController(image:nil, createImage: sectionItem)
+                    self.navigationController?.present(imageViewController, animated: true)
+                default:
+                    return
                 }
             }
-
+            return
         }
 
-        collectionView.deselectItem(at: indexPath, animated: true)
+        if let sectionItem = dataSource.itemIdentifier(for: indexPath) {
+            switch sectionItem {
+            case let sectionItem as Image:
+                guard let cell = collectionView.cellForItem(at: indexPath) as? CaptureDetailCollectionViewCell else { fatalError() }
+                cell.showCheckmark()
+                self.listOfImagesToDelete.append(sectionItem)
+            case let sectionItem as CreateImage:
+                guard let cell = collectionView.cellForItem(at: indexPath) as? CaptureDetailCreateImageCollectionViewCell else { fatalError() }
+                cell.showCheckmark()
+                for i in imagesToUpload {
+                    if i.id == sectionItem.id {
+                        self.removeLocalImages.append(i)
+                    }
+                }
+            default:
+                return
+            }
+        }
+
     }
+
+    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        guard self.isEditing else { return }
+
+        if let sectionItem = dataSource.itemIdentifier(for: indexPath) {
+            switch sectionItem {
+            case let sectionItem as Image:
+                guard let cell = collectionView.cellForItem(at: indexPath) as? CaptureDetailCollectionViewCell else { fatalError() }
+                cell.hideCheckmark()
+                for i in self.listOfImagesToDelete {
+                    if i.captureID == sectionItem.captureID {
+                        self.listOfImagesToDelete.remove(element: i)
+                    }
+                }
+            case let sectionItem as CreateImage:
+                guard let cell = collectionView.cellForItem(at: indexPath) as? CaptureDetailCreateImageCollectionViewCell else { fatalError() }
+                cell.hideCheckmark()
+                for i in imagesToUpload {
+                    if i.id == sectionItem.id {
+                        self.removeLocalImages.remove(element: i)
+                    }
+                }
+            default:
+                return
+            }
+        }
+    }
+
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: spacing, left: 5, bottom: spacing, right: 5)
     }
 
+    
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-            let numberOfItemsPerRow:CGFloat = 2
-            let spacingBetweenCells:CGFloat = 0
+        let numberOfItemsPerRow:CGFloat = 2
+        let spacingBetweenCells:CGFloat = 0
 
-            let totalSpacing = (2 * self.spacing) + ((numberOfItemsPerRow - 1) * spacingBetweenCells) //Amount of total spacing in a row
+        let totalSpacing = (2 * self.spacing) + ((numberOfItemsPerRow - 1) * spacingBetweenCells) //Amount of total spacing in a row
 
-            let width = floor((collectionView.bounds.width - totalSpacing)/numberOfItemsPerRow)
-            return CGSize(width: width, height: width)
+        let width = floor((collectionView.bounds.width - totalSpacing)/numberOfItemsPerRow)
+        return CGSize(width: width, height: width)
+    }
+
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 1.0
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout
+                        collectionViewLayout: UICollectionViewLayout,
+                        minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 1.0
     }
 
 }
@@ -666,18 +719,18 @@ extension UICollectionViewDiffableDataSource {
         animated: Bool,
         completion: (() -> Void)? = nil) {
 
-        if #available(iOS 15.0, *) {
-            self.apply(snapshot, animatingDifferences: animated, completion: completion)
-        } else {
-            if animated {
-                self.apply(snapshot, animatingDifferences: true, completion: completion)
+            if #available(iOS 15.0, *) {
+                self.apply(snapshot, animatingDifferences: animated, completion: completion)
             } else {
-                UIView.performWithoutAnimation {
+                if animated {
                     self.apply(snapshot, animatingDifferences: true, completion: completion)
+                } else {
+                    UIView.performWithoutAnimation {
+                        self.apply(snapshot, animatingDifferences: true, completion: completion)
+                    }
                 }
             }
         }
-    }
 }
 
 extension UICollectionView {
@@ -706,5 +759,81 @@ extension UIViewController {
         let tap = UITapGestureRecognizer(target: self.view, action: #selector(self.view.endEditing(_:)))
         tap.cancelsTouchesInView = false
         return tap
+    }
+}
+
+
+extension UITextView {
+
+    func addDoneButton(title: String, target: Any, selector: Selector) {
+
+        let toolBar = UIToolbar(frame: CGRect(x: 0.0,
+                                              y: 0.0,
+                                              width: UIScreen.main.bounds.size.width,
+                                              height: 44.0))//1
+        let flexible = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)//2
+        let barButton = UIBarButtonItem(title: title, style: .plain, target: target, action: selector)//3
+        toolBar.setItems([flexible, barButton], animated: false)//4
+        self.inputAccessoryView = toolBar//5
+    }
+}
+
+
+//extension UIImage {
+//    func resizeImage(_ dimension: CGFloat, opaque: Bool, contentMode: UIView.ContentMode = .scaleAspectFit) -> UIImage {
+//        var width: CGFloat
+//        var height: CGFloat
+//        var newImage: UIImage
+//
+//        let size = self.size
+//        let aspectRatio =  size.width/size.height
+//
+//        switch contentMode {
+//            case .scaleAspectFit:
+//                if aspectRatio > 1 {                            // Landscape image
+//                    width = dimension
+//                    height = dimension / aspectRatio
+//                } else {                                        // Portrait image
+//                    height = dimension
+//                    width = dimension * aspectRatio
+//                }
+//
+//        default:
+//            fatalError("UIIMage.resizeToFit(): FATAL: Unimplemented ContentMode")
+//        }
+//
+//        if #available(iOS 10.0, *) {
+//            let renderFormat = UIGraphicsImageRendererFormat.default()
+//            renderFormat.opaque = opaque
+//            let renderer = UIGraphicsImageRenderer(size: CGSize(width: width, height: height), format: renderFormat)
+//            newImage = renderer.image {
+//                (context) in
+//                self.draw(in: CGRect(x: 0, y: 0, width: width, height: height))
+//            }
+//        } else {
+//            UIGraphicsBeginImageContextWithOptions(CGSize(width: width, height: height), opaque, 0)
+//                self.draw(in: CGRect(x: 0, y: 0, width: width, height: height))
+//                newImage = UIGraphicsGetImageFromCurrentImageContext()!
+//            UIGraphicsEndImageContext()
+//        }
+//
+//        return newImage
+//    }
+//}
+
+
+extension CreateImage {
+    struct Diffable {
+        let id: UUID
+
+        let encoded: String
+        let dateCreated: Date
+        // other properties that will be rendered on the cell
+
+        init(model: CreateImage) {
+            self.id = model.id
+            self.encoded = model.encoded
+            self.dateCreated = model.dateCreated ?? Date.now
+        }
     }
 }

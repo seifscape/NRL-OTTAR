@@ -179,6 +179,7 @@ class CaptureCameraViewController: UIViewController {
     }
 
     override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         sessionQueue.async {
             if self.setupResult == .success {
                 self.session.stopRunning()
@@ -187,7 +188,6 @@ class CaptureCameraViewController: UIViewController {
             }
         }
         locationManager.stopUpdatingLocation()
-        super.viewWillDisappear(animated)
     }
 
     func checkForPreviewButton() {

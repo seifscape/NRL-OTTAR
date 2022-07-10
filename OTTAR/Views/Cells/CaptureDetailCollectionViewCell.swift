@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreGraphics
 
 class CaptureDetailCollectionViewCell: UICollectionViewCell {
 
@@ -34,11 +35,9 @@ class CaptureDetailCollectionViewCell: UICollectionViewCell {
             if isMarked {
                 self.checkmarkView.checked = true
                 self.checkmarkView.isHidden = false
-                //self.button.isHidden = false
             } else {
                 self.checkmarkView.checked = false
                 self.checkmarkView.isHidden = true
-                //self.button.isHidden = true
             }
         }
     }
@@ -62,10 +61,12 @@ class CaptureDetailCollectionViewCell: UICollectionViewCell {
 
         let imageData = Data(base64Encoded: image.encoded, options: .init(rawValue: 0))
 
+        let targetSize = CGSize(width: self.contentView.frame.width, height: self.contentView.frame.height)
+
         if let imgData = imageData {
-            self.imageView.image = UIImage(data: imgData)
+            self.imageView.image = UIImage(data: imgData)?.scalePreservingAspectRatio(targetSize: targetSize)
         }
-        self.imageView.contentMode = .scaleToFill
+        self.imageView.contentMode = .scaleAspectFill
     }
 
     private func setupUI() {
@@ -80,20 +81,10 @@ class CaptureDetailCollectionViewCell: UICollectionViewCell {
         self.imageView.contentMode = .scaleAspectFill
         self.imageView.translatesAutoresizingMaskIntoConstraints = false
 
-
-        //        let largeConfig = UIImage.SymbolConfiguration(pointSize: 48, weight: .bold, scale: .large)
-        //        let largeBoldDoc = UIImage(systemName: "x.circle.fill", withConfiguration: largeConfig)
-        //        self.button.setImage(largeBoldDoc, for: .normal)
-        //        self.button.tintColor = .white
-        //        self.button.layer.cornerRadius = 20
-        //        self.button.translatesAutoresizingMaskIntoConstraints = false
-        //        self.contentView.addSubview(self.button)
-        //        self.contentView.bringSubviewToFront(self.button)
-        //        self.button.isHidden = true
-
         checkmarkView = SSCheckMark(frame: .zero)
         checkmarkView.translatesAutoresizingMaskIntoConstraints = false
         checkmarkView.backgroundColor = .clear
+        checkmarkView.clipsToBounds = true
         self.card.addSubview(checkmarkView)
     }
 
@@ -124,7 +115,7 @@ class CaptureDetailCollectionViewCell: UICollectionViewCell {
         super.prepareForReuse()
         imageView.image = nil
         checkmarkView.isHidden = true
-    
+
 
         //        for subview in subviews {
         //            subview.removeConstraints(subview.constraints)
@@ -145,5 +136,46 @@ class CaptureDetailCollectionViewCell: UICollectionViewCell {
         UIView.animate(withDuration:0.2){
             self.transform = CGAffineTransform.identity
         }
+    }
+
+    func showCheckmark() {
+        self.isMarked = true
+        self.checkmarkView.checked = true
+    }
+
+    func hideCheckmark() {
+        self.isMarked = false
+        self.checkmarkView.checked = false
+    }
+}
+
+
+extension UIImage {
+    func scalePreservingAspectRatio(targetSize: CGSize) -> UIImage {
+        // Determine the scale factor that preserves aspect ratio
+        let widthRatio = targetSize.width / size.width
+        let heightRatio = targetSize.height / size.height
+
+        let scaleFactor = min(widthRatio, heightRatio)
+
+        // Compute the new image size that preserves aspect ratio
+        let scaledImageSize = CGSize(
+            width: size.width * scaleFactor,
+            height: size.height * scaleFactor
+        )
+
+        // Draw and return the resized UIImage
+        let renderer = UIGraphicsImageRenderer(
+            size: scaledImageSize
+        )
+
+        let scaledImage = renderer.image { _ in
+            self.draw(in: CGRect(
+                origin: .zero,
+                size: scaledImageSize
+            ))
+        }
+
+        return scaledImage
     }
 }

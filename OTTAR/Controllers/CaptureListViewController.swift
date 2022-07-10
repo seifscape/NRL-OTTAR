@@ -56,6 +56,7 @@ class CaptureListViewController: UIViewController {
     }()
 
     var currentLocation = CLLocation()
+    let locationManager  = CLLocationManager()
     var captureCollectionView = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: UICollectionViewFlowLayout())
     var safeArea: UILayoutGuide!
     var capturePreviewController = CapturePreviewViewController(images: nil, capture: nil)
@@ -79,6 +80,18 @@ class CaptureListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "Captures"
+
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+
+        locationManager.startUpdatingLocation()
+
+
+        // Request location authorization so photos and videos can be tagged with their location.
+        if locationManager.authorizationStatus == .notDetermined {
+            locationManager.requestWhenInUseAuthorization()
+        }
+
         edgesForExtendedLayout = []
         self.navigationController?.navigationBar.backgroundColor  = .white
         let layout = UICollectionViewFlowLayout()
@@ -123,6 +136,11 @@ class CaptureListViewController: UIViewController {
         }
         flowLayout.invalidateLayout()
         flowLayout.itemSize = CGSize(width:size.width - 30, height: 105)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        locationManager.stopUpdatingLocation()
     }
 
     override func becomeFirstResponder() -> Bool {
@@ -369,5 +387,25 @@ extension CaptureListViewController {
                 }
             }
         }
+    }
+}
+
+
+extension CaptureListViewController:CLLocationManagerDelegate {
+    func locationManager(
+        _ manager: CLLocationManager,
+        didUpdateLocations locations: [CLLocation]
+    ) {
+        if let location = locations.first {
+            // Handle location update
+            self.currentLocation = location
+        }
+    }
+
+    func locationManager(
+        _ manager: CLLocationManager,
+        didFailWithError error: Error
+    ) {
+        // Handle failure to get a user’s location
     }
 }

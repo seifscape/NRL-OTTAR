@@ -28,7 +28,6 @@ class CapturePreviewViewController: UIViewController {
     var safeArea: UILayoutGuide!
     var indexOfCellBeforeDragging: Int = 0
     var initialAnimation:Bool = false
-    var centerCell:CaptureDetailCollectionViewCell?
     var selectedIndex:IndexPath?
     var images:[CreateImage]?
     var capture:Capture?
@@ -86,7 +85,7 @@ class CapturePreviewViewController: UIViewController {
         self.setupConstraints()
         self.viewDidLayoutSubviews()
 
-        collectionView.register(CaptureDetailCollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
+        collectionView.register(CaptureDetailCreateImageCollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.decelerationRate = .fast
@@ -273,19 +272,17 @@ extension CapturePreviewViewController: UICollectionViewDelegate, UICollectionVi
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! CaptureDetailCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? CaptureDetailCreateImageCollectionViewCell
         // Configure the cell
-        let imageData = Data(base64Encoded: images?[indexPath.row].encoded ?? "", options: .init(rawValue: 0))
-        if let imgData = imageData {
-            cell.imageView.image = UIImage(data: imgData)
-        }
+        if let createImage = images?[indexPath.row] {
+            cell?.configure(for: createImage)
 
-        cell.imageView.contentMode = .scaleAspectFill
+        }
 
         // if user does not scroll, assign the value
         self.selectedIndex = indexPath
 
-        return cell
+        return cell ?? UICollectionViewCell()
     }
 }
 
@@ -316,17 +313,26 @@ extension CapturePreviewViewController: UICollectionViewDelegateFlowLayout {
         let centerPoint = CGPoint(x: self.collectionView.frame.size.width/2 + scrollView.contentOffset.x,
                                   y:self.collectionView.frame.size.height/2 + scrollView.contentOffset.y )
 
-        if let indexPath = self.collectionView.indexPathForItem(at: centerPoint), self.centerCell == nil {
-            self.centerCell = (self.collectionView.cellForItem(at: indexPath) as! CaptureDetailCollectionViewCell)
+        var centerCell:CaptureDetailCollectionViewCell?
+
+        if let indexPath = self.collectionView.indexPathForItem(at: centerPoint), centerCell == nil {
+            if let detailCell =  self.collectionView.cellForItem(at: indexPath) as? CaptureDetailCollectionViewCell {
+                centerCell = detailCell
+
+            } else {
+                if let newImageCell = self.collectionView.cellForItem(at: indexPath) as? CaptureDetailCreateImageCollectionViewCell {
+                    centerCell = newImageCell
+                }
+            }
             self.selectedIndex = indexPath
-            self.centerCell?.transformToLarge()
+            centerCell?.transformToLarge()
         }
 
-        if let cell = self.centerCell {
+        if let cell = centerCell {
             let offsetX = centerPoint.x - cell.center.x
             if offsetX < -20 || offsetX > 20 {
                 cell.transformToStandard()
-                self.centerCell = nil
+                centerCell = nil
             }
         }
     }

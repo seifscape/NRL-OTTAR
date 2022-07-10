@@ -18,7 +18,7 @@ public struct DeleteImages: Codable {
 }
 
 public struct Capture: Codable, Identifiable, Hashable {
-    public let id = UUID()
+    public let id = UUID().uuidString
     public var coordinates: String?
     public var dateUpdated: Date?
     public var captureID: Int
@@ -112,7 +112,7 @@ public struct ValidationError: Codable {
     }
 }
 
-public struct CreateImage: Codable, Identifiable, Hashable {
+public struct CreateImage: Codable, Hashable {
     public let id = UUID()
     public var encoded: String
     public var captureID: Int?

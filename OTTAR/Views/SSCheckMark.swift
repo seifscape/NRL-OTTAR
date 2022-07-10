@@ -136,3 +136,20 @@ class SSCheckMark: UIView {
 
     }
 }
+
+extension UIView {
+    @discardableResult
+    func addLineDashedStroke(pattern: [NSNumber]?, radius: CGFloat, color: CGColor, thickness:CGFloat) -> CALayer {
+        let borderLayer = CAShapeLayer()
+
+        borderLayer.lineWidth = thickness
+        borderLayer.strokeColor = color
+        borderLayer.lineDashPattern = pattern
+        borderLayer.frame = bounds
+        borderLayer.fillColor = nil
+        borderLayer.path = UIBezierPath(roundedRect: bounds, byRoundingCorners: .allCorners, cornerRadii: CGSize(width: radius, height: radius)).cgPath
+
+        layer.addSublayer(borderLayer)
+        return borderLayer
+    }
+}
