@@ -309,26 +309,7 @@ class CaptureListViewController: UIViewController {
 extension CaptureListViewController: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if self.isEditing {
-            if let capture = dataSource.itemIdentifier(for: indexPath) {
-                let alertController = UIAlertController(title: "Delete Capture: \(capture.captureID)",
-                                                        message: nil,
-                                                        preferredStyle: .alert)
-
-                let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
-                let deleteAction = UIAlertAction(title: "Delete",
-                                                 style: .destructive) { _ in
-                    self.captureToDelete.append(capture)
-                    self.deleteCapture(capture.captureID)
-                }
-
-                alertController.addAction(cancelAction)
-                alertController.addAction(deleteAction)
-                self.present(alertController, animated: true)
-                print("Capture ID: \(capture.captureID)")
-            }
-        }
-        else {
+        guard self.isEditing else {
             if let capture = capturesList?.captures[indexPath.row] {
                 DispatchQueue.main.async {
                     let captureDetail = CaptureDetailViewController(capture: capture)
@@ -348,6 +329,25 @@ extension CaptureListViewController: UICollectionViewDelegate {
                     self.navigationController?.pushViewController(captureDetail, animated: true)
                 }
             }
+            return
+        }
+
+        if let capture = dataSource.itemIdentifier(for: indexPath) {
+            let alertController = UIAlertController(title: "Delete Capture: \(capture.captureID)",
+                                                    message: nil,
+                                                    preferredStyle: .alert)
+
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+            let deleteAction = UIAlertAction(title: "Delete",
+                                             style: .destructive) { _ in
+                self.captureToDelete.append(capture)
+                self.deleteCapture(capture.captureID)
+            }
+
+            alertController.addAction(cancelAction)
+            alertController.addAction(deleteAction)
+            self.present(alertController, animated: true)
+            print("Capture ID: \(capture.captureID)")
         }
 
         collectionView.deselectItem(at: indexPath, animated: true)

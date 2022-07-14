@@ -11,6 +11,12 @@ import AVFoundation
 import CoreLocation
 import Photos
 
+enum FlashPhotoMode {
+    case auto
+    case off
+    case on
+}
+
 class CaptureCameraViewController: UIViewController {
 
     private var spinner: UIActivityIndicatorView!
@@ -22,6 +28,8 @@ class CaptureCameraViewController: UIViewController {
     var captureButton = CameraButton()
     var previewView   = PreviewView()
     let previewButton = UIButton()
+    let torchButton = UIButton()
+    var flashMode:FlashPhotoMode = .auto
     var images = [CreateImage]()
     var capture:Capture?
     var currentLocation = CLLocation()
@@ -43,9 +51,6 @@ class CaptureCameraViewController: UIViewController {
         fatalError("init(coder:) is not supported")
     }
 
-    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .portrait
-    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -254,8 +259,7 @@ class CaptureCameraViewController: UIViewController {
         let configuration = UIImage.SymbolConfiguration(pointSize: 25, weight: .regular, scale: .medium)
 
         let closeSymbol         = UIImage(systemName: "xmark", withConfiguration: configuration)
-        let torchSymbolOn       = UIImage(systemName: "bolt.fill", withConfiguration: configuration)
-        let torchSymbolOff      = UIImage(systemName: "bolt.slash.fill", withConfiguration: configuration)
+        let torchSymbolAuto     = UIImage(systemName: "bolt.badge.a.fill", withConfiguration: configuration)
 
         stackViewContainer.translatesAutoresizingMaskIntoConstraints    = false
         mainStackView.translatesAutoresizingMaskIntoConstraints         = false
@@ -264,10 +268,12 @@ class CaptureCameraViewController: UIViewController {
         let closeButton = UIButton()
         closeButton.setImage(closeSymbol, for: .normal)
 
-        let torchButton = UIButton()
-        torchButton.setImage(torchSymbolOn, for: .normal)
-        torchButton.setImage(torchSymbolOff, for: .selected)
 
+        // Default
+        self.flashMode = .auto
+        self.torchButton.setImage(torchSymbolAuto, for: .normal)
+        self.torchButton.tintColor = .black
+        closeButton.tintColor = .black
 
         mainStackView.addArrangedSubview(closeButton)
         mainStackView.addArrangedSubview(torchButton)
@@ -322,7 +328,7 @@ class CaptureCameraViewController: UIViewController {
 
 
         torchButton.addTarget(self,
-                              action: #selector(toggleTorch(_:)),
+                              action: #selector(toggleFlashPhotoMode(_:)),
                               for: .touchUpInside)
 
 
@@ -570,6 +576,41 @@ class CaptureCameraViewController: UIViewController {
         }
     }
 
+
+
+@objc
+    private func toggleFlashPhotoMode(_ sender: UIButton) {
+
+        let configuration       = UIImage.SymbolConfiguration(pointSize: 25, weight: .regular, scale: .medium)
+        let torchSymbolOn       = UIImage(systemName: "bolt.fill", withConfiguration: configuration)
+        let torchSymbolOff      = UIImage(systemName: "bolt.slash.fill", withConfiguration: configuration)
+        let torchSymbolAuto     = UIImage(systemName: "bolt.badge.a.fill", withConfiguration: configuration)
+
+
+        sessionQueue.async {
+            switch self.flashMode {
+            case .auto:
+                self.flashMode = .off
+                DispatchQueue.main.async {
+                    self.torchButton.setImage(torchSymbolOff, for: .normal)
+                }
+                return
+            case .off:
+                self.flashMode = .on
+                DispatchQueue.main.async {
+                    self.torchButton.setImage(torchSymbolOn, for: .normal)
+                }
+                return
+            case .on:
+                self.flashMode = .auto
+                DispatchQueue.main.async {
+                    self.torchButton.setImage(torchSymbolAuto, for: .normal)
+                }
+                return
+            }
+        }
+    }
+
     @objc
     private func toggleTorch(_ sender: UIButton) {
 
@@ -673,7 +714,7 @@ class CaptureCameraViewController: UIViewController {
          */
         let videoPreviewLayerOrientation = previewView.videoPreviewLayer.connection?.videoOrientation
 
-        sessionQueue.async {
+        sessionQueue.async { [self] in
             if let photoOutputConnection = self.photoOutput.connection(with: .video) {
                 photoOutputConnection.videoOrientation = videoPreviewLayerOrientation!
             }
@@ -684,8 +725,16 @@ class CaptureCameraViewController: UIViewController {
                 photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.hevc])
             }
 
+            // Sync Button with flashMode
             if self.videoDeviceInput.device.isFlashAvailable {
-                photoSettings.flashMode = .auto
+                switch self.flashMode {
+                case .auto:
+                    photoSettings.flashMode = .auto
+                case .off:
+                    photoSettings.flashMode = .off
+                case .on:
+                    photoSettings.flashMode = .on
+                }
             }
 
             photoSettings.isHighResolutionPhotoEnabled = true

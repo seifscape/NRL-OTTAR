@@ -12,12 +12,12 @@ import SPAlert
 import CoreGraphics
 import Accelerate
 
-enum Item: Hashable {
+enum SectionItem: Hashable {
     case images(Image)
     case createImages(CreateImage)
 }
 
-enum Section: CaseIterable {
+enum Section: CaseIterable, Hashable {
     case images
     case newImages
 
@@ -33,26 +33,21 @@ enum Section: CaseIterable {
 
 class CaptureDetailViewController: UIViewController, UIGestureRecognizerDelegate {
 
-    typealias Snapshot = NSDiffableDataSourceSnapshot<Section, AnyHashable>
-    lazy var dataSource = UICollectionViewDiffableDataSource<Section, AnyHashable> (collectionView: collectionView) { [unowned self] (collectionView, indexPath, item) in
+    typealias Snapshot = NSDiffableDataSourceSnapshot<Section, SectionItem>
+    lazy var dataSource = UICollectionViewDiffableDataSource<Section, SectionItem> (collectionView: collectionView) { [unowned self] (collectionView, indexPath, item) in
 
         switch item {
-        case let item as Image:
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "captureDetailCell", for: indexPath) as? CaptureDetailCollectionViewCell else { fatalError() }
-            // configure the cell
-            if let image = self.capture.images?[indexPath.row] {
-                cell.configure(for: image)
-            }
-            return cell
-        case let item as CreateImage:
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "captureDetailCreateImageCell", for: indexPath) as? CaptureDetailCreateImageCollectionViewCell else { fatalError() }
-            // configure the cell
-            cell.configure(for: self.imagesToUpload[indexPath.row])
-            return cell
 
-
-        default:
-            return nil
+        case .images(let object):
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Section.images.cellIdentifier, for: indexPath) as? CaptureDetailCollectionViewCell else { fatalError() }
+            // configure the cell
+            cell.configure(for: object)
+            return cell
+        case .createImages(let object):
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Section.newImages.cellIdentifier, for: indexPath) as? CaptureDetailCreateImageCollectionViewCell else { fatalError() }
+            // configure the cell
+            cell.configure(for: object)
+            return cell
         }
     }
 
@@ -78,10 +73,13 @@ class CaptureDetailViewController: UIViewController, UIGestureRecognizerDelegate
     private var capture: Capture {
         didSet {
             var snapshot = Snapshot()
-            snapshot.appendSections([.images])
+            snapshot.appendSections([.images, .newImages])
             if let images = self.capture.images {
-                snapshot.appendItems(images, toSection: .images)
-                self.dataSource.apply(snapshot, animatingDifferences: true)
+                let imageItems = images.map { SectionItem.images($0) }
+                snapshot.appendItems(imageItems, toSection: .images)
+                DispatchQueue.main.async {
+                    self.dataSource.applySnapshot(snapshot, animated: true)
+                }
             }
         }
     }
@@ -186,24 +184,25 @@ class CaptureDetailViewController: UIViewController, UIGestureRecognizerDelegate
     //          .sectionIdentifiers[indexPath.section]
 
             if indexPath.section == 0 {
-                view?.titleLabel.text = "Images"  //section.cellIdentifier
-            } else { view?.titleLabel.text = "New Images" }
+                view?.titleLabel.text = " Saved Images"  //section.cellIdentifier
+            } else { view?.titleLabel.text = " New Images" }
             return view
 
         }
 
-//    func gestureRecognizer(
-//        _ gestureRecognizer: UIGestureRecognizer,
-//        shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
-//    ) -> Bool {
-//        return false
-//    }
+    func gestureRecognizer(
+        _ gestureRecognizer: UIGestureRecognizer,
+        shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
+    ) -> Bool {
+        return false
+    }
 
     @objc func dismissKeyboard(_ gesture: UITapGestureRecognizer) {
         self.capture.annotation = self.textView.text
-        self.textView.endEditing(true)
+        self.textView.resignFirstResponder()
+        self.textView.isEditable = false
         do {
-//            self.textView.isEditable = true
+            self.textView.isEditable = true
             if self.capture.annotation.isEmpty {
                 textView.text  = "Enter an annotation here"
                 textView.textColor = .lightGray
@@ -395,7 +394,6 @@ class CaptureDetailViewController: UIViewController, UIGestureRecognizerDelegate
             self.collectionView.allowsMultipleSelection = false
             self.deletePhotosFromServer()
             self.uploadPhotosToServer()
-
         } else {
             self.isEditing = true
             topHeaderView.isUserInteractionEnabled = true
@@ -406,6 +404,10 @@ class CaptureDetailViewController: UIViewController, UIGestureRecognizerDelegate
             self.deleteFloatingButton.isHidden = false
             self.collectionView.allowsMultipleSelection = true
         }
+
+        var snapshot = dataSource.snapshot()
+        snapshot.reloadSections([.images,.newImages])
+        self.dataSource.apply(snapshot, animatingDifferences: false)
     }
 
 
@@ -442,11 +444,22 @@ class CaptureDetailViewController: UIViewController, UIGestureRecognizerDelegate
                     for i in responseImages.images {
                         self.capture.images?.append(i)
                     }
+
+                    // https://applecider2020.tistory.com/38
+                    // https://developer.apple.com/forums/thread/653215
+
                     var snapshot = dataSource.snapshot()
-                    snapshot.appendItems(responseImages.images)
-                    dataSource.apply(snapshot, animatingDifferences: false) {
+                    let localImages =  self.imagesToUpload.map { SectionItem.createImages($0) }
+                    snapshot.deleteItems(localImages)
+                    let imageItems = responseImages.images.map { SectionItem.images($0) }
+                    // https://stackoverflow.com/questions/64081701/what-is-nsdiffabledatasourcesnapshot-reloaditems-for?answertab=trending#tab-top
+                    snapshot.reloadItems(imageItems)
+                    // snapshot.appendItems(imageItems, toSection: .images)
+                    dataSource.apply(snapshot, animatingDifferences: true) {
+                        snapshot.reloadSections([.images])
                         self.imagesToUpload.removeAll()
                     }
+
                 }
             }
             catch {
@@ -469,14 +482,16 @@ class CaptureDetailViewController: UIViewController, UIGestureRecognizerDelegate
                 self.capture.images?.removeAll(where: {$0.imageID == i.imageID})
             }
 
-            snapshot.deleteItems(self.listOfImagesToDelete)
+            let imageItems = self.listOfImagesToDelete.map { SectionItem.images($0) }
+            snapshot.deleteItems(imageItems)
             self.dataSource.apply(snapshot, animatingDifferences: true)
             self.listOfImagesToDelete.removeAll()
 
         }
         // Local Images
         var snapshot = dataSource.snapshot()
-        snapshot.deleteItems(self.removeLocalImages)
+        let removeLocalImages = self.removeLocalImages.map { SectionItem.createImages($0) }
+        snapshot.deleteItems(removeLocalImages)
         self.dataSource.apply(snapshot, animatingDifferences: true) {
             for i in self.imagesToUpload {
                 for e in self.removeLocalImages {
@@ -509,9 +524,9 @@ class CaptureDetailViewController: UIViewController, UIGestureRecognizerDelegate
             for image in images {
                 self.imagesToUpload.append(image)
             }
+            let newImages = self.imagesToUpload.map { SectionItem.createImages($0) }
             var snapshot = self.dataSource.snapshot()
-            snapshot.appendSections([.newImages])
-            snapshot.appendItems(self.imagesToUpload)
+            snapshot.appendItems(newImages)
             DispatchQueue.main.async {
                 self.dataSource.applySnapshot(snapshot, animated: true)
             }
@@ -526,17 +541,16 @@ class CaptureDetailViewController: UIViewController, UIGestureRecognizerDelegate
 extension CaptureDetailViewController: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+
         guard self.isEditing else {
             if let sectionItem = dataSource.itemIdentifier(for: indexPath) {
                 switch sectionItem {
-                case let sectionItem as Image:
-                    let imageViewController = CaptureImageViewController(image: sectionItem, createImage: nil)
+                case .images(let image):
+                    let imageViewController = CaptureImageViewController(image: image, createImage: nil)
                     self.navigationController?.present(imageViewController, animated: true)
-                case let sectionItem as CreateImage:
-                    let imageViewController = CaptureImageViewController(image:nil, createImage: sectionItem)
+                case .createImages(let createImage):
+                    let imageViewController = CaptureImageViewController(image:nil, createImage: createImage)
                     self.navigationController?.present(imageViewController, animated: true)
-                default:
-                    return
                 }
             }
             return
@@ -544,23 +558,20 @@ extension CaptureDetailViewController: UICollectionViewDelegate {
 
         if let sectionItem = dataSource.itemIdentifier(for: indexPath) {
             switch sectionItem {
-            case let sectionItem as Image:
+            case .images(let image):
                 guard let cell = collectionView.cellForItem(at: indexPath) as? CaptureDetailCollectionViewCell else { fatalError() }
                 cell.showCheckmark()
-                self.listOfImagesToDelete.append(sectionItem)
-            case let sectionItem as CreateImage:
+                self.listOfImagesToDelete.append(image)
+            case .createImages(let createImage):
                 guard let cell = collectionView.cellForItem(at: indexPath) as? CaptureDetailCreateImageCollectionViewCell else { fatalError() }
                 cell.showCheckmark()
                 for i in imagesToUpload {
-                    if i.id == sectionItem.id {
+                    if i.id == createImage.id {
                         self.removeLocalImages.append(i)
                     }
                 }
-            default:
-                return
             }
         }
-
     }
 
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
@@ -568,24 +579,22 @@ extension CaptureDetailViewController: UICollectionViewDelegate {
 
         if let sectionItem = dataSource.itemIdentifier(for: indexPath) {
             switch sectionItem {
-            case let sectionItem as Image:
+            case .images(let image):
                 guard let cell = collectionView.cellForItem(at: indexPath) as? CaptureDetailCollectionViewCell else { fatalError() }
                 cell.hideCheckmark()
                 for i in self.listOfImagesToDelete {
-                    if i.captureID == sectionItem.captureID {
+                    if i.captureID == image.captureID {
                         self.listOfImagesToDelete.remove(element: i)
                     }
                 }
-            case let sectionItem as CreateImage:
+            case .createImages(let createImage):
                 guard let cell = collectionView.cellForItem(at: indexPath) as? CaptureDetailCreateImageCollectionViewCell else { fatalError() }
                 cell.hideCheckmark()
                 for i in imagesToUpload {
-                    if i.id == sectionItem.id {
+                    if i.id == createImage.id {
                         self.removeLocalImages.remove(element: i)
                     }
                 }
-            default:
-                return
             }
         }
     }

@@ -148,7 +148,7 @@ public struct CreateImages: Codable {
     }
 }
 
-public struct Image: Codable, Identifiable, Hashable {
+public struct Image: Codable, Identifiable, Hashable, Equatable {
     public let id = UUID()
     public var dateCreated: Date?
     public var imageID: Int

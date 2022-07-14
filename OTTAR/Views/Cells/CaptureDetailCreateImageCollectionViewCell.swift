@@ -43,15 +43,14 @@ class CaptureDetailCreateImageCollectionViewCell: CaptureDetailCollectionViewCel
         self.card.translatesAutoresizingMaskIntoConstraints = false
         self.card.layer.cornerRadius = 15.0
         self.card.clipsToBounds = true
-        self.imageView.clipsToBounds = true
-        self.imageView.backgroundColor = .systemGray
-        self.imageView.contentMode = .scaleAspectFill
-        self.imageView.translatesAutoresizingMaskIntoConstraints = false
-
         checkmarkView = SSCheckMark(frame: .zero)
         checkmarkView.translatesAutoresizingMaskIntoConstraints = false
         checkmarkView.backgroundColor = .clear
 //        checkmarkView.clipsToBounds = true
+//        self.imageView.clipsToBounds = true
+//        self.imageView.backgroundColor = .systemGray
+//        self.imageView.contentMode = .scaleAspectFill
+//        self.imageView.translatesAutoresizingMaskIntoConstraints = false
         self.card.addSubview(checkmarkView)
     }
 
@@ -69,7 +68,7 @@ class CaptureDetailCreateImageCollectionViewCell: CaptureDetailCollectionViewCel
 
         checkmarkView.widthAnchor.constraint(equalToConstant: 35).isActive = true
         checkmarkView.heightAnchor.constraint(equalToConstant: 35).isActive = true
-        checkmarkView.bottomAnchor.constraint(equalTo: self.card.layoutMarginsGuide.bottomAnchor, constant: -10).isActive = true
+        checkmarkView.bottomAnchor.constraint(equalTo: self.card.bottomAnchor, constant: -10).isActive = true
         checkmarkView.trailingAnchor.constraint(equalTo: self.card.trailingAnchor, constant: -20).isActive = true
 
     }

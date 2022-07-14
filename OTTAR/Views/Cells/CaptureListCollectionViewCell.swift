@@ -128,7 +128,7 @@ class CaptureListCollectionViewCell: UICollectionViewCell {
         timeStackView.layoutMargins = UIEdgeInsets(top: 0, left: 6, bottom: 0, right: 4)
         timeStackView.isLayoutMarginsRelativeArrangement = true
 
-        dateStackView.layoutMargins = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 8)
+        dateStackView.layoutMargins = UIEdgeInsets(top: 0, left: 25, bottom: 0, right: 13)
         dateStackView.isLayoutMarginsRelativeArrangement = true
 
 
