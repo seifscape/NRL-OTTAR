@@ -143,8 +143,31 @@ class CaptureListCollectionViewCell: UICollectionViewCell {
 
     }
 
-    private func setupConstraints() {
+    func configureCell(capture: Capture) {
+        self.titleLabel.text = "Capture: \(capture.captureID)"
 
+
+        let myFormatter = DateFormatter()
+        myFormatter.dateStyle = .medium
+        myFormatter.timeZone = TimeZone(identifier: "UTC")
+
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm:ss"
+        formatter.timeZone = TimeZone(identifier: "UTC")
+
+        if let dateUpdated = capture.dateUpdated {
+            self.timeLabel.text = String(format: "%@ UTC", formatter.string(from: dateUpdated))
+            self.dateLabel.text = myFormatter.string(from: dateUpdated)
+            self.clockImageView.tintColor = .systemRed
+        } else {
+            if let dateCreated = capture.dateCreated {
+                self.timeLabel.text = String(format: "%@ UTC", formatter.string(from: dateCreated))
+                self.dateLabel.text = myFormatter.string(from: dateCreated)
+            }
+        }
+
+        self.locationLabel.text = capture.coordinates
+        self.layoutSubviews()
     }
 
     override func layoutSubviews() {

@@ -165,46 +165,5 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
             return
         }
         self.didFinish()
-
-/*
-        PHPhotoLibrary.requestAuthorization { status in
-            if status == .authorized {
-                PHPhotoLibrary.shared().performChanges({
-                    let options = PHAssetResourceCreationOptions()
-                    let creationRequest = PHAssetCreationRequest.forAsset()
-                    options.uniformTypeIdentifier = self.requestedPhotoSettings.processedFileType.map { $0.rawValue }
-                    creationRequest.addResource(with: .photo, data: photoData, options: options)
-
-                    // Specify the location the photo was taken
-                    creationRequest.location = self.location
-
-                    // Save Portrait Effects Matte to Photos Library only if it was generated
-                    if let portraitEffectsMatteData = self.portraitEffectsMatteData {
-                        let creationRequest = PHAssetCreationRequest.forAsset()
-                        creationRequest.addResource(with: .photo,
-                                                    data: portraitEffectsMatteData,
-                                                    options: nil)
-                    }
-                    // Save Portrait Effects Matte to Photos Library only if it was generated
-                    for semanticSegmentationMatteData in self.semanticSegmentationMatteDataArray {
-                        let creationRequest = PHAssetCreationRequest.forAsset()
-                        creationRequest.addResource(with: .photo,
-                                                    data: semanticSegmentationMatteData,
-                                                    options: nil)
-                    }
-
-                }, completionHandler: { _, error in
-                    if let error = error {
-                        print("Error occurred while saving photo to photo library: \(error)")
-                    }
-
-                    self.didFinish()
-                }
-                )
-            } else {
-                self.didFinish()
-            }
-        }
-*/
     }
 }

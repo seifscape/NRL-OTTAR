@@ -214,48 +214,6 @@ class CapturePreviewViewController: UIViewController {
         }
     }
 
-    @objc func completeCapture(_ sender: UIButton) {
-        var alertView = SPAlertView(title: "Uploading", preset: .spinner)
-        alertView.present()
-        sender.isEnabled = false
-
-        if self.capture?.captureID != nil {
-            Task {
-                do {
-                    if let capture = capture {
-                        if let images = images {
-                            let value = try await CaptureServices.addImages(capture: capture, images: images)
-                            if let images = value {
-                                self.addImagesToCapture?(images, true)
-                                sender.isEnabled = true
-                                alertView.dismiss()
-                                self.dismissMe()
-                            }
-                        }
-                    }
-                } catch {
-                    alertView = SPAlertView(title: "Error", preset: .error)
-                    alertView.duration = 0.66
-                    alertView.present()
-                    print("Unknown error: \(error)")
-                }
-            }
-        } else {
-            Task {
-                if let images = self.images {
-                    let coordinatesString = "\(String(format: "%.3f", self.currentLocation.coordinate.latitude)),\(String(format: "%.5f", self.currentLocation.coordinate.longitude))"
-                    let capture = try await CaptureServices.createCapture(coordinateString: coordinatesString, images: images)
-                    if let unwrapedCapture = capture {
-                        self.responseCapture?(unwrapedCapture, nil)
-                        sender.isEnabled = true
-                        alertView.dismiss()
-                        self.dismissMe()
-                    }
-                }
-            }
-        }
-    }
-
     func dismissMe() {
         DispatchQueue.main.async {
             guard self.navigationController?.topViewController == self else { return }
@@ -276,7 +234,6 @@ extension CapturePreviewViewController: UICollectionViewDelegate, UICollectionVi
         // Configure the cell
         if let createImage = images?[indexPath.row] {
             cell?.configure(for: createImage)
-
         }
 
         // if user does not scroll, assign the value

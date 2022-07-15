@@ -9,8 +9,6 @@
 import UIKit
 import Get
 import SPAlert
-import CoreGraphics
-import Accelerate
 
 enum SectionItem: Hashable {
     case images(Image)
@@ -63,13 +61,25 @@ class CaptureDetailViewController: UIViewController, UIGestureRecognizerDelegate
 
     var listOfIds:[Int] = []
     var safeArea: UILayoutGuide!
-    var collectionView = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: UICollectionViewFlowLayout())
+
     private let spacing:CGFloat = 16.0
     private let topHeaderHeight:CGFloat = 150.0
     private var listOfImagesToDelete = [Image]()
     private var removeLocalImages = [CreateImage]()
-    var deleteResponseCapture : ((Capture?, Bool?) -> Void)?
     private var imagesToUpload:[CreateImage] = []
+    private let viewLayout = UICollectionViewFlowLayout()
+
+    private lazy var collectionView: UICollectionView = {
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: viewLayout)
+        collectionView.backgroundColor = .white
+        collectionView.automaticallyAdjustsScrollIndicatorInsets = false
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.contentInsetAdjustmentBehavior = .never
+        collectionView.delegate = self
+        return collectionView
+    }()
+
+
     private var capture: Capture {
         didSet {
             var snapshot = Snapshot()
@@ -110,55 +120,35 @@ class CaptureDetailViewController: UIViewController, UIGestureRecognizerDelegate
         super.viewDidLoad()
         self.title = "Capture Detail: \(self.capture.captureID)"
         self.textView.delegate = self
-        topHeaderView.isUserInteractionEnabled = false
-        edgesForExtendedLayout = []
-        let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width:(self.view.frame.width/2.1) - spacing, height: (self.view.frame.height-topHeaderHeight)/3)
-        collectionView.automaticallyAdjustsScrollIndicatorInsets = false
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        layout.sectionInset = UIEdgeInsets(top: spacing, left: spacing, bottom: spacing, right: spacing)
-        layout.minimumLineSpacing = spacing
-        layout.minimumInteritemSpacing = spacing
-
-        layout.headerReferenceSize = CGSize(width: 50, height: 50)
-        collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
-
-        editModeButton = UIBarButtonItem(title:"Edit", style: .plain, target: self, action: #selector(editCaptures(_:)))
-        editModeButton.tintColor = .black
+        self.topHeaderView.isUserInteractionEnabled = false
+        self.editModeButton = UIBarButtonItem(title:"Edit", style: .plain, target: self, action: #selector(editCaptures(_:)))
+        self.editModeButton.tintColor = .black
         self.navigationItem.rightBarButtonItem = editModeButton
 
 
-        collectionView.register(CaptureDetailCollectionViewCell.self, forCellWithReuseIdentifier: "captureDetailCell")
-        collectionView.register(CaptureDetailCreateImageCollectionViewCell.self, forCellWithReuseIdentifier: "captureDetailCreateImageCell")
-                collectionView.register(SectionHeaderReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: SectionHeaderReusableView.reuseIdentifier)
+        self.collectionView.register(CaptureDetailCollectionViewCell.self, forCellWithReuseIdentifier: "captureDetailCell")
+        self.collectionView.register(CaptureDetailCreateImageCollectionViewCell.self, forCellWithReuseIdentifier: "captureDetailCreateImageCell")
+        self.collectionView.register(SectionHeaderReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: SectionHeaderReusableView.reuseIdentifier)
 
-
-        collectionView.delegate = self
         self.setupInterface()
         self.setupConstraints()
-        self.setupCollectionView()
-        self.collectionView.contentInsetAdjustmentBehavior = .never
+        self.setupCollectionViewLayout()
         self.setupNavBar()
+
         if self.capture.annotation.isEmpty {
-            textView.text  = "Enter an annotation here"
-            textView.textColor = .lightGray
+            self.textView.text  = "Enter an annotation here"
+            self.textView.textColor = .lightGray
         } else {
             self.textView.text = self.capture.annotation
         }
         self.textView.delegate = self
         self.textView.keyboardDismissMode = .none
         self.navigationController?.navigationBar.barStyle = .black
-
         self.textView.addDoneButton(title: "Done", target: self, selector: #selector(dismissKeyboard(_:)))
-//        let dismissKeyboardGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard(_:)))
-//        dismissKeyboardGesture.delegate = self
-//        dismissKeyboardGesture.cancelsTouchesInView = false
-//        self.collectionView.addGestureRecognizer(dismissKeyboardGesture)
-//        self.view.addGestureRecognizer(dismissKeyboardGesture)
 
-        let tap = UITapGestureRecognizer(target: view, action: #selector(UIView.endEditing))
+        let tap = UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing))
         tap.cancelsTouchesInView = false
-        view.addGestureRecognizer(tap)
+        self.view.addGestureRecognizer(tap)
 
 
         dataSource.supplementaryViewProvider = { [unowned self] collectionView, kind, indexPath in
@@ -167,31 +157,22 @@ class CaptureDetailViewController: UIViewController, UIGestureRecognizerDelegate
 
     }
 
-
-
-        func supplementary(collectionView: UICollectionView, kind: String, indexPath: IndexPath) -> UICollectionReusableView?
-        {
-            guard kind == UICollectionView.elementKindSectionHeader else {
-              return nil
-            }
-            // 3
-            let view = collectionView.dequeueReusableSupplementaryView(
-              ofKind: kind,
-              withReuseIdentifier: SectionHeaderReusableView.reuseIdentifier,
-              for: indexPath) as? SectionHeaderReusableView
-            // 4
-    //        let section = self.dataSource.snapshot()
-    //          .sectionIdentifiers[indexPath.section]
-
-            if indexPath.section == 0 {
-                view?.titleLabel.text = " Saved Images"  //section.cellIdentifier
-            } else { view?.titleLabel.text = " New Images" }
-            return view
-
+    func supplementary(collectionView: UICollectionView, kind: String, indexPath: IndexPath) -> UICollectionReusableView?
+    {
+        guard kind == UICollectionView.elementKindSectionHeader else {
+            return nil
         }
+        let view = collectionView.dequeueReusableSupplementaryView(
+            ofKind: kind,
+            withReuseIdentifier: SectionHeaderReusableView.reuseIdentifier,
+            for: indexPath) as? SectionHeaderReusableView
+        if indexPath.section == 0 {
+            view?.titleLabel.text = " Saved Images"
+        } else { view?.titleLabel.text = " New Images" }
+        return view
+    }
 
-    func gestureRecognizer(
-        _ gestureRecognizer: UIGestureRecognizer,
+    func gestureRecognizer( _ gestureRecognizer: UIGestureRecognizer,
         shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
     ) -> Bool {
         return false
@@ -204,8 +185,8 @@ class CaptureDetailViewController: UIViewController, UIGestureRecognizerDelegate
         do {
             self.textView.isEditable = true
             if self.capture.annotation.isEmpty {
-                textView.text  = "Enter an annotation here"
-                textView.textColor = .lightGray
+                self.textView.text  = "Enter an annotation here"
+                self.textView.textColor = .lightGray
             } else {
                 self.textView.text = self.capture.annotation
             }
@@ -237,6 +218,16 @@ class CaptureDetailViewController: UIViewController, UIGestureRecognizerDelegate
         self.isEditing = !self.isEditing
     }
 
+    func setupCollectionViewLayout() {
+        edgesForExtendedLayout = []
+        self.viewLayout.itemSize = CGSize(width:(self.view.frame.width/2.1) - self.spacing, height: (self.view.frame.height-self.topHeaderHeight)/3)
+        self.viewLayout.sectionInset = UIEdgeInsets(top: self.spacing, left: self.spacing, bottom: self.spacing, right: self.spacing)
+        self.viewLayout.minimumLineSpacing = spacing
+        self.viewLayout.minimumInteritemSpacing = spacing
+        self.viewLayout.headerReferenceSize = CGSize(width: 50, height: 50)
+        self.collectionView.collectionViewLayout = self.viewLayout
+    }
+
     func setupNavBar() {
         self.navigationController?.setNavigationBarHidden(false, animated: true)
         let appearance = UINavigationBarAppearance()
@@ -263,8 +254,6 @@ class CaptureDetailViewController: UIViewController, UIGestureRecognizerDelegate
         self.navigationItem.rightBarButtonItem = editModeButton
         self.navigationController?.navigationBar.tintColor = .black
 
-
-
     }
 
     func setupInterface() {
@@ -283,6 +272,7 @@ class CaptureDetailViewController: UIViewController, UIGestureRecognizerDelegate
         topHeaderView.backgroundColor = .white
         collectionContainer.backgroundColor = .systemTeal
         collectionView.backgroundColor = self.view.backgroundColor
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
 
         self.view.addSubview(topHeaderView)
         self.view.addSubview(collectionContainer)
@@ -368,11 +358,6 @@ class CaptureDetailViewController: UIViewController, UIGestureRecognizerDelegate
         deleteFloatingButton.bottomAnchor.constraint(equalTo: floatingButton.topAnchor, constant: -20).isActive = true
         deleteFloatingButton.trailingAnchor.constraint(equalTo: collectionContainer.trailingAnchor, constant: -20).isActive = true
 
-
-    }
-
-    private func setupCollectionView() {
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.topAnchor.constraint(equalTo: collectionContainer.topAnchor).isActive = true
         collectionView.leftAnchor.constraint(equalTo: collectionContainer.leftAnchor).isActive = true
         collectionView.bottomAnchor.constraint(equalTo: collectionContainer.bottomAnchor).isActive = true
@@ -380,14 +365,13 @@ class CaptureDetailViewController: UIViewController, UIGestureRecognizerDelegate
 
     }
 
-
     @objc
     private func editCaptures(_ sender: UIButton) {
         if self.isEditing {
             self.isEditing = false
-            topHeaderView.isUserInteractionEnabled = false
-            textView.isEditable = false
-            editModeButton.title = "Edit"
+            self.topHeaderView.isUserInteractionEnabled = false
+            self.textView.isEditable = false
+            self.editModeButton.title = "Edit"
             self.navigationItem.leftBarButtonItem = nil
             self.floatingButton.isHidden = true
             self.deleteFloatingButton.isHidden = true
@@ -396,10 +380,10 @@ class CaptureDetailViewController: UIViewController, UIGestureRecognizerDelegate
             self.uploadPhotosToServer()
         } else {
             self.isEditing = true
-            topHeaderView.isUserInteractionEnabled = true
-            textView.isEditable = true
-            textView.isSelectable = true
-            editModeButton.title = "Done"
+            self.topHeaderView.isUserInteractionEnabled = true
+            self.textView.isEditable = true
+            self.textView.isSelectable = true
+            self.editModeButton.title = "Done"
             self.floatingButton.isHidden = false
             self.deleteFloatingButton.isHidden = false
             self.collectionView.allowsMultipleSelection = true
@@ -447,14 +431,13 @@ class CaptureDetailViewController: UIViewController, UIGestureRecognizerDelegate
 
                     // https://applecider2020.tistory.com/38
                     // https://developer.apple.com/forums/thread/653215
-
                     var snapshot = dataSource.snapshot()
                     let localImages =  self.imagesToUpload.map { SectionItem.createImages($0) }
                     snapshot.deleteItems(localImages)
                     let imageItems = responseImages.images.map { SectionItem.images($0) }
                     // https://stackoverflow.com/questions/64081701/what-is-nsdiffabledatasourcesnapshot-reloaditems-for?answertab=trending#tab-top
-                    snapshot.reloadItems(imageItems)
-                    // snapshot.appendItems(imageItems, toSection: .images)
+                    //snapshot.reloadItems(imageItems)
+                    snapshot.appendItems(imageItems, toSection: .images)
                     dataSource.apply(snapshot, animatingDifferences: true) {
                         snapshot.reloadSections([.images])
                         self.imagesToUpload.removeAll()
@@ -604,8 +587,6 @@ extension CaptureDetailViewController: UICollectionViewDelegate {
         return UIEdgeInsets(top: spacing, left: 5, bottom: spacing, right: 5)
     }
 
-    
-
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let numberOfItemsPerRow:CGFloat = 2
         let spacingBetweenCells:CGFloat = 0
@@ -614,18 +595,6 @@ extension CaptureDetailViewController: UICollectionViewDelegate {
 
         let width = floor((collectionView.bounds.width - totalSpacing)/numberOfItemsPerRow)
         return CGSize(width: width, height: width)
-    }
-
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 1.0
-    }
-
-    func collectionView(_ collectionView: UICollectionView, layout
-                        collectionViewLayout: UICollectionViewLayout,
-                        minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 1.0
     }
 
 }
@@ -742,36 +711,6 @@ extension UICollectionViewDiffableDataSource {
         }
 }
 
-extension UICollectionView {
-    func reconfigureCell(at indexPath: IndexPath) {
-        let visibleIndexPaths = self.indexPathsForVisibleItems
-        let foundIndexPath = visibleIndexPaths.first { $0 == indexPath }
-
-        if let foundIndexPath = foundIndexPath {
-            let cell = self.cellForItem(at: foundIndexPath)
-
-            // get model that corresponds to index path
-            // reconfigure the cell using the model
-        }
-    }
-}
-
-extension UIViewController {
-    /// Call this once to dismiss open keyboards by tapping anywhere in the view controller
-    func setupHideKeyboardOnTap() {
-        self.view.addGestureRecognizer(self.endEditingRecognizer())
-        self.navigationController?.navigationBar.addGestureRecognizer(self.endEditingRecognizer())
-    }
-
-    /// Dismisses the keyboard from self.view
-    private func endEditingRecognizer() -> UIGestureRecognizer {
-        let tap = UITapGestureRecognizer(target: self.view, action: #selector(self.view.endEditing(_:)))
-        tap.cancelsTouchesInView = false
-        return tap
-    }
-}
-
-
 extension UITextView {
 
     func addDoneButton(title: String, target: Any, selector: Selector) {
@@ -784,65 +723,5 @@ extension UITextView {
         let barButton = UIBarButtonItem(title: title, style: .plain, target: target, action: selector)//3
         toolBar.setItems([flexible, barButton], animated: false)//4
         self.inputAccessoryView = toolBar//5
-    }
-}
-
-
-//extension UIImage {
-//    func resizeImage(_ dimension: CGFloat, opaque: Bool, contentMode: UIView.ContentMode = .scaleAspectFit) -> UIImage {
-//        var width: CGFloat
-//        var height: CGFloat
-//        var newImage: UIImage
-//
-//        let size = self.size
-//        let aspectRatio =  size.width/size.height
-//
-//        switch contentMode {
-//            case .scaleAspectFit:
-//                if aspectRatio > 1 {                            // Landscape image
-//                    width = dimension
-//                    height = dimension / aspectRatio
-//                } else {                                        // Portrait image
-//                    height = dimension
-//                    width = dimension * aspectRatio
-//                }
-//
-//        default:
-//            fatalError("UIIMage.resizeToFit(): FATAL: Unimplemented ContentMode")
-//        }
-//
-//        if #available(iOS 10.0, *) {
-//            let renderFormat = UIGraphicsImageRendererFormat.default()
-//            renderFormat.opaque = opaque
-//            let renderer = UIGraphicsImageRenderer(size: CGSize(width: width, height: height), format: renderFormat)
-//            newImage = renderer.image {
-//                (context) in
-//                self.draw(in: CGRect(x: 0, y: 0, width: width, height: height))
-//            }
-//        } else {
-//            UIGraphicsBeginImageContextWithOptions(CGSize(width: width, height: height), opaque, 0)
-//                self.draw(in: CGRect(x: 0, y: 0, width: width, height: height))
-//                newImage = UIGraphicsGetImageFromCurrentImageContext()!
-//            UIGraphicsEndImageContext()
-//        }
-//
-//        return newImage
-//    }
-//}
-
-
-extension CreateImage {
-    struct Diffable {
-        let id: UUID
-
-        let encoded: String
-        let dateCreated: Date
-        // other properties that will be rendered on the cell
-
-        init(model: CreateImage) {
-            self.id = model.id
-            self.encoded = model.encoded
-            self.dateCreated = model.dateCreated ?? Date.now
-        }
     }
 }

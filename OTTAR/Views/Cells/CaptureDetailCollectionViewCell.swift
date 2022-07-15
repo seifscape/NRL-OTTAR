@@ -18,18 +18,6 @@ class CaptureDetailCollectionViewCell: UICollectionViewCell {
     var image:Image?
 
 
-//    override var isSelected: Bool {
-//        didSet {
-//            if isSelected {
-//                self.checkmarkView.checked = isSelected
-//            } else {
-//                // do opposite color
-//                self.checkmarkView.checked = isSelected
-//            }
-//            self.checkmarkView.isHidden = !isSelected
-//         }
-//    }
-
     var isMarked: Bool = false {
         didSet {
             if isMarked {
@@ -46,9 +34,7 @@ class CaptureDetailCollectionViewCell: UICollectionViewCell {
         super.init(frame: frame)
         self.setupUI()
         self.setupConstrainsts()
-        //self.checkmarkView.checked = self.isMarked
         self.checkmarkView.isHidden = true
-        //self.button.isHidden = true
     }
 
     required init?(coder: NSCoder) {
@@ -80,9 +66,6 @@ class CaptureDetailCollectionViewCell: UICollectionViewCell {
         checkmarkView.backgroundColor = .clear
         checkmarkView.clipsToBounds = true
         self.card.addSubview(checkmarkView)
-//        self.imageView.clipsToBounds = true
-//        self.imageView.backgroundColor = .systemGray
-        //self.imageView.layer.cornerRadius = 15.0
         self.imageView.contentMode = .scaleAspectFill
         self.imageView.translatesAutoresizingMaskIntoConstraints = false
     }
@@ -104,24 +87,12 @@ class CaptureDetailCollectionViewCell: UICollectionViewCell {
         checkmarkView.bottomAnchor.constraint(equalTo: self.card.bottomAnchor, constant: -10).isActive = true
         checkmarkView.trailingAnchor.constraint(equalTo: self.card.trailingAnchor, constant: -20).isActive = true
 
-        //        self.button.widthAnchor.constraint(equalToConstant: 40).isActive = true
-        //        self.button.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        //        self.button.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: -12).isActive = true
-        //        self.button.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: -10).isActive = true
     }
 
     override func prepareForReuse() {
         super.prepareForReuse()
         imageView.image = nil
         checkmarkView.isHidden = true
-
-
-        //        for subview in subviews {
-        //            subview.removeConstraints(subview.constraints)
-        //            subview.removeFromSuperview()
-        //        }
-        //
-        //        self.removeFromSuperview() // BURN EVERYTHING
     }
 
     func transformToLarge() {
