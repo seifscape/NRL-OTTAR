@@ -548,10 +548,8 @@ extension CaptureDetailViewController: UICollectionViewDelegate {
             case .createImages(let createImage):
                 guard let cell = collectionView.cellForItem(at: indexPath) as? CaptureDetailCreateImageCollectionViewCell else { fatalError() }
                 cell.showCheckmark()
-                for i in imagesToUpload {
-                    if i.id == createImage.id {
-                        self.removeLocalImages.append(i)
-                    }
+                if let index = imagesToUpload.firstIndex(where: {$0.id == createImage.id}) {
+                    self.removeLocalImages.append(self.imagesToUpload[index])
                 }
             }
         }
@@ -565,18 +563,14 @@ extension CaptureDetailViewController: UICollectionViewDelegate {
             case .images(let image):
                 guard let cell = collectionView.cellForItem(at: indexPath) as? CaptureDetailCollectionViewCell else { fatalError() }
                 cell.hideCheckmark()
-                for i in self.listOfImagesToDelete {
-                    if i.captureID == image.captureID {
-                        self.listOfImagesToDelete.remove(element: i)
-                    }
+                if let index = listOfImagesToDelete.firstIndex(where: {$0.captureID == image.captureID}) {
+                    self.listOfImagesToDelete.remove(element: listOfImagesToDelete[index])
                 }
             case .createImages(let createImage):
                 guard let cell = collectionView.cellForItem(at: indexPath) as? CaptureDetailCreateImageCollectionViewCell else { fatalError() }
                 cell.hideCheckmark()
-                for i in imagesToUpload {
-                    if i.id == createImage.id {
-                        self.removeLocalImages.remove(element: i)
-                    }
+                if let index = imagesToUpload.firstIndex(where: {$0.id == createImage.id}) {
+                    self.removeLocalImages.remove(element: imagesToUpload[index])
                 }
             }
         }
