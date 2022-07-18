@@ -131,6 +131,31 @@ class CaptureCameraViewController: UIViewController {
 
     }
 
+    private func updatePreviewLayer(layer: AVCaptureConnection, orientation: AVCaptureVideoOrientation) {
+        layer.videoOrientation = orientation
+        self.previewView.videoPreviewLayer.frame = view.bounds
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        if let connection = self.previewView.videoPreviewLayer.connection {
+            let currentDevice = UIDevice.current
+            let orientation: UIDeviceOrientation = currentDevice.orientation
+            let previewLayerConnection: AVCaptureConnection = connection
+
+            if previewLayerConnection.isVideoOrientationSupported {
+                switch orientation {
+                case .portrait: self.updatePreviewLayer(layer: previewLayerConnection, orientation: .portrait)
+                case .landscapeRight: self.updatePreviewLayer(layer: previewLayerConnection, orientation: .landscapeLeft)
+                case .landscapeLeft: self.updatePreviewLayer(layer: previewLayerConnection, orientation: .landscapeRight)
+                case .portraitUpsideDown: self.updatePreviewLayer(layer: previewLayerConnection, orientation: .portraitUpsideDown)
+                default: self.updatePreviewLayer(layer: previewLayerConnection, orientation: .portrait)
+                }
+            }
+        }
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.setNavigationBarHidden(true, animated: true)
